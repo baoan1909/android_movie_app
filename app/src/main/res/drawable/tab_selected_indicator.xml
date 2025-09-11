@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- nền trong suốt -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- gạch dưới màu cam có bo cạnh -->
+    <item android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <solid android:color="#FF5722"/>
+            <size android:height="3dp"/>
+            <corners android:bottomLeftRadius="2dp"
+                android:bottomRightRadius="2dp"/>
+        </shape>
+    </item>
+
+</layer-list>
