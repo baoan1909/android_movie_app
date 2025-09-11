@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">Android_Movie_App</string>
+    <string name="app_name">Movie App</string>
+    <string name="search_movies">Search movies...</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="movie_details">Movie Details</string>
+    <string name="loading">Loading...</string>
+    <string name="error_loading_movies">Error loading movies</string>
+    <string name="no_movies_found">No movies found</string>
+    <string name="release_date">Release Date: %s</string>
+    <string name="rating">★ %s (%d votes)</string>
 </resources>
