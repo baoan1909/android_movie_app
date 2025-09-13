@@ -1,0 +1,10 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Gradient chuyển từ trong suốt ở trên sang đen đậm ở dưới -->
+    <gradient
+        android:startColor="#00000000"
+        android:centerColor="#80000000"
+        android:endColor="#FF000000"
+        android:angle="270" /> <!-- Gradient theo chiều dọc từ trên xuống dưới -->
+</shape>

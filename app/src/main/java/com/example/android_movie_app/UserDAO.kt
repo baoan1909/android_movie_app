@@ -16,7 +16,6 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             put("username", user.username)
             put("email", user.email)
             put("passwordHash", user.passwordHash)
-            put("displayName", user.displayName)
             put("createdAt", user.createdAt?.let { dateFormat.format(it) })
             put("isActive", if (user.isActive) 1 else 0)
         }
@@ -65,7 +64,6 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             put("username", user.username)
             put("email", user.email)
             put("passwordHash", user.passwordHash)
-            put("displayName", user.displayName)
             put("isActive", if (user.isActive) 1 else 0)
             put("createdAt", user.createdAt?.let { dateFormat.format(it) })
         }
@@ -93,7 +91,6 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             username = cursor.getString(cursor.getColumnIndexOrThrow("username")),
             email = cursor.getString(cursor.getColumnIndexOrThrow("email")),
             passwordHash = cursor.getString(cursor.getColumnIndexOrThrow("passwordHash")),
-            displayName = cursor.getString(cursor.getColumnIndexOrThrow("displayName")),
             createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) },
             isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1
         )

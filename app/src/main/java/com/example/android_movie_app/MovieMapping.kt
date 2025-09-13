@@ -8,7 +8,6 @@ data class User(
     var username: String,
     var email: String,
     var passwordHash: String,
-    var displayName: String? = null,
     var createdAt: Date? = null,   // có ngày + giờ
     var isActive: Boolean = true
 )

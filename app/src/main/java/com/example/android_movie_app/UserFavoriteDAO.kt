@@ -55,23 +55,23 @@ class UserFavoriteDAO(private val dbHelper: DatabaseHelper) {
     }
 
     // Lấy danh sách phim yêu thích (JOIN với movies)
-    fun getFavoriteMovies(userId: Int): List<Movie> {
-        val list = mutableListOf<Movie>()
-        val db = dbHelper.readableDatabase
-        val query = """
-            SELECT m.* FROM user_favorites uf
-            INNER JOIN movies m ON uf.movieId = m.id
-            WHERE uf.userId=?
-            ORDER BY uf.createdAt DESC
-        """
-        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
-        cursor.use {
-            while (it.moveToNext()) {
-                list.add(dbHelper.cursorToMovie(it))
-            }
-        }
-        return list
-    }
+//    fun getFavoriteMovies(userId: Int): List<Movie> {
+//        val list = mutableListOf<Movie>()
+//        val db = dbHelper.readableDatabase
+//        val query = """
+//            SELECT m.* FROM user_favorites uf
+//            INNER JOIN movies m ON uf.movieId = m.id
+//            WHERE uf.userId=?
+//            ORDER BY uf.createdAt DESC
+//        """
+//        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
+//        cursor.use {
+//            while (it.moveToNext()) {
+//                list.add(dbHelper.cursorToMovie(it))
+//            }
+//        }
+//        return list
+//    }
 
     // Đếm tổng số phim yêu thích
     fun countFavorites(userId: Int): Int {
@@ -99,26 +99,26 @@ class UserFavoriteDAO(private val dbHelper: DatabaseHelper) {
     }
 
     // Lấy danh sách phim yêu thích kèm thời điểm add
-    fun getFavoriteMovieItems(userId: Int): List<FavoriteMovieItem> {
-        val list = mutableListOf<FavoriteMovieItem>()
-        val db = dbHelper.readableDatabase
-        val query = """
-            SELECT m.*, uf.createdAt as favCreatedAt 
-            FROM user_favorites uf
-            INNER JOIN movies m ON uf.movieId = m.id
-            WHERE uf.userId=?
-            ORDER BY uf.createdAt DESC
-        """
-        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
-        cursor.use {
-            while (it.moveToNext()) {
-                val movie = dbHelper.cursorToMovie(it)
-                val favCreatedAt = it.getString(it.getColumnIndexOrThrow("favCreatedAt"))?.let { d ->
-                    dateFormat.parse(d)
-                }
-                list.add(FavoriteMovieItem(movie, favCreatedAt))
-            }
-        }
-        return list
-    }
+//    fun getFavoriteMovieItems(userId: Int): List<FavoriteMovieItem> {
+//        val list = mutableListOf<FavoriteMovieItem>()
+//        val db = dbHelper.readableDatabase
+//        val query = """
+//            SELECT m.*, uf.createdAt as favCreatedAt
+//            FROM user_favorites uf
+//            INNER JOIN movies m ON uf.movieId = m.id
+//            WHERE uf.userId=?
+//            ORDER BY uf.createdAt DESC
+//        """
+//        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
+//        cursor.use {
+//            while (it.moveToNext()) {
+//                val movie = dbHelper.cursorToMovie(it)
+//                val favCreatedAt = it.getString(it.getColumnIndexOrThrow("favCreatedAt"))?.let { d ->
+//                    dateFormat.parse(d)
+//                }
+//                list.add(FavoriteMovieItem(movie, favCreatedAt))
+//            }
+//        }
+//        return list
+//    }
 }

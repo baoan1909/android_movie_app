@@ -20,7 +20,6 @@ class DatabaseHelper(context: Context) :
                 username TEXT UNIQUE NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 passwordHash TEXT NOT NULL,
-                displayName TEXT,
                 createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
                 isActive INTEGER DEFAULT 1
             )
