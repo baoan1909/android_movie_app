@@ -29,6 +29,22 @@ data class Movie(
     var createdAt: Date? = null
 )
 
+// ---------- CATEGORIES ----------
+data class Category(
+    var id: Int = 0,
+    var name: String,
+    var slug: String,
+    var description: String? = null,
+    var createdAt: Date? = null
+)
+
+// ---------- MOVIE_CATEGORIES (Junction Many-to-Many) ----------
+data class MovieCategory(
+    var movieId: Int,
+    var categoryId: Int,
+    var createdAt: Date? = null
+)
+
 // Bảng episodes
 data class Episode(
     var id: Int = 0,
@@ -66,6 +82,28 @@ data class UserSession(
     var expiresAt: Date
 )
 
+// ---------- COMMENTS ----------
+data class Comment(
+    var id: Int = 0,
+    var userId: Int,
+    var movieId: Int,
+    var episodeId: Int? = null,
+    var parentCommentId: Int? = null,
+    var content: String,
+    var createdAt: Date? = null
+)
+
+// ---------- REVIEWS ----------
+data class Review(
+    var id: Int = 0,
+    var userId: Int,
+    var movieId: Int,
+    var episodeId: Int? = null,
+    var rating: Int,
+    var createdAt: Date? = null,
+    var updatedAt: Date? = null
+)
+
 data class ContinueWatchingItem(
     val progress: WatchProgress,
     val movie: Movie
@@ -75,4 +113,19 @@ data class FavoriteMovieItem(
     val movie: Movie,
     val createdAt: Date? = null
 )
+
+data class MovieWithCategories(
+    val movieId: Int,
+    val slug: String,
+    val name: String,
+    val originName: String? = null,
+    val type: String,
+    val thumbUrl: String? = null,
+    val posterUrl: String? = null,
+    val year: Int? = null,
+    val rating: Int = 0,
+    val createdAt: Date? = null,
+    val categories: List<String> = emptyList()
+)
+
 

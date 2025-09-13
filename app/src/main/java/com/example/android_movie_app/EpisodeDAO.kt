@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class EpisodeDAO(private val dbHelper: DatabaseHelper) {
-
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     // ---------------- CRUD Episodes ----------------
@@ -38,7 +37,6 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                     episodeNumber = it.getInt(it.getColumnIndexOrThrow("episodeNumber")),
                     videoUrl = it.getString(it.getColumnIndexOrThrow("videoUrl")),
                     duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(it.getColumnIndexOrThrow("duration")) else null,
-                    viewCount = it.getInt(it.getColumnIndexOrThrow("viewCount")),
                     createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
                 )
                 list.add(ep)
@@ -80,7 +78,7 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                     name = it.getString(it.getColumnIndexOrThrow("name")),
                     episodeNumber = it.getInt(it.getColumnIndexOrThrow("episodeNumber")),
                     videoUrl = it.getString(it.getColumnIndexOrThrow("videoUrl")),
-                    duration = it.getInt(it.getColumnIndexOrThrow("duration")),
+                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(it.getColumnIndexOrThrow("duration")) else null,
                     createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
                 )
                 list.add(ep)
@@ -89,14 +87,7 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
         return list
     }
 
-    // 2. Cập nhật số lượt xem của 1 tập
-    fun incrementEpisodeViewCount(episodeId: Int): Int {
-        val db = dbHelper.writableDatabase
-        db.execSQL("UPDATE episodes SET viewCount = viewCount + 1 WHERE id=?", arrayOf(episodeId))
-        return 1
-    }
-
-    // 3. Lấy danh sách tập kèm tiến độ xem (join với WatchProgress)
+    // 2. Lấy danh sách tập kèm tiến độ xem (join với WatchProgress)
     fun getEpisodesWithProgress(movieId: Int, userId: Int): List<Pair<Episode, WatchProgress?>> {
         val result = mutableListOf<Pair<Episode, WatchProgress?>>()
         val db = dbHelper.readableDatabase
@@ -120,7 +111,7 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                     name = it.getString(it.getColumnIndexOrThrow("name")),
                     episodeNumber = it.getInt(it.getColumnIndexOrThrow("episodeNumber")),
                     videoUrl = it.getString(it.getColumnIndexOrThrow("videoUrl")),
-                    duration = it.getInt(it.getColumnIndexOrThrow("duration")),
+                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(it.getColumnIndexOrThrow("duration")) else null,
                     createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
                 )
 

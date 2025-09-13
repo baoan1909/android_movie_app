@@ -29,7 +29,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM users WHERE username=?", arrayOf(username))
         cursor.use {
             if (it.moveToFirst()) {
-                return dbHelper.cursorToUser(it)
+                return cursorToUser(it)
             }
         }
         return null
@@ -40,7 +40,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM users WHERE id=?", arrayOf(id.toString()))
         cursor.use {
             if (it.moveToFirst()) {
-                return dbHelper.cursorToUser(it)
+                return cursorToUser(it)
             }
         }
         return null
@@ -52,7 +52,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM users ORDER BY id DESC", null)
         cursor.use {
             while (it.moveToNext()) {
-                list.add(dbHelper.cursorToUser(it))
+                list.add(cursorToUser(it))
             }
         }
         return list
@@ -84,5 +84,18 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
     fun deleteUser(id: Int): Int {
         val db = dbHelper.writableDatabase
         return db.delete("users", "id=?", arrayOf(id.toString()))
+    }
+
+
+    public fun cursorToUser(cursor: Cursor): User {
+        return User(
+            id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+            username = cursor.getString(cursor.getColumnIndexOrThrow("username")),
+            email = cursor.getString(cursor.getColumnIndexOrThrow("email")),
+            passwordHash = cursor.getString(cursor.getColumnIndexOrThrow("passwordHash")),
+            displayName = cursor.getString(cursor.getColumnIndexOrThrow("displayName")),
+            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) },
+            isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1
+        )
     }
 }

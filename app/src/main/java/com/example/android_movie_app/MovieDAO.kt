@@ -37,7 +37,7 @@ class MovieDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM movies ORDER BY id DESC", null)
         cursor.use {
             while (it.moveToNext()) {
-                list.add(dbHelper.cursorToMovie(it))
+                list.add(cursorToMovie(it))
             }
         }
         return list
@@ -81,7 +81,7 @@ class MovieDAO(private val dbHelper: DatabaseHelper) {
         )
         cursor.use {
             while (it.moveToNext()) {
-                list.add(dbHelper.cursorToMovie(it))
+                list.add(cursorToMovie(it))
             }
         }
         return list
@@ -97,7 +97,7 @@ class MovieDAO(private val dbHelper: DatabaseHelper) {
         )
         cursor.use {
             while (it.moveToNext()) {
-                list.add(dbHelper.cursorToMovie(it))
+                list.add(cursorToMovie(it))
             }
         }
         return list
@@ -113,7 +113,7 @@ class MovieDAO(private val dbHelper: DatabaseHelper) {
         )
         cursor.use {
             while (it.moveToNext()) {
-                list.add(dbHelper.cursorToMovie(it))
+                list.add(cursorToMovie(it))
             }
         }
         return list
@@ -125,7 +125,7 @@ class MovieDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM movies WHERE id = ?", arrayOf(id.toString()))
         cursor.use {
             if (it.moveToFirst()) {
-                return dbHelper.cursorToMovie(it)
+                return cursorToMovie(it)
             }
         }
         return null
@@ -137,10 +137,59 @@ class MovieDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM movies WHERE slug = ?", arrayOf(slug))
         cursor.use {
             if (it.moveToFirst()) {
-                return dbHelper.cursorToMovie(it)
+                return cursorToMovie(it)
             }
         }
         return null
+    }
+
+    /** Cập nhật rating của movie từ bảng reviews */
+    fun updateMovieRatingFromReviews(movieId: Int): Int {
+        val db = dbHelper.writableDatabase
+
+        // Lấy điểm trung bình từ bảng reviews
+        val cursor = db.rawQuery(
+            "SELECT AVG(rating) AS avgRating FROM reviews WHERE movieId=?",
+            arrayOf(movieId.toString())
+        )
+
+        var avgRating = 0.0
+        cursor.use {
+            if (it.moveToFirst()) {
+                avgRating = it.getDouble(it.getColumnIndexOrThrow("avgRating"))
+            }
+        }
+
+        // Cập nhật vào bảng movies
+        val values = ContentValues().apply {
+            put("rating", avgRating)
+        }
+
+        return db.update(
+            "movies",
+            values,
+            "id=?",
+            arrayOf(movieId.toString())
+        )
+    }
+
+    public fun cursorToMovie(cursor: Cursor): Movie {
+        return Movie(
+            id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+            slug = cursor.getString(cursor.getColumnIndexOrThrow("slug")),
+            name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
+            originName = cursor.getString(cursor.getColumnIndexOrThrow("originName")),
+            content = cursor.getString(cursor.getColumnIndexOrThrow("content")),
+            type = cursor.getString(cursor.getColumnIndexOrThrow("type")),
+            thumbUrl = cursor.getString(cursor.getColumnIndexOrThrow("thumbUrl")),
+            posterUrl = cursor.getString(cursor.getColumnIndexOrThrow("posterUrl")),
+            year = if (!cursor.isNull(cursor.getColumnIndexOrThrow("year"))) cursor.getInt(cursor.getColumnIndexOrThrow("year")) else null,
+            viewCount = cursor.getInt(cursor.getColumnIndexOrThrow("viewCount")),
+            rating = cursor.getDouble(cursor.getColumnIndexOrThrow("rating")),
+            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))?.let {
+                dateFormat.parse(it)
+            }
+        )
     }
 
 }
