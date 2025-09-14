@@ -99,6 +99,41 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         db.close()
         return list
     }
+
+    fun getRecentMovies(): List<Movie> {
+        val db = dbHelper.readableDatabase
+        val list = mutableListOf<Movie>()
+        val cursor = db.rawQuery(
+            "SELECT * FROM movies ORDER BY createdAt DESC LIMIT 10",
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursorToMovie(cursor))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return list
+    }
+    
+    fun getMovieById(movieId: Int): Movie? {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM movies WHERE id = ?",
+            arrayOf(movieId.toString())
+        )
+        
+        cursor.use {
+            if (it.moveToFirst()) {
+                return cursorToMovie(it)
+            }
+        }
+        return null
+    }
+    
     fun getTopMovies(): List<Movie> {
         val db = dbHelper.readableDatabase
         val list = mutableListOf<Movie>()
