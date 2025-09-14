@@ -1,7 +1,10 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.WatchProgress
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -169,7 +172,7 @@ class WatchProgressDAO(private val dbHelper: DatabaseHelper) {
 //    }
 
     /** Helper: chuyển Cursor -> WatchProgress */
-    private fun cursorToWatchProgress(it: android.database.Cursor): WatchProgress {
+    private fun cursorToWatchProgress(it: Cursor): WatchProgress {
         return WatchProgress(
             userId = it.getInt(it.getColumnIndexOrThrow("userId")),
             movieId = it.getInt(it.getColumnIndexOrThrow("movieId")),

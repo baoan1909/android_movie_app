@@ -1,6 +1,9 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.Episode
+import com.example.android_movie_app.WatchProgress
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,8 +39,13 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                     name = it.getString(it.getColumnIndexOrThrow("name")),
                     episodeNumber = it.getInt(it.getColumnIndexOrThrow("episodeNumber")),
                     videoUrl = it.getString(it.getColumnIndexOrThrow("videoUrl")),
-                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(it.getColumnIndexOrThrow("duration")) else null,
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
+                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(
+                        it.getColumnIndexOrThrow(
+                            "duration"
+                        )
+                    ) else null,
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 )
                 list.add(ep)
             }
@@ -78,8 +86,13 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                     name = it.getString(it.getColumnIndexOrThrow("name")),
                     episodeNumber = it.getInt(it.getColumnIndexOrThrow("episodeNumber")),
                     videoUrl = it.getString(it.getColumnIndexOrThrow("videoUrl")),
-                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(it.getColumnIndexOrThrow("duration")) else null,
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
+                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(
+                        it.getColumnIndexOrThrow(
+                            "duration"
+                        )
+                    ) else null,
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 )
                 list.add(ep)
             }
@@ -111,8 +124,13 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                     name = it.getString(it.getColumnIndexOrThrow("name")),
                     episodeNumber = it.getInt(it.getColumnIndexOrThrow("episodeNumber")),
                     videoUrl = it.getString(it.getColumnIndexOrThrow("videoUrl")),
-                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(it.getColumnIndexOrThrow("duration")) else null,
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
+                    duration = if (!it.isNull(it.getColumnIndexOrThrow("duration"))) it.getInt(
+                        it.getColumnIndexOrThrow(
+                            "duration"
+                        )
+                    ) else null,
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 )
 
                 val wp = if (!it.isNull(it.getColumnIndexOrThrow("currentTime"))) {
@@ -123,7 +141,8 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
                         currentTime = it.getInt(it.getColumnIndexOrThrow("currentTime")),
                         totalTime = it.getInt(it.getColumnIndexOrThrow("totalTime")),
                         isCompleted = it.getInt(it.getColumnIndexOrThrow("isCompleted")) == 1,
-                        lastWatchedAt = it.getString(it.getColumnIndexOrThrow("lastWatchedAt"))?.let { d -> dateFormat.parse(d) }
+                        lastWatchedAt = it.getString(it.getColumnIndexOrThrow("lastWatchedAt"))
+                            ?.let { d -> dateFormat.parse(d) }
                     )
                 } else null
 

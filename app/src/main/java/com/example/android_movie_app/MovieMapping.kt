@@ -122,7 +122,7 @@ data class MovieWithCategories(
     val thumbUrl: String? = null,
     val posterUrl: String? = null,
     val year: Int? = null,
-    val rating: Int = 0,
+    val rating: Double = 0.0,
     val createdAt: Date? = null,
     val categories: List<String> = emptyList()
 )

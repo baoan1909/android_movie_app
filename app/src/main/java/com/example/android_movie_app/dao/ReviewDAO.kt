@@ -1,6 +1,9 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.Review
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,7 +20,7 @@ class ReviewDAO(private val dbHelper: DatabaseHelper) {
             put("rating", review.rating)
             put("createdAt", review.createdAt?.let { dateFormat.format(it) } ?: dateFormat.format(Date()))
         }
-        return db.insertWithOnConflict("reviews", null, values, android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE)
+        return db.insertWithOnConflict("reviews", null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
 
     /** Cập nhật review đã tồn tại */
@@ -64,10 +67,16 @@ class ReviewDAO(private val dbHelper: DatabaseHelper) {
                     id = it.getInt(it.getColumnIndexOrThrow("id")),
                     userId = it.getInt(it.getColumnIndexOrThrow("userId")),
                     movieId = it.getInt(it.getColumnIndexOrThrow("movieId")),
-                    episodeId = if (!it.isNull(it.getColumnIndexOrThrow("episodeId"))) it.getInt(it.getColumnIndexOrThrow("episodeId")) else null,
+                    episodeId = if (!it.isNull(it.getColumnIndexOrThrow("episodeId"))) it.getInt(
+                        it.getColumnIndexOrThrow(
+                            "episodeId"
+                        )
+                    ) else null,
                     rating = it.getInt(it.getColumnIndexOrThrow("rating")),
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) },
-                    updatedAt = it.getString(it.getColumnIndexOrThrow("updatedAt"))?.let { d -> dateFormat.parse(d) }
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) },
+                    updatedAt = it.getString(it.getColumnIndexOrThrow("updatedAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 )
             }
         }
@@ -89,10 +98,14 @@ class ReviewDAO(private val dbHelper: DatabaseHelper) {
                         id = it.getInt(it.getColumnIndexOrThrow("id")),
                         userId = it.getInt(it.getColumnIndexOrThrow("userId")),
                         movieId = it.getInt(it.getColumnIndexOrThrow("movieId")),
-                        episodeId = if (!it.isNull(it.getColumnIndexOrThrow("episodeId"))) it.getInt(it.getColumnIndexOrThrow("episodeId")) else null,
+                        episodeId = if (!it.isNull(it.getColumnIndexOrThrow("episodeId"))) it.getInt(
+                            it.getColumnIndexOrThrow("episodeId")
+                        ) else null,
                         rating = it.getInt(it.getColumnIndexOrThrow("rating")),
-                        createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) },
-                        updatedAt = it.getString(it.getColumnIndexOrThrow("updatedAt"))?.let { d -> dateFormat.parse(d) }
+                        createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                            ?.let { d -> dateFormat.parse(d) },
+                        updatedAt = it.getString(it.getColumnIndexOrThrow("updatedAt"))
+                            ?.let { d -> dateFormat.parse(d) }
                     )
                 )
             }

@@ -1,6 +1,8 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.UserSession
 import java.text.SimpleDateFormat
 import java.util.*
 

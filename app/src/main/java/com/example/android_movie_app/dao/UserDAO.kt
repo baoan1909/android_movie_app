@@ -1,7 +1,9 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
 import android.database.Cursor
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.User
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -91,7 +93,8 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             username = cursor.getString(cursor.getColumnIndexOrThrow("username")),
             email = cursor.getString(cursor.getColumnIndexOrThrow("email")),
             passwordHash = cursor.getString(cursor.getColumnIndexOrThrow("passwordHash")),
-            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) },
+            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))
+                ?.let { d -> dateFormat.parse(d) },
             isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1
         )
     }

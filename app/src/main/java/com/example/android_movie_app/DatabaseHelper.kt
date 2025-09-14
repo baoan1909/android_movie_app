@@ -38,7 +38,7 @@ class DatabaseHelper(context: Context) :
                 posterUrl TEXT,
                 year INTEGER,
                 viewCount INTEGER DEFAULT 0,
-                rating INTEGER DEFAULT 0,  -- 1-5
+                rating DOUBLE DEFAULT 0,  -- 1-5
                 createdAt TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)

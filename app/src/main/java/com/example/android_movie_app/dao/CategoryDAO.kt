@@ -1,8 +1,11 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import android.database.Cursor
+import com.example.android_movie_app.Category
+import com.example.android_movie_app.DatabaseHelper
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class CategoryDAO(private val dbHelper: DatabaseHelper) {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -75,13 +78,14 @@ class CategoryDAO(private val dbHelper: DatabaseHelper) {
     }
 
     // ---------- HELPER: Cursor -> Category ----------
-    private fun cursorToCategory(cursor: android.database.Cursor): Category {
+    private fun cursorToCategory(cursor: Cursor): Category {
         return Category(
             id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
             name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
             slug = cursor.getString(cursor.getColumnIndexOrThrow("slug")),
             description = cursor.getString(cursor.getColumnIndexOrThrow("description")),
-            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))?.let { dateFormat.parse(it) }
+            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))
+                ?.let { dateFormat.parse(it) }
         )
     }
 }

@@ -1,6 +1,12 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import com.example.android_movie_app.Category
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.Movie
+import com.example.android_movie_app.MovieCategory
+import com.example.android_movie_app.MovieWithCategories
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -8,6 +14,7 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     // ---------- ADD RELATION ----------
+
     fun addMovieCategory(movieId: Int, categoryId: Int, createdAt: Date? = null): Long {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
@@ -15,7 +22,7 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
             put("categoryId", categoryId)
             put("createdAt", createdAt?.let { dateFormat.format(it) })
         }
-        return db.insertWithOnConflict("movie_categories", null, values, android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE)
+        return db.insertWithOnConflict("movie_categories", null, values, SQLiteDatabase.CONFLICT_IGNORE)
     }
 
     // ---------- REMOVE RELATION ----------
@@ -39,12 +46,14 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
         )
         cursor.use {
             while (it.moveToNext()) {
-                list.add(Category(
+                list.add(
+                    Category(
                     id = it.getInt(it.getColumnIndexOrThrow("id")),
                     name = it.getString(it.getColumnIndexOrThrow("name")),
                     slug = it.getString(it.getColumnIndexOrThrow("slug")),
                     description = it.getString(it.getColumnIndexOrThrow("description")),
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 ))
             }
         }
@@ -66,7 +75,8 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
         )
         cursor.use {
             while (it.moveToNext()) {
-                list.add(Movie(
+                list.add(
+                    Movie(
                     id = it.getInt(it.getColumnIndexOrThrow("id")),
                     slug = it.getString(it.getColumnIndexOrThrow("slug")),
                     name = it.getString(it.getColumnIndexOrThrow("name")),
@@ -75,10 +85,15 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
                     type = it.getString(it.getColumnIndexOrThrow("type")),
                     thumbUrl = it.getString(it.getColumnIndexOrThrow("thumbUrl")),
                     posterUrl = it.getString(it.getColumnIndexOrThrow("posterUrl")),
-                    year = if (!it.isNull(it.getColumnIndexOrThrow("year"))) it.getInt(it.getColumnIndexOrThrow("year")) else null,
+                    year = if (!it.isNull(it.getColumnIndexOrThrow("year"))) it.getInt(
+                        it.getColumnIndexOrThrow(
+                            "year"
+                        )
+                    ) else null,
                     viewCount = it.getInt(it.getColumnIndexOrThrow("viewCount")),
                     rating = it.getDouble(it.getColumnIndexOrThrow("rating")),
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 ))
             }
         }
@@ -92,10 +107,12 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
         val cursor = db.rawQuery("SELECT * FROM movie_categories", null)
         cursor.use {
             while (it.moveToNext()) {
-                list.add(MovieCategory(
+                list.add(
+                    MovieCategory(
                     movieId = it.getInt(it.getColumnIndexOrThrow("movieId")),
                     categoryId = it.getInt(it.getColumnIndexOrThrow("categoryId")),
-                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d -> dateFormat.parse(d) }
+                    createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))
+                        ?.let { d -> dateFormat.parse(d) }
                 ))
             }
         }
@@ -157,8 +174,12 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
                         type = it.getString(it.getColumnIndexOrThrow("type")),
                         thumbUrl = it.getString(it.getColumnIndexOrThrow("thumbUrl")),
                         posterUrl = it.getString(it.getColumnIndexOrThrow("posterUrl")),
-                        year = if (!it.isNull(it.getColumnIndexOrThrow("year"))) it.getInt(it.getColumnIndexOrThrow("year")) else null,
-                        rating = it.getDouble(it.getColumnIndexOrThrow("rating")).toInt(),
+                        year = if (!it.isNull(it.getColumnIndexOrThrow("year"))) it.getInt(
+                            it.getColumnIndexOrThrow(
+                                "year"
+                            )
+                        ) else null,
+                        rating = it.getDouble(it.getColumnIndexOrThrow("rating")).toDouble(),
                         createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d ->
                             SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(d)
                         },

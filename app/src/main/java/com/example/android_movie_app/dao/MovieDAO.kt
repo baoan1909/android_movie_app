@@ -1,4 +1,4 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
 import android.database.Cursor
@@ -7,7 +7,7 @@ import com.example.android_movie_app.Movie
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MovieDAO(private val dbHelper: DatabaseHelper) {
+class MovieDAO(val dbHelper: DatabaseHelper) {
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 

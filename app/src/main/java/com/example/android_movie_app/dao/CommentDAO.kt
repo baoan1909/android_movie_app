@@ -1,8 +1,12 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.dao
 
 import android.content.ContentValues
+import android.database.Cursor
+import com.example.android_movie_app.Comment
+import com.example.android_movie_app.DatabaseHelper
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.get
 
 class CommentDAO(private val dbHelper: DatabaseHelper) {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -116,15 +120,20 @@ class CommentDAO(private val dbHelper: DatabaseHelper) {
     }
 
     // ---------- HELPER: Cursor -> CommentWithUser ----------
-    private fun cursorToCommentWithUser(cursor: android.database.Cursor): CommentWithUser {
+    private fun cursorToCommentWithUser(cursor: Cursor): CommentWithUser {
         val comment = Comment(
             id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
             userId = cursor.getInt(cursor.getColumnIndexOrThrow("userId")),
             movieId = cursor.getInt(cursor.getColumnIndexOrThrow("movieId")),
-            episodeId = if (!cursor.isNull(cursor.getColumnIndexOrThrow("episodeId"))) cursor.getInt(cursor.getColumnIndexOrThrow("episodeId")) else null,
-            parentCommentId = if (!cursor.isNull(cursor.getColumnIndexOrThrow("parentCommentId"))) cursor.getInt(cursor.getColumnIndexOrThrow("parentCommentId")) else null,
+            episodeId = if (!cursor.isNull(cursor.getColumnIndexOrThrow("episodeId"))) cursor.getInt(
+                cursor.getColumnIndexOrThrow("episodeId")
+            ) else null,
+            parentCommentId = if (!cursor.isNull(cursor.getColumnIndexOrThrow("parentCommentId"))) cursor.getInt(
+                cursor.getColumnIndexOrThrow("parentCommentId")
+            ) else null,
             content = cursor.getString(cursor.getColumnIndexOrThrow("content")),
-            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))?.let { dateFormat.parse(it) }
+            createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))
+                ?.let { dateFormat.parse(it) }
         )
         val username = cursor.getString(cursor.getColumnIndexOrThrow("username"))
         val displayName = cursor.getString(cursor.getColumnIndexOrThrow("displayName"))
