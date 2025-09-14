@@ -147,43 +147,35 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
             m.posterUrl,
             m.year,
             m.rating,
-            m.createdAt,
-            GROUP_CONCAT(c.name, ',') AS categories
+            m.createdAt
         FROM movies m
-        LEFT JOIN movie_categories mc ON m.id = mc.movieId
-        LEFT JOIN categories c ON mc.categoryId = c.id
-        GROUP BY m.id, m.slug, m.name, m.originName, m.type, m.thumbUrl, 
-                 m.posterUrl, m.year, m.rating, m.createdAt
         """.trimIndent(),
             null
         )
 
         cursor.use {
             while (it.moveToNext()) {
-                val categories = it.getString(it.getColumnIndexOrThrow("categories"))
-                    ?.split(",")
-                    ?.map { name -> name.trim() }
-                    ?: emptyList()
+                val movieId = it.getInt(it.getColumnIndexOrThrow("movieId"))
+
+                // Lấy categories của movie này
+                val categories = getCategoriesByMovie(movieId)
 
                 list.add(
                     MovieWithCategories(
-                        movieId = it.getInt(it.getColumnIndexOrThrow("movieId")),
+                        movieId = movieId,
                         slug = it.getString(it.getColumnIndexOrThrow("slug")),
                         name = it.getString(it.getColumnIndexOrThrow("name")),
                         originName = it.getString(it.getColumnIndexOrThrow("originName")),
                         type = it.getString(it.getColumnIndexOrThrow("type")),
                         thumbUrl = it.getString(it.getColumnIndexOrThrow("thumbUrl")),
                         posterUrl = it.getString(it.getColumnIndexOrThrow("posterUrl")),
-                        year = if (!it.isNull(it.getColumnIndexOrThrow("year"))) it.getInt(
-                            it.getColumnIndexOrThrow(
-                                "year"
-                            )
-                        ) else null,
-                        rating = it.getDouble(it.getColumnIndexOrThrow("rating")).toDouble(),
+                        year = if (!it.isNull(it.getColumnIndexOrThrow("year")))
+                            it.getInt(it.getColumnIndexOrThrow("year")) else null,
+                        rating = it.getDouble(it.getColumnIndexOrThrow("rating")),
                         createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d ->
-                            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(d)
+                            dateFormat.parse(d)
                         },
-                        categories = categories
+                        categories = categories // <-- bây giờ là List<Category>
                     )
                 )
             }
@@ -191,5 +183,4 @@ class MovieCategoryDAO(private val dbHelper: DatabaseHelper) {
 
         return list
     }
-
 }

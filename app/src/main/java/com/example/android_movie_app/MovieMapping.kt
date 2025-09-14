@@ -124,7 +124,7 @@ data class MovieWithCategories(
     val year: Int? = null,
     val rating: Double = 0.0,
     val createdAt: Date? = null,
-    val categories: List<String> = emptyList()
+    val categories: List<Category> = emptyList()
 )
 
 

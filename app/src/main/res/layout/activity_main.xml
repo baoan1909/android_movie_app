@@ -8,7 +8,7 @@
 
     <!-- Nội dung chính -->
     <ScrollView
-        android:id="@+id/main"
+        android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#121212"
@@ -30,6 +30,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <ImageView
                         android:id="@+id/bannerImage"
                         android:layout_width="match_parent"
@@ -39,6 +40,7 @@
                         android:src="@drawable/anime_8" />
 
                     <TextView
+                        android:id="@+id/bannerTag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top|end"
@@ -56,8 +58,10 @@
                 </FrameLayout>
             </androidx.cardview.widget.CardView>
 
-
             <!-- Genre Tags -->
+            <TextView
+                style="@style/SectionTitle"
+                android:text="Thể loại" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -65,26 +69,16 @@
                 android:scrollbars="none"
                 android:paddingHorizontal="12dp">
 
-
                 <LinearLayout
+                    android:id="@+id/genreContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/GenreChip"
-                        android:text="Hành động" />
-
-                    <TextView style="@style/GenreChip" android:text="Phiêu lưu" />
-                    <TextView style="@style/GenreChip" android:text="Viễn tưởng" />
-                    <TextView style="@style/GenreChip" android:text="Tình cảm" />
-                    <TextView style="@style/GenreChip" android:text="Học đường" />
+                    <!-- Items sẽ inflate từ code -->
                 </LinearLayout>
             </HorizontalScrollView>
 
-
             <!-- Top 10 Anime Today -->
-
             <TextView
                 style="@style/SectionTitle"
                 android:text="Top 10 Anime hôm nay" />
@@ -95,127 +89,20 @@
                 android:scrollbars="none">
 
                 <LinearLayout
+                    android:id="@+id/topContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
-
-                    <!-- Item 1 -->
-
-                    <FrameLayout
-                        android:layout_width="150dp"
-                        android:layout_height="220dp"
-                        android:layout_marginEnd="8dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:text="1"
-                            android:textColor="#33FFFFFF"
-                            android:textSize="120sp"
-                            android:textStyle="bold" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="120dp"
-                            android:layout_height="180dp"
-                            android:layout_gravity="end|center_vertical"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/anime_1" />
-                        </androidx.cardview.widget.CardView>
-
-                    </FrameLayout>
-
-
-
-                    <!-- Item 2 -->
-
-                    <FrameLayout
-
-                        android:layout_width="140dp"
-
-                        android:layout_height="220dp"
-
-                        android:layout_marginEnd="8dp">
-
-                        <TextView
-
-                            android:layout_width="wrap_content"
-
-                            android:layout_height="match_parent"
-
-                            android:gravity="center_vertical"
-
-                            android:text="2"
-
-                            android:textColor="#33FFFFFF"
-
-                            android:textSize="120sp"
-
-                            android:textStyle="bold" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="110dp"
-                            android:layout_height="170dp"
-                            android:layout_gravity="end|center_vertical"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/anime_2" />
-                        </androidx.cardview.widget.CardView>
-                    </FrameLayout>
-
-
-
-                    <!-- Item 3 -->
-
-                    <FrameLayout
-                        android:layout_width="140dp"
-                        android:layout_height="220dp"
-                        android:layout_marginEnd="8dp">
-
-                        <TextView
-
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:text="3"
-                            android:textColor="#33FFFFFF"
-                            android:textSize="120sp"
-                            android:textStyle="bold" />
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="110dp"
-                            android:layout_height="170dp"
-                            android:layout_gravity="end|center_vertical"
-                            app:cardCornerRadius="8dp">
-
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/anime_3" />
-                        </androidx.cardview.widget.CardView>
-                    </FrameLayout>
-
+                    <!-- Items sẽ inflate từ code -->
                 </LinearLayout>
             </HorizontalScrollView>
-
 
             <!-- Summer 2025 Anime -->
             <TextView
                 style="@style/SectionTitle"
                 android:text="Anime Mùa Hè 2025" />
-
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -224,69 +111,29 @@
                 android:paddingBottom="16dp">
 
                 <LinearLayout
+                    android:id="@+id/posterContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
-
-                    <!-- Item 1 -->
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="160dp"
-                        android:layout_height="240dp"
-                        app:cardCornerRadius="8dp"
-                        android:layout_marginEnd="12dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/anime_4" />
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Item 2 -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="160dp"
-                        android:layout_height="240dp"
-                        app:cardCornerRadius="8dp"
-                        android:layout_marginEnd="12dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/anime_5" />
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Item 3 -->
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="160dp"
-                        android:layout_height="240dp"
-                        app:cardCornerRadius="8dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/anime_6" />
-                    </androidx.cardview.widget.CardView>
+                    <!-- Items sẽ inflate từ code -->
                 </LinearLayout>
             </HorizontalScrollView>
-        </LinearLayout>
 
+        </LinearLayout>
     </ScrollView>
 
     <!-- Thanh Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
-    android:id="@+id/bottomNavigationView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    app:menu="@menu/bottom_nav_menu"
-    android:background="@color/black"
-    app:itemIconTint="@color/selector_nav_item"
-    app:itemTextColor="@color/selector_nav_item"
-    app:labelVisibilityMode="labeled" />
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_nav_menu"
+        android:background="@color/black"
+        app:itemIconTint="@color/selector_nav_item"
+        app:itemTextColor="@color/selector_nav_item"
+        app:labelVisibilityMode="labeled" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

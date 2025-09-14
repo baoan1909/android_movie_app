@@ -173,6 +173,23 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         )
     }
 
+    // Lấy tất cả phim năm 2025 (ví dụ dùng để hiển thị poster mùa hè)
+    fun getMoviesByYear(year: Int = 2025): List<Movie> {
+        val list = mutableListOf<Movie>()
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM movies WHERE year = ? ORDER BY name ASC",
+            arrayOf(year.toString())
+        )
+
+        cursor.use {
+            while (it.moveToNext()) {
+                list.add(cursorToMovie(it))
+            }
+        }
+        return list
+    }
+
     public fun cursorToMovie(cursor: Cursor): Movie {
         return Movie(
             id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),

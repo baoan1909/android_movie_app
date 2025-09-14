@@ -1,54 +1,107 @@
 package com.example.android_movie_app
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import android.util.Log
+import android.view.LayoutInflater
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.android_movie_app.dao.CategoryDAO
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.bumptech.glide.Glide
-import com.example.android_movie_app.model.MovieResponse
-import com.example.android_movie_app.network.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.android_movie_app.dao.MovieDAO
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var genreContainer: LinearLayout
+    private lateinit var topContainer: LinearLayout
+    private lateinit var posterContainer: LinearLayout
+    private lateinit var bannerImage: ImageView
+    private lateinit var bannerTag: TextView
+    private lateinit var bottomNavigation: BottomNavigationView
+
+    private lateinit var dbHelper: DatabaseHelper
+    private lateinit var categoryDAO: CategoryDAO
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // Ánh xạ view
+        genreContainer = findViewById(R.id.genreContainer)
+        topContainer = findViewById(R.id.topContainer)
+        posterContainer = findViewById(R.id.posterContainer)
+        bannerImage = findViewById(R.id.bannerImage)
+        bannerTag = findViewById(R.id.bannerTag)
+        bottomNavigation = findViewById(R.id.bottomNavigationView)
+
+        // DB
+        dbHelper = DatabaseHelper(this)
+        categoryDAO = CategoryDAO(dbHelper)
+
+        // Hiển thị dữ liệu
+        showGenres()
+        showTopAnime()
+        showPosterAnime()
+
+    }
+
+    // ---------- Load thể loại từ DB ----------
+    private fun showGenres() {
+        genreContainer.removeAllViews()
+        val categories = categoryDAO.getAllCategories()
+        val inflater = LayoutInflater.from(this)
+
+        for (cat in categories) {
+            val chipView = inflater.inflate(R.layout.item_genre_container, genreContainer, false) as TextView
+            chipView.text = cat.name
+            genreContainer.addView(chipView)
         }
     }
 
-    private fun loadMovies() {
-        val call = RetrofitClient.instance.getNewMovies()
-        call.enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful) {
-                    val movies = response.body()?.items ?: return
-                    if (movies.isNotEmpty()) {
-                        val topMovie = movies[0]
+    // ---------- Fake Top 10 Anime ----------
+    private fun showTopAnime() {
+        topContainer.removeAllViews()
+        val inflater = LayoutInflater.from(this)
+        val sampleImages = listOf(
+            R.drawable.anime_1, R.drawable.anime_2, R.drawable.anime_3,
+            R.drawable.anime_4, R.drawable.anime_5
+        )
 
-                        // Gắn vào Top Banner
-                        val bannerImage = findViewById<ImageView>(R.id.bannerImage)
-
-                        Glide.with(this@MainActivity)
-                            .load(topMovie.poster_url)
-                            .into(bannerImage)
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Log.e("API_ERROR", "Failed: ${t.message}")
-            }
-        })
+        for (resId in sampleImages) {
+            val imageView = ImageView(this)
+            imageView.setImageResource(resId)
+            val params = LinearLayout.LayoutParams(300, 400) // kích thước poster
+            params.setMargins(16, 0, 16, 0)
+            imageView.layoutParams = params
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            topContainer.addView(imageView)
+        }
     }
+
+
+    // ---------- Hiển thị Poster Anime mùa 2025 từ DB ----------
+    private fun showPosterAnime() {
+        posterContainer.removeAllViews()
+        val movieDAO = MovieDAO(DatabaseHelper(this))
+        val summer2025Movies = movieDAO.getMoviesByYear(2025)
+
+        for (movie in summer2025Movies) {
+            val imageView = ImageView(this)
+            val params = LinearLayout.LayoutParams(300, 450)
+            params.setMargins(16, 0, 16, 0)
+            imageView.layoutParams = params
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+
+            // Load ảnh poster bằng Glide
+            Glide.with(this)
+                .load(movie.posterUrl) // nếu posterUrl null có thể thay bằng thumbUrl
+                .placeholder(R.drawable.ic_launcher_foreground) // ảnh tạm nếu chưa load xong
+                .error(R.drawable.ic_launcher_foreground) // ảnh nếu load lỗi
+                .into(imageView)
+
+            posterContainer.addView(imageView)
+        }
+    }
+
 }
