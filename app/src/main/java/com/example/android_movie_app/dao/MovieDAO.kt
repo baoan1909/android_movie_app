@@ -66,129 +66,77 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         return db.delete("movies", "id=?", arrayOf(id.toString()))
     }
 
-    // ---------------- Custom Queries ----------------
+    fun getGenres(): List<String> {
+        val db = dbHelper.readableDatabase
+        val list = mutableListOf<String>()
+        val cursor = db.rawQuery("SELECT name FROM categories ORDER BY name", null)
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getString(0))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return list
+    }
 
-    // Tìm kiếm phim theo tên, slug hoặc năm
-    fun searchMovies(keyword: String): List<Movie> {
+    fun getPosters(): List<String> {
+        val db = dbHelper.readableDatabase
+        val list = mutableListOf<String>()
+        val cursor = db.rawQuery(
+            "SELECT posterUrl FROM movies ORDER BY createdAt DESC LIMIT 10",
+            null
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val posterUrl = "https://img.ophim.live/uploads/movies/${cursor.getString(0)}"
+                list.add(posterUrl)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return list
+    }
+    fun getTopMovies(): List<Movie> {
         val db = dbHelper.readableDatabase
         val list = mutableListOf<Movie>()
         val cursor = db.rawQuery(
             """
-            SELECT * FROM movies 
-            WHERE name LIKE ? OR slug LIKE ? OR year LIKE ?
-            """.trimIndent(),
-            arrayOf("%$keyword%", "%$keyword%", keyword)
+        SELECT m.id, m.name, m.posterUrl, m.thumbUrl, m.rating
+        FROM movies m
+        ORDER BY m.rating DESC
+        LIMIT 10
+        """.trimIndent(), null
         )
-        cursor.use {
-            while (it.moveToNext()) {
-                list.add(cursorToMovie(it))
-            }
+
+        if (cursor.moveToFirst()) {
+            do {
+                val movie = Movie(
+                    id = cursor.getInt(0),
+                    slug = "",
+                    name = cursor.getString(1),
+                    originName = null,
+                    content = null,
+                    type = "",
+                    thumbUrl = "https://img.ophim.live/uploads/movies/${cursor.getString(3)}",
+                    posterUrl = "https://img.ophim.live/uploads/movies/${cursor.getString(2)}",
+                    year = null,
+                    viewCount = 0,
+                    rating = cursor.getDouble(4),
+                    createdAt = null
+                )
+                list.add(movie)
+            } while (cursor.moveToNext())
         }
+        cursor.close()
+        db.close()
         return list
     }
 
-    // Xem phim phổ biến (sắp xếp theo viewCount giảm dần)
-    fun getPopularMovies(limit: Int = 10): List<Movie> {
-        val db = dbHelper.readableDatabase
-        val list = mutableListOf<Movie>()
-        val cursor = db.rawQuery(
-            "SELECT * FROM movies ORDER BY viewCount DESC LIMIT ?",
-            arrayOf(limit.toString())
-        )
-        cursor.use {
-            while (it.moveToNext()) {
-                list.add(cursorToMovie(it))
-            }
-        }
-        return list
-    }
 
-    // Xem phim mới thêm (sắp xếp theo createdAt mới nhất)
-    fun getLatestMovies(limit: Int = 10): List<Movie> {
-        val db = dbHelper.readableDatabase
-        val list = mutableListOf<Movie>()
-        val cursor = db.rawQuery(
-            "SELECT * FROM movies ORDER BY datetime(createdAt) DESC LIMIT ?",
-            arrayOf(limit.toString())
-        )
-        cursor.use {
-            while (it.moveToNext()) {
-                list.add(cursorToMovie(it))
-            }
-        }
-        return list
-    }
 
-    // Xem chi tiết 1 phim theo id
-    fun getMovieById(id: Int): Movie? {
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM movies WHERE id = ?", arrayOf(id.toString()))
-        cursor.use {
-            if (it.moveToFirst()) {
-                return cursorToMovie(it)
-            }
-        }
-        return null
-    }
-
-    // Xem chi tiết 1 phim theo slug
-    fun getMovieBySlug(slug: String): Movie? {
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM movies WHERE slug = ?", arrayOf(slug))
-        cursor.use {
-            if (it.moveToFirst()) {
-                return cursorToMovie(it)
-            }
-        }
-        return null
-    }
-
-    /** Cập nhật rating của movie từ bảng reviews */
-    fun updateMovieRatingFromReviews(movieId: Int): Int {
-        val db = dbHelper.writableDatabase
-
-        // Lấy điểm trung bình từ bảng reviews
-        val cursor = db.rawQuery(
-            "SELECT AVG(rating) AS avgRating FROM reviews WHERE movieId=?",
-            arrayOf(movieId.toString())
-        )
-
-        var avgRating = 0.0
-        cursor.use {
-            if (it.moveToFirst()) {
-                avgRating = it.getDouble(it.getColumnIndexOrThrow("avgRating"))
-            }
-        }
-
-        // Cập nhật vào bảng movies
-        val values = ContentValues().apply {
-            put("rating", avgRating)
-        }
-
-        return db.update(
-            "movies",
-            values,
-            "id=?",
-            arrayOf(movieId.toString())
-        )
-    }
-
-    // Lấy tất cả phim năm 2025 (ví dụ dùng để hiển thị poster mùa hè)
-    fun getMoviesByYear(year: Int = 2025): List<Movie> {
-        val list = mutableListOf<Movie>()
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT * FROM movies WHERE year = ? ORDER BY name ASC",
-            arrayOf(year.toString())
-        )
-
-        cursor.use {
-            while (it.moveToNext()) {
-                list.add(cursorToMovie(it))
-            }
-        }
-        return list
-    }
 
     public fun cursorToMovie(cursor: Cursor): Movie {
         return Movie(

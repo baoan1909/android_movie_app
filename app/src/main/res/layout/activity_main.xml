@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#121212">
 
     <!-- Nội dung chính -->
     <ScrollView
         android:id="@+id/mainScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#121212"
-        android:orientation="vertical"
-        android:layout_above="@id/bottomNavigationView">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,8 +40,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
-                        app:cardCornerRadius="8dp"
-                        android:src="@drawable/anime_8" />
+                        android:src="@drawable/anime_8"/>
 
                     <TextView
                         android:id="@+id/bannerTag"
@@ -73,15 +76,13 @@
                     android:id="@+id/genreContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <!-- Items sẽ inflate từ code -->
-                </LinearLayout>
+                    android:orientation="horizontal" />
             </HorizontalScrollView>
 
-            <!-- Top 10 Anime Today -->
+            <!-- Top 10 -->
             <TextView
                 style="@style/SectionTitle"
-                android:text="Top 10 Anime hôm nay" />
+                android:text="Top 10 phim hay hôm nay" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -94,15 +95,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
-                    android:paddingEnd="16dp">
-                    <!-- Items sẽ inflate từ code -->
-                </LinearLayout>
+                    android:paddingEnd="16dp" />
             </HorizontalScrollView>
 
             <!-- Summer 2025 Anime -->
             <TextView
                 style="@style/SectionTitle"
-                android:text="Anime Mùa Hè 2025" />
+                android:text="Phim Mùa Hè 2025" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -116,9 +115,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
-                    android:paddingEnd="16dp">
-                    <!-- Items sẽ inflate từ code -->
-                </LinearLayout>
+                    android:paddingEnd="16dp" />
             </HorizontalScrollView>
 
         </LinearLayout>
@@ -127,13 +124,15 @@
     <!-- Thanh Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:menu="@menu/bottom_nav_menu"
         android:background="@color/black"
         app:itemIconTint="@color/selector_nav_item"
         app:itemTextColor="@color/selector_nav_item"
-        app:labelVisibilityMode="labeled" />
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
