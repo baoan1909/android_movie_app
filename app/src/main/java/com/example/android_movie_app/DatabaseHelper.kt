@@ -70,16 +70,31 @@ class DatabaseHelper(context: Context) :
             )
         """)
 
-        // ------------------- MOVIE_CATEGORIES (junction) -------------------
         db?.execSQL("""
-            CREATE TABLE movie_categories (
-                movieId INTEGER NOT NULL,
-                categoryId INTEGER NOT NULL,
-                PRIMARY KEY(movieId, categoryId),
-                FOREIGN KEY(movieId) REFERENCES movies(id) ON DELETE CASCADE,
-                FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
-            )
-        """)
+            INSERT INTO categories (name, slug) VALUES
+            ('Hành Động', 'hanh-dong'),
+            ('Tình Cảm', 'tinh-cam'),
+            ('Hài Hước', 'hai-huoc'),
+            ('Cổ Trang', 'co-trang'),
+            ('Tâm Lý', 'tam-ly'),
+            ('Hình Sự', 'hinh-su'),
+            ('Chiến Tranh', 'chien-tranh'),
+            ('Thể Thao', 'the-thao'),
+            ('Võ Thuật', 'vo-thuat'),
+            ('Viễn Tưởng', 'vien-tuong'),
+            ('Phiêu Lưu', 'phieu-luu'),
+            ('Khoa Học', 'khoa-hoc'),
+            ('Kinh Dị', 'kinh-di'),
+            ('Âm Nhạc', 'am-nhac'),
+            ('Thần Thoại', 'than-thoai'),
+            ('Tài Liệu', 'tai-lieu'),
+            ('Gia Đình', 'gia-dinh'),
+            ('Chính kịch', 'chinh-kich'),
+            ('Bí ẩn', 'bi-an'),
+            ('Học Đường', 'hoc-duong'),
+            ('Kinh Điển', 'kinh-dien'),
+            ('Phim 18+', 'phim-18')
+        """.trimIndent())
 
         // ------------------- EPISODES -------------------
         db?.execSQL("""
@@ -94,6 +109,63 @@ class DatabaseHelper(context: Context) :
                 FOREIGN KEY(movieId) REFERENCES movies(id) ON DELETE CASCADE
             )
         """)
+
+        db?.execSQL("""
+            INSERT INTO episodes (id, movieId, name, episodeNumber, videoUrl, duration) VALUES
+            (1, 1, 'Full', 1, 'https://vip.opstream90.com/20250913/12223_004881eb/index.m3u8', 6300),
+            (2, 2, 'Full', 1, 'https://vip.opstream90.com/20250913/12215_422e42d0/index.m3u8', 6480),
+            (3, 3, 'Full', 1, 'https://vip.opstream90.com/20250912/12188_1730f69e/index.m3u8', 7800),
+            (4, 4, 'Full', 1, 'https://vip.opstream12.com/20250911/28032_e4160531/index.m3u8', 5100),
+            (5, 5, 'Full', 1, 'https://vip.opstream12.com/20250911/28033_59089496/index.m3u8', 5640),
+            (6, 6, 'Full', 1, 'https://vip.opstream13.com/20250911/7082_3bf29f38/index.m3u8', 4980),
+            (7, 7, 'Full', 1, 'https://vip.opstream90.com/20250911/12139_c5c548e4/index.m3u8', 6960),
+            (8, 8, 'Full', 1, 'https://vip.opstream90.com/20250911/12133_37e01843/index.m3u8', 7740),
+            (9, 9, 'Full', 1, 'https://vip.opstream10.com/20250910/30392_63e8e953/index.m3u8', 5700),
+            (10, 10, 'Full', 1, 'https://vip.opstream90.com/20250910/12126_4bdb6179/index.m3u8', 5340),
+            (11, 11, 'Full', 1, 'https://vip.opstream12.com/20250909/28028_604ee636/index.m3u8', 5460),
+            (12, 12, 'Full', 1, 'https://vip.opstream90.com/20250909/12084_8caa4453/index.m3u8', 6900),
+            (13, 13, 'Full', 1, 'https://vip.opstream12.com/20250907/28026_21353d3d/index.m3u8', 7200),
+            (14, 14, 'Full', 1, 'https://vip.opstream12.com/20250907/28027_487cbe45/index.m3u8', 5400)
+        """.trimIndent())
+
+
+        // ------------------- MOVIE_CATEGORIES (junction) -------------------
+        db?.execSQL("""
+            CREATE TABLE movie_categories (
+                movieId INTEGER NOT NULL,
+                categoryId INTEGER NOT NULL,
+                PRIMARY KEY(movieId, categoryId),
+                FOREIGN KEY(movieId) REFERENCES movies(id) ON DELETE CASCADE,
+                FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
+            )
+        """)
+
+        db?.execSQL("""
+            INSERT INTO movie_categories (movieId, categoryId) VALUES
+            (1, 3),
+            (2, 3),
+            (3, 18),
+            (4, 18),
+            (5, 7),
+            (6, 1),
+            (6, 3),
+            (7, 6),
+            (7, 18),
+            (8, 13),
+            (8, 19),
+            (9, 13),
+            (9, 19),
+            (10, 3),
+            (10, 6),
+            (11, 13),
+            (12, 10),
+            (12, 11),
+            (12, 12),
+            (13, 7),
+            (13, 18),
+            (14, 16)
+        """.trimIndent())
+
 
         // ------------------- USER FAVORITES -------------------
         db?.execSQL("""
