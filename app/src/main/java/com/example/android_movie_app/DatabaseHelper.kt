@@ -59,6 +59,32 @@ class DatabaseHelper(context: Context) :
         db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (13, 'chien-dich-blitz', 'Chiến Dịch Blitz', 'Blitz', 'Ở London trong Thế Chiến II, cậu bé chín tuổi George được mẹ, Rita, đưa đi sơ tán về vùng nông thôn để tránh các vụ đánh bom. Bất khuất và quyết tâm về với gia đình, George bước vào một hành trình gian truân để trở về nhà trong lúc Rita đi tìm cậu.', 'single', 'chien-dich-blitz-thumb.jpg', 'chien-dich-blitz-poster.jpg', 2024, 0, 5.991)")
         db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (14, 'banh-mi-and-hoa-hong', 'Bánh Mì & Hoa Hồng', 'Bread & Roses', 'Taliban dần lấy lại quyền lực, một nhóm phụ nữ Kabul dẫn đầu cuộc đấu tranh cách mạng vì quyền lợi và mạng sống của họ.', 'single', 'banh-mi-and-hoa-hong-thumb.jpg', 'banh-mi-and-hoa-hong-poster.jpg', 2024, 0, 6.393)")
 
+        // Adding new movies from học đường category
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (15, 'i-am-your-king-1', 'I Am Your King 1', 'I Am Your King 1', 'Một câu chuyện tình yêu đầy cảm xúc trong môi trường học đường với những bài học về tình bạn và tình yêu.', 'series', 'i-am-your-king-1-thumb.jpg', 'i-am-your-king-1-poster.jpg', 2023, 0, 7.5)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (16, 'star-struck-truy-tinh', 'Star Struck: Truy Tinh', 'Star Struck', 'Câu chuyện về tình yêu học đường giữa những ngôi sao trẻ trong ngành giải trí.', 'series', 'star-struck-truy-tinh-thumb.jpg', 'star-struck-truy-tinh-poster.jpg', 2023, 0, 6.4)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (17, 'chap-canh', 'Chắp Cánh', 'Fly, Again', 'Một câu chuyện cảm động về những ước mơ bay cao và tình yêu tuổi học trò.', 'series', 'chap-canh-thumb.jpg', 'chap-canh-poster.jpg', 2021, 0, 3.7)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (18, 'day-khong-phai-la-keo-co-sao', 'Đây Không Phải Là Kéo Co Sao?', 'Let''s Tug It!', 'Một bộ phim hài hước về cuộc sống học đường đầy màu sắc.', 'series', 'day-khong-phai-la-keo-co-sao--thumb.jpg', 'day-khong-phai-la-keo-co-sao--poster.jpg', 2023, 0, 5.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (19, 'chang-phan-dien-de-thuong', 'Chàng Phản Diện Dễ Thương', 'Cute Bad Guy', 'Câu chuyện về một chàng trai có vẻ ngoài phản diện nhưng thực chất rất dễ thương trong môi trường học đường.', 'series', 'chang-phan-dien-de-thuong-thumb.jpg', 'chang-phan-dien-de-thuong-poster.jpg', 2023, 0, 6.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (20, 'birdie-wing-golf-girls-story-season-2', 'BIRDIE WING -Golf Girls'' Story- Season 2', 'BIRDIE WING -Golf Girls'' Story- Season 2', 'Phần 2 của câu chuyện về những cô gái chơi golf với những ước mơ và tình bạn đẹp.', 'series', 'birdie-wing-golf-girls-story-season-2-thumb.jpg', 'birdie-wing-golf-girls-story-season-2-poster.jpg', 2023, 0, 6.6)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (21, 'vi-nho-reminders', 'Vì Nhớ (ReminderS)', 'ReminderS', 'Một câu chuyện ngắn về những kỷ niệm đẹp trong thời học sinh.', 'series', 'vi-nho-reminders-thumb.jpg', 'vi-nho-reminders-poster.jpg', 2023, 0, 7.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (22, 'alice-gear-aegis-expansion', 'Alice Gear Aegis Expansion', 'アリス・ギア・アイギス Expansion', 'Anime về những cô gái chiến đấu với thiết bị Alice Gear trong môi trường học đường.', 'series', 'alice-gear-aegis-expansion-thumb.jpg', 'alice-gear-aegis-expansion-poster.jpg', 2023, 0, 5.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (23, 'sau-khi-co-duoc-nang-luc-ba-dao-o-di-gioi-toi-cung-vo-doi-o-the-gioi-thuc-thang-cap-xong-thi-cuoc-doi-cung-thay-doi', 'Sau khi có được năng lực bá đạo ở dị giới, tôi cũng vô đối ở thế giới thực ~Thăng cấp xong thì cuộc đời cũng thay đổi~', '異世界でチート能力を手にした俺は、現実世界をも無双する ～レベルアップは人生を変えた～', 'Câu chuyện về một học sinh có được sức mạnh từ dị giới và áp dụng vào cuộc sống thực.', 'series', 'sau-khi-co-duoc-nang-luc-ba-dao-o-di-gioi-toi-cung-vo-doi-o-the-gioi-thuc-thang-cap-xong-thi-cuoc-doi-cung-thay-doi-thumb.jpg', 'sau-khi-co-duoc-nang-luc-ba-dao-o-di-gioi-toi-cung-vo-doi-o-the-gioi-thuc-thang-cap-xong-thi-cuoc-doi-cung-thay-doi-poster.jpg', 2023, 0, 8.245)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (24, 'the-dangers-in-my-heart', 'The Dangers in My Heart', '僕の心のヤバイやつ', 'Anime về tình yêu học đường với những cảm xúc phức tạp của tuổi mới lớn.', 'series', 'the-dangers-in-my-heart-thumb.jpg', 'the-dangers-in-my-heart-poster.jpg', 2023, 0, 7.8)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (25, 'yeu-yamada-o-lv999', 'Yêu Yamada ở Lv999!', 'My Love Story With Yamada-kun at Lv999', 'Câu chuyện tình yêu dễ thương giữa game thủ và cô gái trong môi trường đại học.', 'series', 'yeu-yamada-o-lv999d-thumb.jpg', 'yeu-yamada-o-lv999d-poster.jpg', 2023, 0, 8.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (26, 'khoa-hoc-ve-tinh-yeu', 'Khoa Học Về Tình Yêu', 'The Science of Falling in Love', 'Drama về việc nghiên cứu khoa học về tình yêu trong môi trường đại học.', 'series', 'khoa-hoc-ve-tinh-yeu-thumb.jpg', 'khoa-hoc-ve-tinh-yeu-poster.jpg', 2023, 0, 4.7)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (27, 'giai-dieu-tren-trien-doc', 'Giai Điệu Trên Triền Dốc', 'Kids on the Slope Sakamichi no Apollon', 'Anime về tình bạn và âm nhạc jazz trong thời kỳ học sinh.', 'series', 'giai-dieu-tren-trien-doc-thumb.jpg', 'giai-dieu-tren-trien-doc-poster.jpg', 2012, 0, 8.5)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (28, 'roboticsnotes', 'Robotics;Notes', 'ROBOTICS;NOTES', 'Anime về việc chế tạo robot trong câu lạc bộ robotics của trường học.', 'series', 'roboticsnotes-thumb.jpg', 'roboticsnotes-poster.jpg', 2012, 0, 6.8)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (29, 'than-tham-tron-hoc', 'Thần Thám Trốn Học', 'DETECTIVE CHEN', 'Phim về một thám tử trẻ giải quyết các vụ án trong môi trường học đường.', 'single', 'than-tham-tron-hoc-thumb.jpg', 'than-tham-tron-hoc-poster.jpg', 2022, 0, 3.3)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (30, 'nhat-quy-nhi-ma-thu-ba-takagi-movie', 'Nhất Quỷ Nhì Ma, Thứ Ba Takagi - Movie', '劇場版 からかい上手の高木さん', 'Phim điện ảnh về câu chuyện tình yêu học trò đầy hài hước.', 'single', 'nhat-quy-nhi-ma-thu-ba-takagi-movie-thumb.jpg', 'nhat-quy-nhi-ma-thu-ba-takagi-movie-poster.jpg', 2023, 0, 8.4)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (31, 'kubo-khong-de-toi-vo-hinh', 'Kubo Không Để Tôi Vô Hình', 'Kubo Won''t Let Me Be Invisible', 'Anime về một cậu học sinh nhút nhát và cô bạn luôn chú ý đến cậu.', 'series', 'kubo-khong-de-toi-vo-hinh-thumb.jpg', 'kubo-khong-de-toi-vo-hinh-poster.jpg', 2023, 0, 6.778)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (32, 'the-angel-next-door-spoils-me-rotten', 'Thiên Sứ nhà bên', 'The Angel Next Door Spoils Me Rotten', 'Anime về mối quan hệ giữa một học sinh lười biếng và cô hàng xóm hoàn hảo.', 'series', 'the-angel-next-door-spoils-me-rotten-thumb.jpg', 'the-angel-next-door-spoils-me-rotten-poster.jpg', 2023, 0, 7.7)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (33, 'the-misfit-of-demon-king-academy-ii', 'Kẻ Ngoại Lai Ở Học Viện Ma Vương (Phần 2)', 'The Misfit of Demon King Academy Ⅱ: Raja Iblis Terkuat dalam Sejarah Bereinkarnasi dan Bersekolah dengan Keturunannya', 'Phần 2 của câu chuyện về ma vương học tại học viện dành cho con cháu của mình.', 'series', 'the-misfit-of-demon-king-academy-ii-thumb.jpg', 'the-misfit-of-demon-king-academy-ii-poster.jpg', 2023, 0, 8.475)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (34, 'dont-toy-with-me-miss-nagatoro-2nd-attack', 'Đừng Chọc Anh Nữa Mà, Nagatoro! Phần 2', 'Don''t Toy with Me, Miss Nagatoro 2nd Attack', 'Phần 2 của câu chuyện hài hước về Nagatoro và senpai của cô.', 'series', 'dont-toy-with-me-miss-nagatoro-2nd-attack-thumb.jpg', 'dont-toy-with-me-miss-nagatoro-2nd-attack-poster.jpg', 2023, 0, 7.5)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (35, 'spy-classroom', 'Lớp Học Điệp Viên', 'Spy Classroom', 'Anime về một lớp học đào tạo điệp viên với những nhiệm vụ nguy hiểm.', 'series', 'spy-classroom-thumb.jpg', 'spy-classroom-poster.jpg', 2023, 0, 6.406)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (36, 'ky-luc-la-ve-ky-si-khong-dau', 'kỷ lục lạ về kỵ sĩ không đầu', 'The tale of the headless horseman', 'Anime về những câu chuyện kỳ bí trong môi trường học đường.', 'series', 'ky-luc-la-ve-ky-si-khong-dau-thumb.jpg', 'ky-luc-la-ve-ky-si-khong-dau-poster.jpg', 2010, 0, 7.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (37, 'xin-chao-ngay-hom-qua', 'Xin Chào, Ngày Hôm Qua', 'Never Grow Old', 'Drama về tình yêu học đường và những kỷ niệm tuổi trẻ.', 'series', 'xin-chao-ngay-hom-qua-thumb.jpg', 'xin-chao-ngay-hom-qua-poster.jpg', 2022, 0, 2.0)")
+        db?.execSQL("INSERT INTO movies (id, slug, name, originName, content, type, thumbUrl, posterUrl, year, viewCount, rating) VALUES (38, 'mat-ma-lech-lac', 'Mật Mã Lệch Lạc', 'The Warp Effect', 'Drama hài về cuộc sống học đường với những tình huống bất ngờ.', 'series', 'mat-ma-lech-lac-thumb.jpg', 'mat-ma-lech-lac-poster.jpg', 2022, 0, 8.4)")
+
         // ------------------- CATEGORIES -------------------
         db?.execSQL("""
             CREATE TABLE categories (
@@ -128,6 +154,42 @@ class DatabaseHelper(context: Context) :
             (14, 14, 'Full', 1, 'https://vip.opstream12.com/20250907/28027_487cbe45/index.m3u8', 5400)
         """.trimIndent())
 
+        // Episodes for new movies
+        // I Am Your King 1 (movieId: 15) - 5 episodes
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (15, 'Tập 1', 1, 'https://vip.opstream11.com/20230610/44635_ef5299ab/index.m3u8', 1500)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (15, 'Tập 2', 2, 'https://vip.opstream11.com/20230610/44636_04c05ef1/index.m3u8', 1500)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (15, 'Tập 3', 3, 'https://vip.opstream11.com/20230610/44637_978aa2b1/index.m3u8', 1500)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (15, 'Tập 4', 4, 'https://vip.opstream11.com/20230610/44638_79aed6fd/index.m3u8', 1500)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (15, 'Tập 5', 5, 'https://vip.opstream11.com/20230610/44639_4f6dec83/index.m3u8', 1500)")
+
+        // Star Struck: Truy Tinh (movieId: 16) - 8 episodes
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 1', 1, 'https://vip.opstream14.com/20230519/36598_2e32dec4/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 2', 2, 'https://vip.opstream14.com/20230519/36599_1a8802df/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 3', 3, 'https://vip.opstream14.com/20230525/36824_63878372/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 4', 4, 'https://vip.opstream14.com/20230525/36825_ec86faf1/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 5', 5, 'https://vip.opstream14.com/20230601/37102_89bfba98/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 6', 6, 'https://vip.opstream14.com/20230601/37103_ab831917/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 7', 7, 'https://vip.opstream14.com/20230608/37381_539e8955/index.m3u8', 1200)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (16, 'Tập 8', 8, 'https://vip.opstream14.com/20230608/37382_8e4aa760/index.m3u8', 1200)")
+
+        // Chắp Cánh (movieId: 17) - 10 episodes
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 1', 1, 'https://vip.opstream15.com/20230501/38557_e25c5bf9/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 2', 2, 'https://vip.opstream15.com/20230501/38559_a9f5f0ec/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 3', 3, 'https://vip.opstream15.com/20230501/38560_c7fc2b30/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 4', 4, 'https://vip.opstream15.com/20230501/38561_48aefb85/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 5', 5, 'https://vip.opstream15.com/20230501/38562_47755168/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 6', 6, 'https://vip.opstream15.com/20230501/38563_8950451d/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 7', 7, 'https://vip.opstream15.com/20230501/38564_17cc506d/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 8', 8, 'https://vip.opstream15.com/20230501/38565_bbfca463/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 9', 9, 'https://vip.opstream15.com/20230501/38566_f714d43a/index.m3u8', 1800)")
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (17, 'Tập 10', 10, 'https://vip.opstream15.com/20230501/38567_02402906/index.m3u8', 1800)")
+
+        // Thần Thám Trốn Học (movieId: 29) - single movie
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (29, 'Full', 1, 'https://vip.opstream16.com/20230110/28952_754c3dff/index.m3u8', 5520)")
+
+        // Nhất Quỷ Nhì Ma, Thứ Ba Takagi - Movie (movieId: 30) - single movie
+        db?.execSQL("INSERT INTO episodes (movieId, name, episodeNumber, videoUrl, duration) VALUES (30, 'Full', 1, 'https://vip.opstream11.com/20230110/41393_d75713cc/index.m3u8', 4320)")
+
 
         // ------------------- MOVIE_CATEGORIES (junction) -------------------
         db?.execSQL("""
@@ -165,6 +227,79 @@ class DatabaseHelper(context: Context) :
             (13, 18),
             (14, 16)
         """.trimIndent())
+
+        // Movie categories for new movies
+        // I Am Your King 1 (15) - Tâm Lý, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (15, 5), (15, 20)")
+        
+        // Star Struck: Truy Tinh (16) - Tâm Lý, Học Đường  
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (16, 5), (16, 20)")
+        
+        // Chắp Cánh (17) - Tình Cảm, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (17, 2), (17, 20)")
+        
+        // Đây Không Phải Là Kéo Co Sao? (18) - Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (18, 20)")
+        
+        // Chàng Phản Diện Dễ Thương (19) - Tâm Lý, Viễn Tưởng, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (19, 5), (19, 10), (19, 20)")
+        
+        // BIRDIE WING Season 2 (20) - Thể Thao, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (20, 8), (20, 20)")
+        
+        // Vì Nhớ (21) - Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (21, 20)")
+        
+        // Alice Gear Aegis Expansion (22) - Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (22, 20)")
+        
+        // Sau khi có được năng lực bá đạo (23) - Hành Động, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (23, 1), (23, 20)")
+        
+        // The Dangers in My Heart (24) - Tình Cảm, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (24, 2), (24, 20)")
+        
+        // Yêu Yamada ở Lv999 (25) - Tình Cảm, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (25, 2), (25, 20)")
+        
+        // Khoa Học Về Tình Yêu (26) - Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (26, 20)")
+        
+        // Giai Điệu Trên Triền Dốc (27) - Âm Nhạc, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (27, 14), (27, 20)")
+        
+        // Robotics;Notes (28) - Hành Động, Viễn Tưởng, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (28, 1), (28, 10), (28, 20)")
+        
+        // Thần Thám Trốn Học (29) - Hành Động, Bí ẩn, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (29, 1), (29, 19), (29, 20)")
+        
+        // Nhất Quỷ Nhì Ma, Thứ Ba Takagi Movie (30) - Tình Cảm, Hài Hước, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (30, 2), (30, 3), (30, 20)")
+        
+        // Kubo Không Để Tôi Vô Hình (31) - Tình Cảm, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (31, 2), (31, 20)")
+        
+        // Thiên Sứ nhà bên (32) - Hài Hước, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (32, 3), (32, 20)")
+        
+        // Kẻ Ngoại Lai Ở Học Viện Ma Vương II (33) - Tình Cảm, Viễn Tưởng, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (33, 2), (33, 10), (33, 20)")
+        
+        // Đừng Chọc Anh Nữa Mà, Nagatoro! Phần 2 (34) - Tình Cảm, Hài Hước, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (34, 2), (34, 3), (34, 20)")
+        
+        // Lớp Học Điệp Viên (35) - Hành Động, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (35, 1), (35, 20)")
+        
+        // kỷ lục lạ về kỵ sĩ không đầu (36) - Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (36, 20)")
+        
+        // Xin Chào, Ngày Hôm Qua (37) - Tình Cảm, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (37, 2), (37, 20)")
+        
+        // Mật Mã Lệch Lạc (38) - Tình Cảm, Hài Hước, Chính kịch, Học Đường
+        db?.execSQL("INSERT INTO movie_categories (movieId, categoryId) VALUES (38, 2), (38, 3), (38, 18), (38, 20)")
 
 
         // ------------------- USER FAVORITES -------------------
