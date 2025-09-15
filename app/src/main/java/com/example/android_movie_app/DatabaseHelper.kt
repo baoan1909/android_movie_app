@@ -38,7 +38,7 @@ class DatabaseHelper(context: Context) :
                 posterUrl TEXT,
                 year INTEGER,
                 viewCount INTEGER DEFAULT 0,
-                rating DOUBLE DEFAULT 0,  -- 1-5
+                rating DOUBLE DEFAULT 0.0,  -- 1-5
                 createdAt TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -95,6 +95,18 @@ class DatabaseHelper(context: Context) :
             ('Kinh Điển', 'kinh-dien'),
             ('Phim 18+', 'phim-18')
         """.trimIndent())
+
+        db?.execSQL("""
+            CREATE TABLE movie_categories (
+                movieId INTEGER NOT NULL,
+                categoryId INTEGER NOT NULL,
+                createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY(movieId, categoryId),
+                FOREIGN KEY(movieId) REFERENCES movies(id) ON DELETE CASCADE,
+                FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
+            )
+        """)
+
 
         // ------------------- EPISODES -------------------
         db?.execSQL("""

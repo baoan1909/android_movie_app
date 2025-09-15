@@ -52,7 +52,6 @@ data class Episode(
     var episodeNumber: Int = 1,
     var videoUrl: String,
     var duration: Int? = null,
-    var viewCount: Int = 0,
     var createdAt: Date? = null
 )
 
