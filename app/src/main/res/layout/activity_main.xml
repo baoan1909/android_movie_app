@@ -71,7 +71,7 @@
                 android:paddingEnd="16dp" />
         </HorizontalScrollView>
 
-        <!-- Summer 2025 Anime -->
+        <!-- Summer 2025 -->
         <TextView
             style="@style/SectionTitle"
             android:text="Phim Mùa Hè 2025" />
@@ -91,5 +91,64 @@
                 android:paddingEnd="16dp" />
         </HorizontalScrollView>
 
+        <!-- Học đường  -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="Phim học đường" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingBottom="16dp">
+
+            <LinearLayout
+                android:id="@+id/posterSchoolContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+        </HorizontalScrollView>
+
+        <!-- Viễn tưởng  -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="Phim viễn tưởng" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingBottom="16dp">
+
+            <LinearLayout
+                android:id="@+id/posterFictionContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+        </HorizontalScrollView>
+
+        <!-- Cổ trang  -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="Phim cổ trang" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingBottom="16dp">
+
+            <LinearLayout
+                android:id="@+id/posterXianxiaContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+        </HorizontalScrollView>
     </LinearLayout>
 </ScrollView>

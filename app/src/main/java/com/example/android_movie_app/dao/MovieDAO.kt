@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.Movie
+import com.example.android_movie_app.MovieBanner
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -177,6 +178,74 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         return movies
     }
 
+    fun getMoviesForBanner(limit: Int = 5): List<MovieBanner> {
+        val movies = mutableListOf<MovieBanner>()
+        val db = dbHelper.readableDatabase
+
+        // Query phim (ưu tiên lấy theo viewCount cao nhất hoặc mới nhất)
+        val cursor = db.rawQuery(
+            """
+        SELECT m.id, m.name, m.posterUrl, m.type, m.year
+        FROM movies m
+        ORDER BY m.viewCount DESC, m.createdAt DESC
+        LIMIT ?
+        """.trimIndent(), arrayOf(limit.toString())
+        )
+
+        if (cursor.moveToFirst()) {
+            do {
+                val movieId = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val posterUrl = cursor.getString(cursor.getColumnIndexOrThrow("posterUrl"))
+                val type = cursor.getString(cursor.getColumnIndexOrThrow("type"))
+                val year = cursor.getInt(cursor.getColumnIndexOrThrow("year"))
+
+                var duration: Int? = null
+                var currentEpisodes = 0
+                var totalEpisodes = 0
+
+                if (type == "single") {
+                    // Lấy thời lượng từ episode đầu tiên (nếu có)
+                    val epCursor = db.rawQuery(
+                        "SELECT duration FROM episodes WHERE movieId = ? LIMIT 1",
+                        arrayOf(movieId.toString())
+                    )
+                    if (epCursor.moveToFirst()) {
+                        duration = epCursor.getInt(epCursor.getColumnIndexOrThrow("duration"))
+                    }
+                    epCursor.close()
+                } else {
+                    // Lấy số tập hiện tại và tổng số tập (fix alias current -> currentEp)
+                    val epCursor = db.rawQuery(
+                        "SELECT COUNT(*) as total, MAX(episodeNumber) as currentEp FROM episodes WHERE movieId = ?",
+                        arrayOf(movieId.toString())
+                    )
+                    if (epCursor.moveToFirst()) {
+                        totalEpisodes = epCursor.getInt(epCursor.getColumnIndexOrThrow("total"))
+                        currentEpisodes = epCursor.getInt(epCursor.getColumnIndexOrThrow("currentEp"))
+                    }
+                    epCursor.close()
+                }
+
+                movies.add(
+                    MovieBanner(
+                        id = movieId,
+                        name = name,
+                        posterUrl = posterUrl,
+                        year = year,
+                        type = type,
+                        duration = duration,
+                        currentEpisodes = currentEpisodes,
+                        totalEpisodes = totalEpisodes
+                    )
+                )
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return movies
+    }
 
     public fun cursorToMovie(cursor: Cursor): Movie {
         return Movie(

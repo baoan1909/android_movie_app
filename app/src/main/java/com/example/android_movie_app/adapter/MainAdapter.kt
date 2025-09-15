@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.android_movie_app.GenreDetailActivity
 import com.example.android_movie_app.Movie
+import com.example.android_movie_app.MovieBanner
 import com.example.android_movie_app.MovieDetailActivity
 import com.example.android_movie_app.R
 class MainAdapter(private val context: Context) {
@@ -123,19 +124,17 @@ class MainAdapter(private val context: Context) {
 
 class BannerSliderAdapter(
     private val context: Context,
-    private val movies: List<Movie>
-) :
-    RecyclerView.Adapter<BannerSliderAdapter.BannerViewHolder>() {
+    private val movies: List<MovieBanner>
+) : RecyclerView.Adapter<BannerSliderAdapter.BannerViewHolder>() {
 
     inner class BannerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.bannerImage)
         val cardView: CardView = view.findViewById(R.id.cardView)
+        val tvTitle: TextView = view.findViewById(R.id.tvMovieTitle)
+        val tvInfo: TextView = view.findViewById(R.id.tvMovieInfo)
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): BannerViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BannerViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_banner_slider, parent, false)
         return BannerViewHolder(view)
@@ -143,31 +142,49 @@ class BannerSliderAdapter(
 
     @UnstableApi
     override fun onBindViewHolder(holder: BannerViewHolder, position: Int) {
-        // Lấy movie tại vị trí hiện tại
         val movie = movies[position]
 
-        // Load banner với URL đầy đủ
+        // Load poster
         val fullPosterUrl = if (movie.posterUrl?.startsWith("http") == true) {
             movie.posterUrl
         } else {
             "https://img.ophim.live/uploads/movies/${movie.posterUrl}"
         }
 
-        // Dùng Glide để tải ảnh từ URL
         Glide.with(holder.itemView.context)
             .load(fullPosterUrl)
-            .placeholder(R.drawable.anime_8) // Ảnh chờ trong lúc tải
-            .error(R.drawable.anime_8)       // Ảnh hiển thị nếu có lỗi
+            .placeholder(R.drawable.anime_8)
+            .error(R.drawable.anime_8)
             .into(holder.imageView)
 
-        // Xử lý click
+        // Tiêu đề phim
+        holder.tvTitle.text = movie.name
+
+        // Info: nếu phim series thì hiện số tập, nếu phim lẻ thì hiện duration
+        holder.tvInfo.text = if (movie.totalEpisodes > 1) {
+            "${movie.year} • ${movie.currentEpisodes}/${movie.totalEpisodes} tập"
+        } else {
+            movie.duration?.let { durationInSeconds ->
+                val durationInMinutes = durationInSeconds / 60  // đổi sang phút
+                if (durationInMinutes >= 60) {
+                    val hours = durationInMinutes / 60
+                    val minutes = durationInMinutes % 60
+                    "${movie.year} • ${hours} giờ ${minutes} phút"
+                } else {
+                    "${movie.year} • ${durationInMinutes} phút"
+                }
+            } ?: "${movie.year} • 0 phút"
+
+        }
+
+
+        // Click mở MovieDetailActivity
         holder.cardView.setOnClickListener {
             val intent = Intent(context, MovieDetailActivity::class.java).apply {
                 putExtra("movie_id", movie.id)
                 putExtra("movie_name", movie.name)
                 putExtra("movie_poster", movie.posterUrl)
                 putExtra("movie_thumb", movie.thumbUrl)
-                putExtra("movie_rating", movie.rating)
                 putExtra("movie_year", movie.year)
                 putExtra("movie_content", movie.content)
             }
@@ -175,6 +192,5 @@ class BannerSliderAdapter(
         }
     }
 
-    // getItemCount bây giờ sẽ trả về số lượng phim
     override fun getItemCount(): Int = movies.size
 }

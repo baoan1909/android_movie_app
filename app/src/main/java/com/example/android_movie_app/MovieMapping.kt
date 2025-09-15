@@ -28,6 +28,24 @@ data class Movie(
     var createdAt: Date? = null
 )
 
+// Dùng riêng cho banner hiển thị
+data class MovieBanner(
+    var id: Int = 0,
+    var name: String,
+    var content: String? = null,
+    var type: String = "single",  // single | series
+    var thumbUrl: String? = null,
+    var posterUrl: String? = null,
+    var year: Int? = null,
+    var viewCount: Int = 0,
+    var rating: Double = 0.0,
+    val duration: Int? = null,     // thời lượng (phút) cho phim lẻ
+    val currentEpisodes: Int = 0,  // số tập đã chiếu
+    val totalEpisodes: Int = 0     // tổng số tập
+)
+
+
+
 // ---------- CATEGORIES ----------
 data class Category(
     var id: Int = 0,

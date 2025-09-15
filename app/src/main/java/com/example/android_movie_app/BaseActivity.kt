@@ -33,7 +33,7 @@ open class BaseActivity : AppCompatActivity() {
             is NotificationsActivity -> bottomNav.selectedItemId = R.id.navigation_notifications
             is ProfileActivity -> bottomNav.selectedItemId = R.id.navigation_profile
         }
-        
+
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {

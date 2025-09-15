@@ -28,7 +28,7 @@
         android:id="@+id/txtMovieName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tên sản phẩm"
+        android:text="Tên movie"
         android:layout_marginTop="2dp"
         android:textSize="14dp"
         android:ellipsize="end"

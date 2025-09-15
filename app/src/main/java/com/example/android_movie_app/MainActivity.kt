@@ -16,11 +16,16 @@ import com.example.android_movie_app.dao.MovieDAO
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
-class MainActivity  : BaseActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var genreContainer: LinearLayout
     private lateinit var topContainer: LinearLayout
     private lateinit var posterContainer: LinearLayout
+
+    private lateinit var posterSchoolContainer: LinearLayout
+
+    private lateinit var posterFictionContainer: LinearLayout
+    private lateinit var posterXianxiaContainer: LinearLayout
     private lateinit var mainAdapter: MainAdapter
     private lateinit var movieDAO: MovieDAO
     private lateinit var viewPager: ViewPager2
@@ -47,20 +52,30 @@ class MainActivity  : BaseActivity() {
         genreContainer = findViewById(R.id.genreContainer)
         topContainer = findViewById(R.id.topContainer)
         posterContainer = findViewById(R.id.posterContainer)
+        posterSchoolContainer = findViewById(R.id.posterSchoolContainer)
+        posterFictionContainer = findViewById(R.id.posterFictionContainer)
+        posterXianxiaContainer = findViewById(R.id.posterXianxiaContainer)
+
 
         // 3. Lấy dữ liệu từ database
         val genres = movieDAO.getGenres()
         val recentMovies = movieDAO.getRecentMovies()
         val topMovies = movieDAO.getTopMovies()
+        val schoolMovies = movieDAO.getMoviesByGenre("Học Đường")
+        val fictionMovies = movieDAO.getMoviesByGenre("Viễn Tưởng")
+        val XianxiaMovies = movieDAO.getMoviesByGenre("Cổ Trang")
 
         // 4. Đưa dữ liệu lên UI
         mainAdapter.setGenres(genreContainer, genres)
         mainAdapter.setRecentMovies(posterContainer, recentMovies)
         mainAdapter.setTopMovies(topContainer, topMovies)
+        mainAdapter.setRecentMovies(posterSchoolContainer, schoolMovies)
+        mainAdapter.setRecentMovies(posterFictionContainer, fictionMovies)
+        mainAdapter.setRecentMovies(posterXianxiaContainer, XianxiaMovies)
 
         if (topMovies.isNotEmpty()) {
-            val bannerMovieList = topMovies.take(5) // Lấy 5 phim đầu tiên
-            bannerAdapter = BannerSliderAdapter(this, bannerMovieList)
+            val bannerMovies = movieDAO.getMoviesForBanner(5) // Lấy 5 phim đầu tiên
+            bannerAdapter = BannerSliderAdapter(this, bannerMovies)
             viewPager.adapter = bannerAdapter
 
 

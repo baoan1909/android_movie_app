@@ -5,12 +5,14 @@
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:cardCornerRadius="12dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Banner ảnh -->
         <ImageView
             android:id="@+id/bannerImage"
             android:layout_width="match_parent"
@@ -18,20 +20,37 @@
             android:scaleType="centerCrop"
             android:contentDescription="Banner Image" />
 
-        <TextView
-            android:id="@+id/bannerTag"
-            android:layout_width="wrap_content"
+        <!-- Overlay thông tin phim -->
+        <LinearLayout
+            android:id="@+id/bannerInfoContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/live_tag_background"
-            android:drawablePadding="4dp"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:text="PHÁT SONG SONG"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"/>
+            android:layout_gravity="bottom|start"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="@drawable/gradient_banner_info">
+
+            <TextView
+                android:id="@+id/tvMovieTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tên phim"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/tvMovieInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2025 • 12/24 tập"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+        </LinearLayout>
     </FrameLayout>
 </androidx.cardview.widget.CardView>

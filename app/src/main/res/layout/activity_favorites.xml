@@ -6,10 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".FavoritesActivity">
+    tools:context=".FavoritesActivity"
+    android:background="#121212">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Trang phim yêu thích"/>
+        android:text="Trang phim yêu thích"
+        android:textColor="@color/white"/>
 </LinearLayout>
