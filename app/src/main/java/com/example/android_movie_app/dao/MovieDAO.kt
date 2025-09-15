@@ -80,26 +80,6 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         return list
     }
 
-    fun getPosters(): List<String> {
-        val db = dbHelper.readableDatabase
-        val list = mutableListOf<String>()
-        val cursor = db.rawQuery(
-            "SELECT posterUrl FROM movies ORDER BY createdAt DESC LIMIT 10",
-            null
-        )
-
-        if (cursor.moveToFirst()) {
-            do {
-                val posterUrl = "https://img.ophim.live/uploads/movies/${cursor.getString(0)}"
-                list.add(posterUrl)
-            } while (cursor.moveToNext())
-        }
-
-        cursor.close()
-        db.close()
-        return list
-    }
-
     fun getRecentMovies(): List<Movie> {
         val db = dbHelper.readableDatabase
         val list = mutableListOf<Movie>()

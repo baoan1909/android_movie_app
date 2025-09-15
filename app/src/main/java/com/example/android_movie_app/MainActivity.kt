@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.util.UnstableApi
 import com.example.android_movie_app.adapter.MainAdapter
 import com.example.android_movie_app.dao.MovieDAO
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainAdapter: MainAdapter
     private lateinit var movieDAO: MovieDAO
 
+    @UnstableApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

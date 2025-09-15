@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.media3.common.util.UnstableApi
 import com.bumptech.glide.Glide
 import com.example.android_movie_app.Movie
 import com.example.android_movie_app.MovieDetailActivity
@@ -29,6 +30,7 @@ class MainAdapter(private val context: Context) {
     }
 
     /** Inflate Top item (Top 10 Today) */
+    @UnstableApi
     fun setTopMovies(container: LinearLayout, movies: List<Movie>) {
         container.removeAllViews()
         for ((index, movie) in movies.withIndex()) {
@@ -42,10 +44,10 @@ class MainAdapter(private val context: Context) {
             numberView.text = (index + 1).toString()
 
             // Load poster với URL đầy đủ
-            val fullPosterUrl = if (movie.posterUrl?.startsWith("http") == true) {
-                movie.posterUrl
+            val fullPosterUrl = if (movie.thumbUrl?.startsWith("http") == true) {
+                movie.thumbUrl
             } else {
-                "https://img.ophim.live/uploads/movies/${movie.posterUrl}"
+                "https://img.ophim.live/uploads/movies/${movie.thumbUrl}"
             }
             
             Glide.with(context)
@@ -71,6 +73,7 @@ class MainAdapter(private val context: Context) {
     }
 
     /** Inflate Recent Movies (Summer 2025) */
+    @UnstableApi
     fun setRecentMovies(container: LinearLayout, movies: List<Movie>) {
         container.removeAllViews()
         for (movie in movies) {
@@ -79,10 +82,10 @@ class MainAdapter(private val context: Context) {
             val imageView = view.findViewById<ImageView>(R.id.imageView)
 
             // Load poster với URL đầy đủ
-            val fullPosterUrl = if (movie.posterUrl?.startsWith("http") == true) {
-                movie.posterUrl
+            val fullPosterUrl = if (movie.thumbUrl?.startsWith("http") == true) {
+                movie.thumbUrl
             } else {
-                "https://img.ophim.live/uploads/movies/${movie.posterUrl}"
+                "https://img.ophim.live/uploads/movies/${movie.thumbUrl}"
             }
 
             Glide.with(context)

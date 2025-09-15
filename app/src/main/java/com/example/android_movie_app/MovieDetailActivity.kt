@@ -109,7 +109,7 @@ class MovieDetailActivity : AppCompatActivity() {
         }
         
         // Setup overlay cho landscape
-        movieInfoOverlay = findViewById(R.id.movieInfoOverlay)
+        //movieInfoOverlay = findViewById(R.id.movieInfoOverlay)
     }
     
     private fun setupFullscreen() {

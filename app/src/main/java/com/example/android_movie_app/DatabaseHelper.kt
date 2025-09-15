@@ -96,18 +96,6 @@ class DatabaseHelper(context: Context) :
             ('Phim 18+', 'phim-18')
         """.trimIndent())
 
-        db?.execSQL("""
-            CREATE TABLE movie_categories (
-                movieId INTEGER NOT NULL,
-                categoryId INTEGER NOT NULL,
-                createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY(movieId, categoryId),
-                FOREIGN KEY(movieId) REFERENCES movies(id) ON DELETE CASCADE,
-                FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
-            )
-        """)
-
-
         // ------------------- EPISODES -------------------
         db?.execSQL("""
             CREATE TABLE episodes (
