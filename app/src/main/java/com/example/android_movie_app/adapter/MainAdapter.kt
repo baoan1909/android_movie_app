@@ -1,6 +1,7 @@
 package com.example.android_movie_app.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.example.android_movie_app.Movie
+import com.example.android_movie_app.MovieDetailActivity
 import com.example.android_movie_app.R
 
 
@@ -39,36 +41,65 @@ class MainAdapter(private val context: Context) {
             // Số thứ tự
             numberView.text = (index + 1).toString()
 
-            // Load poster
+            // Load poster với URL đầy đủ
+            val fullPosterUrl = if (movie.posterUrl?.startsWith("http") == true) {
+                movie.posterUrl
+            } else {
+                "https://img.ophim.live/uploads/movies/${movie.posterUrl}"
+            }
+            
             Glide.with(context)
-                .load(movie.posterUrl)
+                .load(fullPosterUrl)
                 .placeholder(R.drawable.anime_1)
                 .into(imageView)
 
             // Xử lý click
             cardView.setOnClickListener {
-                // TODO: mở chi tiết phim
+                val intent = Intent(context, MovieDetailActivity::class.java)
+                intent.putExtra("movie_id", movie.id)
+                intent.putExtra("movie_name", movie.name)
+                intent.putExtra("movie_poster", movie.posterUrl)
+                intent.putExtra("movie_thumb", movie.thumbUrl)
+                intent.putExtra("movie_rating", movie.rating)
+                intent.putExtra("movie_year", movie.year)
+                intent.putExtra("movie_content", movie.content)
+                context.startActivity(intent)
             }
 
             container.addView(view)
         }
     }
 
-    /** Inflate Poster item (Summer 2025) */
-    fun setPosters(container: LinearLayout, posters: List<String>) {
+    /** Inflate Recent Movies (Summer 2025) */
+    fun setRecentMovies(container: LinearLayout, movies: List<Movie>) {
         container.removeAllViews()
-        for (posterUrl in posters) {
+        for (movie in movies) {
             val view = inflater.inflate(R.layout.item_movie_poster, container, false)
             val cardView = view.findViewById<CardView>(R.id.cardView)
             val imageView = view.findViewById<ImageView>(R.id.imageView)
 
+            // Load poster với URL đầy đủ
+            val fullPosterUrl = if (movie.posterUrl?.startsWith("http") == true) {
+                movie.posterUrl
+            } else {
+                "https://img.ophim.live/uploads/movies/${movie.posterUrl}"
+            }
+
             Glide.with(context)
-                .load(posterUrl)
+                .load(fullPosterUrl)
                 .placeholder(R.drawable.anime_5)
                 .into(imageView)
 
             cardView.setOnClickListener {
-                // TODO: mở chi tiết phim
+                val intent = Intent(context, MovieDetailActivity::class.java)
+                intent.putExtra("movie_id", movie.id)
+                intent.putExtra("movie_name", movie.name)
+                intent.putExtra("movie_poster", movie.posterUrl)
+                intent.putExtra("movie_thumb", movie.thumbUrl)
+                intent.putExtra("movie_rating", movie.rating)
+                intent.putExtra("movie_year", movie.year)
+                intent.putExtra("movie_content", movie.content)
+                context.startActivity(intent)
             }
 
             container.addView(view)

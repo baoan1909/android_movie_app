@@ -39,12 +39,12 @@ class MainActivity : AppCompatActivity() {
 
         // 3. Lấy dữ liệu từ database
         val genres = movieDAO.getGenres()
-        val posters = movieDAO.getPosters()
+        val recentMovies = movieDAO.getRecentMovies()
         val topMovies = movieDAO.getTopMovies()
 
         // 4. Đưa dữ liệu lên UI
         mainAdapter.setGenres(genreContainer, genres)
-        mainAdapter.setPosters(posterContainer, posters)
+        mainAdapter.setRecentMovies(posterContainer, recentMovies)
         mainAdapter.setTopMovies(topContainer, topMovies)
     }
 }
