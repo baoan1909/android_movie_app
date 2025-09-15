@@ -1,25 +1,34 @@
 package com.example.android_movie_app
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.util.UnstableApi
+import androidx.viewpager2.widget.ViewPager2
+import com.example.android_movie_app.adapter.BannerSliderAdapter
 import com.example.android_movie_app.adapter.MainAdapter
 import com.example.android_movie_app.dao.MovieDAO
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
-class MainActivity : AppCompatActivity() {
+class MainActivity  : BaseActivity() {
 
     private lateinit var genreContainer: LinearLayout
     private lateinit var topContainer: LinearLayout
     private lateinit var posterContainer: LinearLayout
-    private lateinit var bannerImage: ImageView
-    private lateinit var bannerTag: TextView
-    private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var mainAdapter: MainAdapter
     private lateinit var movieDAO: MovieDAO
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
+    private lateinit var bannerAdapter: BannerSliderAdapter
+    // Handler để tự động cuộn
+    private val sliderHandler = Handler(Looper.getMainLooper())
+    private lateinit var sliderRunnable: Runnable
 
     @UnstableApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,13 +40,13 @@ class MainActivity : AppCompatActivity() {
         movieDAO = MovieDAO(dbHelper)
         mainAdapter = MainAdapter(this)
 
+        viewPager = findViewById(R.id.viewPagerBanner)
+        tabLayout = findViewById(R.id.tabLayoutIndicator)
+
         // 2. Sau đó mới gọi findViewById
         genreContainer = findViewById(R.id.genreContainer)
         topContainer = findViewById(R.id.topContainer)
         posterContainer = findViewById(R.id.posterContainer)
-        bannerImage = findViewById(R.id.bannerImage)
-        bannerTag = findViewById(R.id.bannerTag)
-        bottomNavigation = findViewById(R.id.bottomNavigationView)
 
         // 3. Lấy dữ liệu từ database
         val genres = movieDAO.getGenres()
@@ -48,5 +57,53 @@ class MainActivity : AppCompatActivity() {
         mainAdapter.setGenres(genreContainer, genres)
         mainAdapter.setRecentMovies(posterContainer, recentMovies)
         mainAdapter.setTopMovies(topContainer, topMovies)
+
+        if (topMovies.isNotEmpty()) {
+            val bannerMovieList = topMovies.take(5) // Lấy 5 phim đầu tiên
+            bannerAdapter = BannerSliderAdapter(this, bannerMovieList)
+            viewPager.adapter = bannerAdapter
+
+
+            // Kết nối lại TabLayoutMediator nếu cần
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                // ...
+            }.attach()
+        }
+
+        // Logic tự động cuộn
+        setupAutoSlider()
+    }
+
+    private fun setupAutoSlider() {
+        sliderRunnable = Runnable {
+            var currentItem = viewPager.currentItem
+            currentItem++
+            // Nếu là banner cuối cùng, quay lại banner đầu tiên
+            if (currentItem >= bannerAdapter.itemCount) {
+                currentItem = 0
+            }
+            viewPager.setCurrentItem(currentItem, true) // Cuộn mượt
+        }
+
+        // Đăng ký callback để bắt đầu cuộn lại khi người dùng tương tác
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                // Xóa callback cũ và đặt lại timer
+                sliderHandler.removeCallbacks(sliderRunnable)
+                sliderHandler.postDelayed(sliderRunnable, 5000) // 5 giây
+            }
+        })
+    }
+
+    // Bắt đầu và dừng auto-slide theo vòng đời của Activity
+    override fun onResume() {
+        super.onResume()
+        sliderHandler.postDelayed(sliderRunnable, 5000)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sliderHandler.removeCallbacks(sliderRunnable)
     }
 }

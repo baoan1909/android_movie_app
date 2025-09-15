@@ -55,5 +55,12 @@
         <item name="android:textStyle">bold</item>
         <item name="android:background">@drawable/tab_selected_indicator</item>
     </style>
+
+    <style name="CustomDotIndicator" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorHeight">0dp</item>
+        <item name="tabPaddingStart">6dp</item>
+        <item name="tabPaddingEnd">6dp</item>
+        <item name="tabBackground">@drawable/tab_selector</item>
+    </style>
 </resources>
 

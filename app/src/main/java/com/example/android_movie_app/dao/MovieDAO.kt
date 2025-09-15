@@ -150,7 +150,32 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         return list
     }
 
+    // Lấy danh sách phim theo tên thể loại
+    fun getMoviesByGenre(genreName: String): List<Movie> {
+        val db = dbHelper.readableDatabase
+        val movies = mutableListOf<Movie>()
 
+        val query = """
+        SELECT m.*
+        FROM movies m
+        INNER JOIN movie_categories mc ON m.id = mc.movieId
+        INNER JOIN categories c ON mc.categoryId = c.id
+        WHERE c.name = ?
+    """
+
+        val cursor = db.rawQuery(query, arrayOf(genreName))
+
+        cursor.use {
+            if (it.moveToFirst()) {
+                do {
+                    movies.add(cursorToMovie(it))
+                } while (it.moveToNext())
+            }
+        }
+
+        db.close()
+        return movies
+    }
 
 
     public fun cursorToMovie(cursor: Cursor): Movie {
