@@ -7,21 +7,21 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.util.TypedValue
 import android.view.WindowManager
+import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.ScrollView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.ViewCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
@@ -56,6 +56,7 @@ class MovieDetailActivity : AppCompatActivity() {
     private val autoHideHandler = Handler(Looper.getMainLooper())
     private val autoHideRunnable = Runnable { hideControls() }
 
+    @UnstableApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LayoutMovieDetailBinding.inflate(layoutInflater)
@@ -67,7 +68,7 @@ class MovieDetailActivity : AppCompatActivity() {
         movieDAO = MovieDAO(dbHelper)
 
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        
+
         movieId = intent.getIntExtra("movie_id", 0)
         movieName = intent.getStringExtra("movie_name") ?: ""
 
@@ -75,31 +76,18 @@ class MovieDetailActivity : AppCompatActivity() {
         setupPlayer()
         loadMovieDetailsAndPlay()
         setupTabs()
-        setupCustomControls()
+        setupPlayerControls()
         setupSeekBar()
         startSeekBarUpdater()
         startAutoHide()
-        
-        // Setup fullscreen sau khi tất cả views đã được init
-        setupInitialOrientation()
-    }
 
-    private fun setupInitialOrientation() {
-        if (isLandscape) {
-            setupFullscreen()
-            binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen_exit)
-            adjustLayoutForOrientation()
-        } else {
-            exitFullscreen()
-            binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen)
-        }
+        // Khởi tạo UI đúng orientation ban đầu
+        updateFullscreenUI()
     }
 
     private fun initViews() {
         playerView = binding.playerView
         playerView?.useController = false
-
-        // Toggle controls khi chạm vào video
         playerView?.setOnClickListener { toggleControlsWithTimer() }
 
         binding.btnBack?.setOnClickListener { finish() }
@@ -120,50 +108,89 @@ class MovieDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupCustomControls() {
+    @UnstableApi
+    private fun setupPlayerControls() {
+        binding.playerView?.useController = false
+
         binding.btnPlayPause?.setOnClickListener {
-            if (player?.isPlaying == true) {
-                player?.pause()
-                binding.btnPlayPause?.setImageResource(R.drawable.ic_play_arrow)
-            } else {
-                player?.play()
-                binding.btnPlayPause?.setImageResource(R.drawable.ic_pause)
+            player?.let {
+                if (it.isPlaying) {
+                    it.pause()
+                    binding.btnPlayPause?.setImageResource(R.drawable.ic_play_arrow)
+                } else {
+                    it.play()
+                    binding.btnPlayPause?.setImageResource(R.drawable.ic_pause)
+                }
             }
-            showControlsTemporarily()
-        }
-
-
-        binding.btnFullscreen.setOnClickListener {
-            if (isLandscape) {
-                // Thoát fullscreen
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                exitFullscreen()
-                binding.btnFullscreen.setImageResource(R.drawable.ic_fullscreen)
-            } else {
-                // Vào fullscreen
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                setupFullscreen()
-                binding.btnFullscreen.setImageResource(R.drawable.ic_fullscreen_exit)
-            }
-            showControlsTemporarily()
-        }
-
-
-
-        binding.btnForward10?.setOnClickListener {
-            val currentPos = player?.currentPosition ?: 0
-            val duration = player?.duration ?: 0
-            val newPos = (currentPos + 10_000).coerceAtMost(if (duration > 0) duration else currentPos + 10_000)
-            player?.seekTo(newPos)
             showControlsTemporarily()
         }
 
         binding.btnReplay10?.setOnClickListener {
-            val currentPos = player?.currentPosition ?: 0
-            val newPos = (currentPos - 10_000).coerceAtLeast(0)
-            player?.seekTo(newPos)
+            player?.seekTo((player?.currentPosition ?: 0) - 10_000)
             showControlsTemporarily()
         }
+        binding.btnForward10?.setOnClickListener {
+            player?.seekTo((player?.currentPosition ?: 0) + 10_000)
+            showControlsTemporarily()
+        }
+
+        binding.btnFullscreen?.setOnClickListener {
+            isLandscape = !isLandscape
+            requestedOrientation = if (isLandscape)
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            else
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            updateFullscreenUI()
+            showControlsTemporarily()
+        }
+    }
+
+    @UnstableApi
+    private fun updateFullscreenUI() {
+        if (isLandscape) {
+            binding.layoutMovieInfo?.visibility = View.GONE
+            binding.layoutActionButtons?.visibility = View.GONE
+            binding.layoutComments?.visibility = View.GONE
+            binding.layoutTabs?.visibility = View.GONE
+            binding.layoutAdBanner?.visibility = View.GONE
+
+            (binding.root as? ScrollView)?.apply {
+                isVerticalScrollBarEnabled = false
+                scrollTo(0, 0)
+            }
+
+            binding.playerContainer?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.videoContainer?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.playerView?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.playerView?.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+
+            binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen_exit)
+            setupFullscreen()
+        } else {
+            binding.layoutMovieInfo?.visibility = View.VISIBLE
+            binding.layoutActionButtons?.visibility = View.VISIBLE
+            binding.layoutComments?.visibility = View.VISIBLE
+            binding.layoutTabs?.visibility = View.VISIBLE
+            binding.layoutAdBanner?.visibility = View.VISIBLE
+
+            (binding.root as? ScrollView)?.isVerticalScrollBarEnabled = true
+
+            val portraitHeight = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 220f, resources.displayMetrics
+            ).toInt()
+
+            binding.playerContainer?.layoutParams?.height = portraitHeight
+            binding.videoContainer?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.playerView?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
+            binding.playerView?.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+
+            binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen)
+            exitFullscreen()
+        }
+
+        binding.playerContainer?.requestLayout()
+        binding.videoContainer?.requestLayout()
+        binding.playerView?.requestLayout()
     }
 
     private fun setupTabs() {
@@ -216,7 +243,7 @@ class MovieDetailActivity : AppCompatActivity() {
     }
 
     private fun hideControls() {
-        if (controlsVisible && !isUserSeeking) { // không ẩn khi user đang kéo SeekBar
+        if (controlsVisible && !isUserSeeking) {
             controlsVisible = false
             binding.layoutTopControls?.let { fadeOut(it) }
             binding.layoutCenterControls?.let { fadeOut(it) }
@@ -261,166 +288,71 @@ class MovieDetailActivity : AppCompatActivity() {
     }
 
     private fun setupFullscreen() {
-        // Ẩn hoàn toàn status bar và navigation bar
         window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            or View.SYSTEM_UI_FLAG_FULLSCREEN
-            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        )
-        
-        // Giữ màn hình sáng khi xem video
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                )
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        
-        // Đảm bảo layout sử dụng toàn bộ màn hình
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val controller = WindowInsetsControllerCompat(window, window.decorView)
         controller.hide(WindowInsetsCompat.Type.systemBars())
-        controller.systemBarsBehavior = 
+        controller.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
     private fun exitFullscreen() {
-        // Khôi phục hiển thị system bars
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
-        
         WindowCompat.setDecorFitsSystemWindows(window, true)
         val controller = WindowInsetsControllerCompat(window, window.decorView)
         controller.show(WindowInsetsCompat.Type.systemBars())
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
-    private fun toggleFullscreen() {
+    // ====== Player setup ======
+    @UnstableApi
+    private fun setupPlayer() {
+        player = ExoPlayer.Builder(this).build()
+        playerView?.player = player
+        playerView?.setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
+        playerView?.setKeepContentOnPlayerReset(true)
         try {
-            if (isLandscape) {
-                // Đang ở landscape, chuyển về portrait
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            } else {
-                // Đang ở portrait, chuyển sang landscape
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            playerView?.setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
+        } catch (_: Throwable) { }
+        player?.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    playerView?.setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
+                }
             }
-            
-            // Cập nhật icon ngay lập tức để phản hồi người dùng
-            if (isLandscape) {
-                binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen)
-            } else {
-                binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen_exit)
-            }
-        } catch (e: Exception) {
-            // Fallback: nếu không thể thay đổi orientation, chỉ toggle fullscreen UI
-            if (isLandscape) {
-                exitFullscreen()
-                binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen)
-            } else {
-                setupFullscreen()
-                binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen_exit)
-            }
-        }
-    }
-
-    private fun setupMovieInfo(
-        title: String,
-        rating: Double,
-        year: Int,
-        content: String?,
-        isSeries: Boolean = false,
-        totalEpisodes: Int = 0,
-        episodesReleased: Int = 0
-    ) {
-        binding.txtMovieTitle?.text = title
-        binding.txtMovieRating?.text = "⭐ $rating • Đánh giá"
-
-        binding.txtMovieYear?.text = if (year > 0) {
-            if (isSeries) "$year | T18 | $episodesReleased/$totalEpisodes tập"
-            else "$year | T18 | single"
-        } else {
-            if (isSeries) "$episodesReleased/$totalEpisodes tập" else "single"
-        }
-
-        binding.txtMovieInfo?.text = content ?: "Đang cập nhật thông tin phim..."
+        })
     }
 
     private fun loadMovieDetailsAndPlay() {
-        if (movieId == 0) {
-            Toast.makeText(this, "Không tìm thấy thông tin phim", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         val movie = movieDAO.getMovieById(movieId)
         if (movie != null) {
             val episodes = episodeDAO.getEpisodesByMovieAsc(movieId)
             if (episodes.isNotEmpty()) {
                 val totalEpisodes = episodes.size
                 val releasedEpisodes = episodes.count { it.videoUrl.isNotEmpty() }
-                setupMovieInfo(
-                    title = movie.name,
-                    rating = movie.rating,
-                    year = movie.year ?: 0,
-                    content = movie.content,
-                    isSeries = true,
-                    totalEpisodes = totalEpisodes,
-                    episodesReleased = releasedEpisodes
-                )
+                setupMovieInfo(movie.name, movie.rating, movie.year ?: 0, movie.content, true, totalEpisodes, releasedEpisodes)
             } else {
-                setupMovieInfo(
-                    title = movie.name,
-                    rating = movie.rating,
-                    year = movie.year ?: 0,
-                    content = movie.content,
-                    isSeries = false
-                )
+                setupMovieInfo(movie.name, movie.rating, movie.year ?: 0, movie.content, false)
             }
         } else {
-            setupMovieInfo(
-                title = movieName,
-                rating = 0.0,
-                year = 0,
-                content = "Đang cập nhật thông tin phim...",
-                isSeries = false
-            )
+            setupMovieInfo(movieName, 0.0, 0, "Đang cập nhật...", false)
         }
-
         loadEpisodeAndPlay()
     }
 
-    private fun setupPlayer() {
-        player = ExoPlayer.Builder(this).build()
-        playerView?.player = player
-
-        // Tránh màn hình đen do shutter trước khi khung hình đầu tiên xuất hiện
-        playerView?.setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
-        // Giữ khung hình cuối cùng khi reset/prep lại
-        playerView?.setKeepContentOnPlayerReset(true)
-        // Hiển thị UI buffering để biết trạng thái tải
-        try {
-            playerView?.setShowBuffering(androidx.media3.ui.PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
-        } catch (_: Throwable) { /* older versions */ }
-
-        player?.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                when (playbackState) {
-                    Player.STATE_BUFFERING -> {
-                        // có thể hiển thị loading nếu cần
-                    }
-                    Player.STATE_READY -> {
-                        // đã có khung hình, đảm bảo shutter trong suốt
-                        playerView?.setShutterBackgroundColor(android.graphics.Color.TRANSPARENT)
-                    }
-                }
-            }
-
-            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                android.util.Log.e("MovieDetail", "Player error", error)
-                Toast.makeText(this@MovieDetailActivity, "Không phát được video: ${'$'}{error.errorCodeName}", Toast.LENGTH_LONG).show()
-                // Hiển thị controls để user thử lại
-                showControlsTemporarily()
-            }
-        })
-
-        // Khôi phục position nếu có sau prepare
-        // Sẽ seek trong playVideo sau khi set media item
+    private fun setupMovieInfo(title: String, rating: Double, year: Int, content: String?, isSeries: Boolean, totalEpisodes: Int = 0, episodesReleased: Int = 0) {
+        binding.txtMovieTitle?.text = title
+        binding.txtMovieRating?.text = "⭐ $rating • Đánh giá"
+        binding.txtMovieYear?.text = if (isSeries) "$year | $episodesReleased/$totalEpisodes tập" else "$year | single"
+        binding.txtMovieInfo?.text = content ?: "Đang cập nhật..."
     }
 
     private fun loadEpisodeAndPlay() {
@@ -436,55 +368,29 @@ class MovieDetailActivity : AppCompatActivity() {
             if (videoUrl.isNotEmpty()) {
                 savedPosition = (watchProgress?.currentTime?.toLong() ?: 0) * 1000
                 playVideo(videoUrl)
-                if (savedPosition > 0) {
-                    Toast.makeText(this, "Tiếp tục từ ${formatTime(savedPosition)}", Toast.LENGTH_LONG).show()
-                }
-            } else {
-                Toast.makeText(this, "Không tìm thấy video", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "Phim chưa có tập nào", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun playVideo(videoUrl: String) {
         val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
         player?.setMediaItem(mediaItem)
-
-        val prefs = getSharedPreferences("video_state", MODE_PRIVATE)
-        val orientationPosition = prefs.getLong("current_position", 0)
-        val playWhenReady = prefs.getBoolean("play_when_ready", true)
-        val positionToSeek = if (orientationPosition > 0) {
-            prefs.edit().clear().apply()
-            orientationPosition
-        } else savedPosition
-
         player?.prepare()
-        if (positionToSeek > 0) player?.seekTo(positionToSeek)
-        player?.playWhenReady = playWhenReady
-
-        if (playWhenReady) binding.btnPlayPause?.setImageResource(R.drawable.ic_pause)
-        else binding.btnPlayPause?.setImageResource(R.drawable.ic_play_arrow)
+        if (savedPosition > 0) player?.seekTo(savedPosition)
+        player?.playWhenReady = true
+        binding.btnPlayPause?.setImageResource(R.drawable.ic_pause)
     }
 
     private fun setupSeekBar() {
-        binding.seekBar?.max = 0
-        binding.seekBar?.progress = 0
-
         binding.seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     isUserSeeking = true
                     binding.txtCurrentTime?.text = formatTime(progress.toLong())
                 }
             }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                isUserSeeking = true
-                cancelAutoHide()
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            override fun onStartTrackingTouch(sb: SeekBar?) { isUserSeeking = true; cancelAutoHide() }
+            override fun onStopTrackingTouch(sb: SeekBar?) {
                 player?.seekTo((binding.seekBar?.progress ?: 0).toLong())
                 isUserSeeking = false
                 startAutoHide()
@@ -495,15 +401,16 @@ class MovieDetailActivity : AppCompatActivity() {
     private fun startSeekBarUpdater() {
         updateSeekBarRunnable = object : Runnable {
             override fun run() {
-                if (player != null && player!!.isPlaying && !isUserSeeking) {
-                    val current = player!!.currentPosition
-                    val total = player!!.duration
-
-                    if (total > 0) {
-                        binding.seekBar?.max = total.toInt()
-                        binding.seekBar?.progress = current.toInt()
-                        binding.txtCurrentTime?.text = formatTime(current)
-                        binding.txtTotalTime?.text = formatTime(total)
+                player?.let {
+                    if (it.isPlaying && !isUserSeeking) {
+                        val current = it.currentPosition
+                        val total = it.duration
+                        if (total > 0) {
+                            binding.seekBar?.max = total.toInt()
+                            binding.seekBar?.progress = current.toInt()
+                            binding.txtCurrentTime?.text = formatTime(current)
+                            binding.txtTotalTime?.text = formatTime(total)
+                        }
                     }
                 }
                 handler.postDelayed(this, 500)
@@ -511,142 +418,6 @@ class MovieDetailActivity : AppCompatActivity() {
         }
         handler.post(updateSeekBarRunnable!!)
     }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        val newIsLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
-        if (newIsLandscape != isLandscape) {
-            isLandscape = newIsLandscape
-
-            // Thêm delay nhỏ để đảm bảo layout được cập nhật đúng cách
-            binding.root.post {
-                if (isLandscape) {
-                    setupFullscreen()
-                    binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen_exit)
-                } else {
-                    exitFullscreen()
-                    binding.btnFullscreen?.setImageResource(R.drawable.ic_fullscreen)
-                }
-
-                // Cập nhật layout cho orientation mới
-                adjustLayoutForOrientation()
-            }
-        }
-    }
-
-    private fun adjustLayoutForOrientation() {
-        if (isLandscape) {
-            // Trong landscape mode, ẩn các controls không cần thiết để tập trung vào video
-            binding.layoutMovieInfo?.visibility = View.GONE
-            binding.layoutActionButtons?.visibility = View.GONE
-            binding.layoutComments?.visibility = View.GONE
-            binding.layoutTabs?.visibility = View.GONE
-            binding.layoutAdBanner?.visibility = View.GONE
-            
-            // ExoPlayer resize mode trong landscape
-            playerView?.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-
-            // Vô hiệu hóa overscroll/scrollbar của ScrollView khi landscape để không trượt
-            (binding.root as? ScrollView)?.let { sv ->
-                sv.overScrollMode = View.OVER_SCROLL_NEVER
-                sv.isVerticalScrollBarEnabled = false
-                sv.scrollTo(0, 0)
-            }
-
-            // Đảm bảo player chiếm toàn màn hình khi landscape (tránh hở khoảng trống)
-            binding.playerContainer?.let { container ->
-                val params = container.layoutParams
-                if (params != null && params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                    container.layoutParams = params
-                    container.requestLayout()
-                }
-            }
-            binding.videoContainer?.let { vc ->
-                val params = vc.layoutParams
-                if (params != null && params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                    vc.layoutParams = params
-                    vc.requestLayout()
-                }
-            }
-            binding.playerView?.let { pv ->
-                val params = pv.layoutParams
-                if (params != null && params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                    pv.layoutParams = params
-                    pv.requestLayout()
-                }
-            }
-        } else {
-            // Trong portrait mode, hiển thị lại tất cả
-            binding.layoutMovieInfo?.visibility = View.VISIBLE
-            binding.layoutActionButtons?.visibility = View.VISIBLE
-            binding.layoutComments?.visibility = View.VISIBLE
-            binding.layoutTabs?.visibility = View.VISIBLE
-            binding.layoutAdBanner?.visibility = View.VISIBLE
-            playerView?.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-
-            // Khôi phục overscroll/scrollbar khi về portrait
-            (binding.root as? ScrollView)?.let { sv ->
-                sv.overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
-                sv.isVerticalScrollBarEnabled = true
-            }
-
-            // Trả lại chiều cao player như giao diện portrait (220dp)
-            val portraitHeight = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                220f,
-                resources.displayMetrics
-            ).toInt()
-
-            binding.playerContainer?.let { container ->
-                val params = container.layoutParams
-                if (params != null && params.height != portraitHeight) {
-                    params.height = portraitHeight
-                    container.layoutParams = params
-                    container.requestLayout()
-                }
-            }
-            binding.videoContainer?.let { vc ->
-                val params = vc.layoutParams
-                if (params != null && params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                    vc.layoutParams = params
-                    vc.requestLayout()
-                }
-            }
-            binding.playerView?.let { pv ->
-                val params = pv.layoutParams
-                if (params != null && params.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                    params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                    pv.layoutParams = params
-                    pv.requestLayout()
-                }
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        // Lưu state của ExoPlayer khi xoay màn hình
-        player?.let {
-            outState.putLong("player_position", it.currentPosition)
-            outState.putBoolean("player_playing", it.isPlaying)
-        }
-        outState.putInt("current_episode_id", currentEpisodeId)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        // Khôi phục state của ExoPlayer
-        savedPosition = savedInstanceState.getLong("player_position", 0)
-        val wasPlaying = savedInstanceState.getBoolean("player_playing", false)
-        currentEpisodeId = savedInstanceState.getInt("current_episode_id", 0)
-        
-        setupPlayer()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         saveWatchProgress()
@@ -679,10 +450,7 @@ class MovieDetailActivity : AppCompatActivity() {
         val seconds = milliseconds / 1000
         val minutes = seconds / 60
         val hours = minutes / 60
-        return if (hours > 0) {
-            String.format("%d:%02d:%02d", hours, minutes % 60, seconds % 60)
-        } else {
-            String.format("%d:%02d", minutes, seconds % 60)
-        }
+        return if (hours > 0) "%d:%02d:%02d".format(hours, minutes % 60, seconds % 60)
+        else "%d:%02d".format(minutes, seconds % 60)
     }
 }
