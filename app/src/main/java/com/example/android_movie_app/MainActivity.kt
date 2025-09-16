@@ -25,7 +25,7 @@ class MainActivity : BaseActivity() {
     private lateinit var posterSchoolContainer: LinearLayout
 
     private lateinit var posterFictionContainer: LinearLayout
-    private lateinit var posterXianxiaContainer: LinearLayout
+    private lateinit var posterHumorousContainer: LinearLayout
     private lateinit var mainAdapter: MainAdapter
     private lateinit var movieDAO: MovieDAO
     private lateinit var viewPager: ViewPager2
@@ -54,7 +54,7 @@ class MainActivity : BaseActivity() {
         posterContainer = findViewById(R.id.posterContainer)
         posterSchoolContainer = findViewById(R.id.posterSchoolContainer)
         posterFictionContainer = findViewById(R.id.posterFictionContainer)
-        posterXianxiaContainer = findViewById(R.id.posterXianxiaContainer)
+        posterHumorousContainer = findViewById(R.id.posterHumorousContainer)
 
 
         // 3. Lấy dữ liệu từ database
@@ -63,7 +63,7 @@ class MainActivity : BaseActivity() {
         val topMovies = movieDAO.getTopMovies()
         val schoolMovies = movieDAO.getMoviesByGenre("Học Đường")
         val fictionMovies = movieDAO.getMoviesByGenre("Viễn Tưởng")
-        val XianxiaMovies = movieDAO.getMoviesByGenre("Cổ Trang")
+        val XianxiaMovies = movieDAO.getMoviesByGenre("Hài Hước")
 
         // 4. Đưa dữ liệu lên UI
         mainAdapter.setGenres(genreContainer, genres)
@@ -71,7 +71,7 @@ class MainActivity : BaseActivity() {
         mainAdapter.setTopMovies(topContainer, topMovies)
         mainAdapter.setRecentMovies(posterSchoolContainer, schoolMovies)
         mainAdapter.setRecentMovies(posterFictionContainer, fictionMovies)
-        mainAdapter.setRecentMovies(posterXianxiaContainer, XianxiaMovies)
+        mainAdapter.setRecentMovies(posterHumorousContainer, XianxiaMovies)
 
         if (topMovies.isNotEmpty()) {
             val bannerMovies = movieDAO.getMoviesForBanner(5) // Lấy 5 phim đầu tiên
