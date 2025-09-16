@@ -69,6 +69,10 @@ class LoginActivity : AppCompatActivity() {
             // Đăng nhập thành công
             CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
 
+            //Lưu userId
+            val sharedPref = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+            sharedPref.edit().putInt("USER_ID", user.id).apply()
+
             // Chuyển sang màn hình Home/Main
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

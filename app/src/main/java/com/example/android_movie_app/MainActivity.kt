@@ -1,13 +1,11 @@
 package com.example.android_movie_app
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import com.example.android_movie_app.adapter.BannerSliderAdapter
@@ -39,6 +37,12 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //Lấy UserId
+        val sharedPref = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+        val userId = sharedPref.getInt("USER_ID", -1) // -1 nếu không có dữ liệu
+
+
 
         // 1. Khởi tạo DatabaseHelper và DAO trước
         val dbHelper = DatabaseHelper(this)
