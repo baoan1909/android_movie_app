@@ -23,8 +23,11 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import com.example.android_movie_app.CustomToast
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.R
+import com.example.android_movie_app.RatingDialog
+import com.example.android_movie_app.ToastType
 import com.example.android_movie_app.WatchProgress
 import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
@@ -46,6 +49,7 @@ class MovieDetailAdapter(
     private val episodeDAO = EpisodeDAO(dbHelper)
     private val watchProgressDAO = WatchProgressDAO(dbHelper)
     private val movieDAO = MovieDAO(dbHelper)
+    private val reviewDAO = ReviewDAO(dbHelper)
 
     private val handler = Handler(Looper.getMainLooper())
     private var updateSeekBarRunnable: Runnable? = null
@@ -67,7 +71,24 @@ class MovieDetailAdapter(
         startSeekBarUpdater()
         startAutoHide()
         updateFullscreenUI()
+        setupRatingDialog()
     }
+
+    private fun setupRatingDialog() {
+        val txtRating = binding.txtRatingDialog // TextView trong layout
+
+        txtRating.setOnClickListener {
+            val ratingDialog = RatingDialog(
+                context = activity, // dùng activity thay cho context
+                movieId = movieId,
+                episodeId = null
+            ) { rating ->
+                CustomToast.show(activity, "Đã đánh giá $rating sao", ToastType.SUCCESS)
+            }
+            ratingDialog.show()
+        }
+    }
+
 
     private fun initViews() {
         binding.playerView?.useController = false
@@ -122,6 +143,7 @@ class MovieDetailAdapter(
             updateFullscreenUI()
             showControlsTemporarily()
         }
+
     }
 
     @UnstableApi
@@ -221,7 +243,7 @@ class MovieDetailAdapter(
 
     private fun setupMovieInfo(title: String, rating: Double, year: Int, content: String?, isSeries: Boolean, totalEpisodes: Int = 0, episodesReleased: Int = 0) {
         binding.txtMovieTitle?.text = title
-        binding.txtMovieRating?.text = "⭐ $rating • Đánh giá"
+        binding.txtMovieRating?.text = "⭐ $rating • "
         binding.txtMovieYear?.text = if (isSeries) "$year | $episodesReleased/$totalEpisodes tập" else "$year | single"
         binding.txtMovieInfo?.text = content ?: "Đang cập nhật..."
     }

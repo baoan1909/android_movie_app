@@ -230,13 +230,26 @@
                     app:tint="@android:color/white" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/txtMovieRating"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="⭐ 4.8 • Đánh giá"
-                android:textColor="#FFC107"
-                android:layout_marginTop="8dp" />
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/txtMovieRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⭐ 4.8 • "
+                    android:textColor="#FFC107"
+                    android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/txtRatingDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đánh giá"
+                    android:textColor="#FFC107"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/txtMovieYear"

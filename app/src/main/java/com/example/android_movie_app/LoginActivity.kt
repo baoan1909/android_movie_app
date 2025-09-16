@@ -69,6 +69,9 @@ class LoginActivity : AppCompatActivity() {
             // Đăng nhập thành công
             CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
 
+            val session = SessionManager(this)
+            session.saveUserId(user.id)
+
             // Chuyển sang màn hình Home/Main
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

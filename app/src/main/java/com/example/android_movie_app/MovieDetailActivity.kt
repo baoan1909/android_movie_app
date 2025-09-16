@@ -25,6 +25,7 @@ class MovieDetailActivity : AppCompatActivity() {
         adapter.onCreate()
     }
 
+    @UnstableApi
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         adapter.onConfigurationChanged(newConfig)

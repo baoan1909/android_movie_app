@@ -91,8 +91,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
         android:numStars="5"
-        android:stepSize="1.0" />
-
+        android:stepSize="1.0"
+        android:progressTint="#FFC107"
+        android:progressBackgroundTint="@android:color/darker_gray"/>
 </LinearLayout>
