@@ -3,6 +3,7 @@ package com.example.android_movie_app
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.security.MessageDigest
 
 class DatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, "moviesDB", null, 1) {
@@ -24,6 +25,16 @@ class DatabaseHelper(context: Context) :
                 isActive INTEGER DEFAULT 1
             )
         """)
+
+        // Seed default user for convenience login during development
+        // username: diyuyi, password: Diyuyi@123 (store SHA-256 like LoginActivity)
+        val seedPasswordHash = MessageDigest
+            .getInstance("SHA-256")
+            .digest("Diyuyi@123".toByteArray())
+            .joinToString("") { "%02x".format(it) }
+        db?.execSQL(
+            "INSERT INTO users (username, email, passwordHash, isActive) VALUES ('diyuyi', 'diyuyi@example.com', '$seedPasswordHash', 1)"
+        )
 
         // ------------------- MOVIES -------------------
         db?.execSQL("""

@@ -95,7 +95,12 @@ class RegisterActivity : AppCompatActivity() {
 
                     if (result != -1L) {
                         CustomToast.show(this, "Đăng ký thành công", ToastType.SUCCESS)
-                        finish() // Quay về màn hình Login
+                        
+                        // Chuyển thẳng vào app sau khi đăng ký thành công
+                        val intent = Intent(this, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
                     } else {
                         CustomToast.show(this, "Đăng ký thất bại", ToastType.ERROR)
                     }

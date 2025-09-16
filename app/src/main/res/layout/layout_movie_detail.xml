@@ -27,13 +27,14 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/black">
 
-                <!-- ExoPlayer View (UI tắt hết controller mặc định) -->
+                <!-- ExoPlayer View (disable default controller; we use custom overlay) -->
                 <androidx.media3.ui.PlayerView
                     android:id="@+id/playerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:use_controller="false"
                     app:resize_mode="fit"
+                    app:show_buffering="when_playing"
                     android:background="@android:color/black" />
 
                 <!-- Top Controls -->
