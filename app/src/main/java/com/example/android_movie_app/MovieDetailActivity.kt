@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.util.UnstableApi
+import com.example.android_movie_app.adapter.MovieDetailAdapter
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 
 class MovieDetailActivity : AppCompatActivity() {

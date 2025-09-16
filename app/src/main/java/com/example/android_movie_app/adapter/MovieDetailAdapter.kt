@@ -1,4 +1,4 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.adapter
 
 import android.app.Activity
 import android.content.Intent
@@ -23,8 +23,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.R
+import com.example.android_movie_app.WatchProgress
 import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
+import java.util.Date
 
 class MovieDetailAdapter(
     private val activity: Activity,
@@ -374,7 +378,7 @@ class MovieDetailAdapter(
                     currentTime = currentPosition,
                     totalTime = duration,
                     isCompleted = currentPosition >= duration * 0.95,
-                    lastWatchedAt = java.util.Date()
+                    lastWatchedAt = Date()
                 )
                 watchProgressDAO.upsertWatchProgress(progress)
             }
