@@ -132,10 +132,22 @@ class MovieDetailActivity : AppCompatActivity() {
             showControlsTemporarily()
         }
 
-        binding.btnFullscreen?.setOnClickListener {
-            toggleFullscreen()
+
+        binding.btnFullscreen.setOnClickListener {
+            if (isLandscape) {
+                // Thoát fullscreen
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                exitFullscreen()
+                binding.btnFullscreen.setImageResource(R.drawable.ic_fullscreen)
+            } else {
+                // Vào fullscreen
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                setupFullscreen()
+                binding.btnFullscreen.setImageResource(R.drawable.ic_fullscreen_exit)
+            }
             showControlsTemporarily()
         }
+
 
 
         binding.btnForward10?.setOnClickListener {
