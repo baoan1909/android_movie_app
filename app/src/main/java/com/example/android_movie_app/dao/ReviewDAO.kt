@@ -127,4 +127,38 @@ class ReviewDAO(private val dbHelper: DatabaseHelper) {
         }
         return 0.0
     }
+
+    fun insertOrUpdateReview(userId: Int, movieId: Int, episodeId: Int?, rating: Int): Boolean {
+        val db = dbHelper.writableDatabase
+        return try {
+            val values = ContentValues().apply {
+                put("userId", userId)
+                put("movieId", movieId)
+                put("episodeId", episodeId)
+                put("rating", rating)
+                put("updatedAt", System.currentTimeMillis().toString())
+            }
+
+            // Nếu đã tồn tại -> update
+            val updated = db.update(
+                "reviews",
+                values,
+                "userId=? AND movieId=? AND (episodeId IS ? OR episodeId=?)",
+                arrayOf(userId.toString(), movieId.toString(), episodeId?.toString(), episodeId?.toString())
+            )
+
+            if (updated == 0) {
+                // Chưa có -> insert
+                db.insert("reviews", null, values) != -1L
+            } else {
+                true
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        } finally {
+            db.close()
+        }
+    }
+
 }
