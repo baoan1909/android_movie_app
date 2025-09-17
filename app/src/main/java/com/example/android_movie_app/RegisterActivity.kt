@@ -2,9 +2,11 @@ package com.example.android_movie_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +21,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var edtUsernameRegister: EditText
     private lateinit var edtEmailRegister: EditText
     private lateinit var edtPasswordRegister: EditText
-    private lateinit var edtConformPasswordRegister: EditText
+    private lateinit var edtConfirmPasswordRegister: EditText
     private lateinit var btnRegister: Button
     private lateinit var txtLoginHere: TextView
 
@@ -37,25 +39,39 @@ class RegisterActivity : AppCompatActivity() {
             insets
         }
 
-        val dbHelper = DatabaseHelper(this) // Tạo database helper
-        userDAO = UserDAO(dbHelper)         // Khởi tạo userDAO
+        val dbHelper = DatabaseHelper(this)
+        userDAO = UserDAO(dbHelper)
 
         // Ánh xạ view
         edtUsernameRegister = findViewById(R.id.edtUsernameRegister)
         edtEmailRegister = findViewById(R.id.edtEmailRegister)
         edtPasswordRegister = findViewById(R.id.edtPasswordRegister)
-        edtConformPasswordRegister = findViewById(R.id.edtConfirmPasswordRegister)
+        edtConfirmPasswordRegister = findViewById(R.id.edtConfirmPasswordRegister)
         btnRegister = findViewById(R.id.btnRegister)
         txtLoginHere = findViewById(R.id.txtLoginHere)
+
+        val ivTogglePasswordRegister = findViewById<ImageView>(R.id.ivTogglePasswordRegister)
+        val ivToggleConfirmPasswordRegister = findViewById<ImageView>(R.id.ivToggleConfirmPasswordRegister)
+
+        // Dùng chung hàm toggleEye
+        var isPasswordVisible = false
+        var isConfirmPasswordVisible = false
+
+        ivTogglePasswordRegister.setOnClickListener {
+            isPasswordVisible = toggleEye(edtPasswordRegister, ivTogglePasswordRegister, isPasswordVisible)
+        }
+
+        ivToggleConfirmPasswordRegister.setOnClickListener {
+            isConfirmPasswordVisible = toggleEye(edtConfirmPasswordRegister, ivToggleConfirmPasswordRegister, isConfirmPasswordVisible)
+        }
 
         // Xử lý sự kiện đăng ký
         btnRegister.setOnClickListener {
             val username = edtUsernameRegister.text.toString().trim()
             val email = edtEmailRegister.text.toString().trim()
             val password = edtPasswordRegister.text.toString()
-            val confirmPassword = edtConformPasswordRegister.text.toString()
+            val confirmPassword = edtConfirmPasswordRegister.text.toString()
 
-            // Kiểm tra dữ liệu đầu vào
             when {
                 username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() -> {
                     CustomToast.show(this, "Vui lòng nhập đầy đủ thông tin", ToastType.WARNING)
@@ -82,7 +98,6 @@ class RegisterActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 else -> {
-                    // Tạo user mới
                     val newUser = User(
                         username = username,
                         email = email,
@@ -95,9 +110,8 @@ class RegisterActivity : AppCompatActivity() {
 
                     if (result != -1L) {
                         CustomToast.show(this, "Đăng ký thành công", ToastType.SUCCESS)
-                        
-                        // Chuyển thẳng vào app sau khi đăng ký thành công
-                        val intent = Intent(this, MainActivity::class.java)
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.putExtra("username", username)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
                         finish()
@@ -108,7 +122,6 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        // Chuyển sang màn hình đăng nhập
         txtLoginHere.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -116,19 +129,31 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    // Validate mật khẩu
+    /**
+     * Hàm dùng chung toggle hiển thị/ẩn mật khẩu
+     */
+    private fun toggleEye(editText: EditText, imageView: ImageView, isVisible: Boolean): Boolean {
+        val newVisible = !isVisible
+        if (newVisible) {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            imageView.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            imageView.setImageResource(R.drawable.ic_eye_open)
+        }
+        editText.setSelection(editText.text.length)
+        return newVisible
+    }
+
     private fun validatePassword(password: String): Boolean {
-        val passwordPattern =
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%^&*(),.?\":{}|<>]).{8,}\$"
+        val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%^&*(),.?\":{}|<>]).{8,}\$"
         return Regex(passwordPattern).matches(password)
     }
 
-    // Validate email
     private fun validateEmail(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    // Hash mật khẩu
     private fun hashPassword(password: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }

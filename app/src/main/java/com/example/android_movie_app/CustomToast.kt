@@ -28,19 +28,19 @@ object CustomToast {
         when (type) {
             ToastType.SUCCESS -> {
                 (toastLayout.background as GradientDrawable).setColor(Color.parseColor("#4CAF50"))
-                toastIcon.setImageResource(R.drawable.ic_check)
+                toastIcon.setImageResource(R.drawable.ic_check_circle)
             }
             ToastType.ERROR -> {
                 (toastLayout.background as GradientDrawable).setColor(Color.parseColor("#F44336"))
-                toastIcon.setImageResource(R.drawable.ic_error)
+                toastIcon.setImageResource(R.drawable.ic_error_circle)
             }
             ToastType.WARNING -> {
                 (toastLayout.background as GradientDrawable).setColor(Color.parseColor("#FF9800"))
-                toastIcon.setImageResource(R.drawable.ic_warning)
+                toastIcon.setImageResource(R.drawable.ic_warning_triangle)
             }
             ToastType.INFO -> {
                 (toastLayout.background as GradientDrawable).setColor(Color.parseColor("#333333"))
-                toastIcon.setImageResource(R.drawable.ic_infor)
+                toastIcon.setImageResource(R.drawable.ic_info_circle)
             }
         }
 
