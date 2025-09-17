@@ -1,21 +1,21 @@
 package com.example.android_movie_app
 
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import android.widget.ImageView
+import android.widget.LinearLayout
 import com.example.android_movie_app.dao.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import android.widget.ImageView
-import android.widget.LinearLayout
-import com.example.android_movie_app.UserInfoBottomSheet
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : BaseActivity() {
 
     private lateinit var userDAO: UserDAO
 
@@ -23,15 +23,21 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
+        val appMoMo = findViewById<LinearLayout>(R.id.appMoMo)
+        val appTraveloka = findViewById<LinearLayout>(R.id.appTraveloka)
+        val appGrab = findViewById<LinearLayout>(R.id.appGrab)
+        val layoutSupport = findViewById<LinearLayout>(R.id.layoutSupport)
+        val layoutContact = findViewById<LinearLayout>(R.id.layoutContact)
+
         val dbHelper = DatabaseHelper(this)
         userDAO = UserDAO(dbHelper)
 
-        val sharedPref = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        val userId = sharedPref.getInt("USER_ID", -1)
+        // Lấy UserId
+        val sessionManager = SessionManager(this)
+        val userId = sessionManager.getUserId()
 
         if (userId == -1) {
-            Toast.makeText(this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show()
-            return
+            CustomToast.show(this, "Bạn chưa đăng nhập", ToastType.WARNING)
         }
 
         // Load username ra màn Profile
@@ -47,19 +53,85 @@ class ProfileActivity : AppCompatActivity() {
         // Sự kiện click icon drop down
         val ivDropdown = findViewById<ImageView>(R.id.ivDropdownProfile)
         ivDropdown.setOnClickListener {
-            val popup = UserInfoBottomSheet(this)   // class mình viết ở trên
+            val popup = UserInfoBottomSheet(this)
             popup.show(ivDropdown)
         }
 
         // Sự kiện click Đăng xuất
         val btnLogout = findViewById<LinearLayout>(R.id.btnLogoutProfile)
         btnLogout.setOnClickListener {
-            sharedPref.edit().clear().apply()
+            sessionManager.clearSession()
 
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
+
+        // App liên kết
+        appMoMo.setOnClickListener {
+            openWebsite("https://momo.vn")
+        }
+
+        appTraveloka.setOnClickListener {
+            openWebsite("https://www.traveloka.com")
+        }
+
+        appGrab.setOnClickListener {
+            openWebsite("https://www.grab.com/vn/")
+        }
+
+
+        // Trung tâm hỗ trợ
+        layoutSupport.setOnClickListener {
+            showSupportPopup()
+        }
+
+        // Thông tin liên hệ
+        layoutContact.setOnClickListener {
+            showPopup("Thông tin liên hệ", "Vui lòng liên hệ qua email hoặc số điện thoại dưới đây, xin cảm ơn! \nEmail: support@example.com\nHotline: 1900-123-456")
+        }
+    }
+
+    // Hàm mở website
+    private fun openWebsite(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
+    }
+
+    // Hàm popup
+    private fun showPopup(title: String, message: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton("Quay lại") { dialog, _ ->
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    //Popup support
+    private fun showSupportPopup() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Trung tâm hỗ trợ")
+
+        // TextView chứa link
+        val textView = TextView(this)
+        textView.text = "Bạn có thể xem thêm tại: https://support.google.com/chrome?p=help&ctx=menu#topic=7439538"
+        textView.setPadding(40, 30, 40, 30)
+        textView.isClickable = true
+        textView.isFocusable = true
+        textView.autoLinkMask = android.text.util.Linkify.WEB_URLS
+        textView.movementMethod = android.text.method.LinkMovementMethod.getInstance()
+
+        builder.setView(textView)
+
+        builder.setPositiveButton("Quay lại") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }

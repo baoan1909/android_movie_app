@@ -6,6 +6,7 @@ import android.os.Looper
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import com.example.android_movie_app.adapter.BannerSliderAdapter
@@ -37,10 +38,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //Lấy UserId
-        val sharedPref = getSharedPreferences("AppPrefs", MODE_PRIVATE)
-        val userId = sharedPref.getInt("USER_ID", -1) // -1 nếu không có dữ liệu
 
 
 

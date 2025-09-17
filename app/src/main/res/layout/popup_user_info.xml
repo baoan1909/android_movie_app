@@ -67,4 +67,30 @@
         android:text="Trạng thái: Hoạt động"
         android:textSize="16sp"
         android:padding="8dp" />
+
+    <!-- Nút sửa thông tin -->
+    <LinearLayout
+        android:id="@+id/btnEditProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="12dp"
+        android:background="@drawable/bg_popup_edit_info"
+        android:backgroundTint="#0A5BDE">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="Edit Icon"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cập nhật"
+            android:textSize="16sp"
+            android:textColor="#75FB4C"/>
+    </LinearLayout>
 </LinearLayout>

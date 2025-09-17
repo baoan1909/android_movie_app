@@ -9,8 +9,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.android_movie_app.dao.NotificationDAO
 import com.example.android_movie_app.dao.UserDAO
 import java.security.MessageDigest
+import java.util.Date
 
 class LoginActivity : AppCompatActivity() {
 
@@ -19,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var txtCreateAccount: TextView
     private lateinit var btnLogin: Button
     private lateinit var userDAO: UserDAO
-
+    private lateinit var notificationDAO: NotificationDAO
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
 
         val dbHelper = DatabaseHelper(this) // Tạo database helper
         userDAO = UserDAO(dbHelper)         // Khởi tạo userDAO
+        notificationDAO = NotificationDAO(dbHelper)
 
         edtUsername = findViewById(R.id.edtUsername)
         edtPassword = findViewById(R.id.edtPassword)
@@ -66,6 +69,13 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+//            val noti = Notifications(
+//                notificationId = 0,
+//                title = "Đăng nhập thành công",
+//                content = "Xin chào ${user.username}, chúc bạn xem phim vui vẻ!",
+//                createdAt = Date()
+//            )
+//            notificationDAO.insertNotification(noti)
             // Đăng nhập thành công
             CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
 

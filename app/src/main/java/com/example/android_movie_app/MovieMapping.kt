@@ -144,4 +144,11 @@ data class MovieWithCategories(
     val categories: List<Category> = emptyList()
 )
 
+data class Notifications(
+    val notificationId: Int,
+    val title: String,
+    val content: String,
+    val createdAt: Date? = null
+)
+
 

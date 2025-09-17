@@ -406,6 +406,30 @@ class DatabaseHelper(context: Context) :
                 LEFT JOIN categories c ON mc.categoryId = c.id
                 GROUP BY m.id;
         """)
+
+        // ------------------- NOTIFICATIONS -------------------
+        db?.execSQL( """
+        CREATE TABLE notifications (
+            notificationId INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        // Thêm dữ liệu mẫu
+        db?.execSQL("""
+        INSERT INTO notifications (title, content) 
+        VALUES ('One Piece tập 1090', 'Đã có phụ đề tiếng Việt')
+        """)
+            db?.execSQL("""
+        INSERT INTO notifications (title, content) 
+        VALUES ('Naruto Shippuden', 'Tập 220 đã có')
+        """)
+            db?.execSQL("""
+        INSERT INTO notifications (title, content) 
+        VALUES ('Jujutsu Kaisen 2', 'Tập mới nhất đã được thêm')
+        """)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -421,6 +445,7 @@ class DatabaseHelper(context: Context) :
         db?.execSQL("DROP TABLE IF EXISTS categories")
         db?.execSQL("DROP TABLE IF EXISTS movies")
         db?.execSQL("DROP TABLE IF EXISTS users")
+        db?.execSQL("DROP TABLE IF EXISTS notifications")
 
         onCreate(db)
     }

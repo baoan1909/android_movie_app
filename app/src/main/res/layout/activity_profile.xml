@@ -154,100 +154,128 @@
                 android:paddingBottom="10dp" />
 
             <!-- Grid cho các ứng dụng -->
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:scrollbars="none"
                 android:paddingBottom="20dp">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                    android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/anime_1"
-                        android:contentDescription="Vietjet Air" />
-
-                    <TextView
+                    <!-- App 1 -->
+                    <LinearLayout
+                        android:id="@+id/appMoMo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vietjet Air"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/white"
-                        android:paddingTop="5dp" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginEnd="20dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                        <ImageView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:src="@drawable/momo"
+                            android:scaleType="centerCrop"
+                            android:contentDescription="MoMo" />
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/anime_1"
-                        android:contentDescription="Vietnam Airlines" />
+                        <TextView
+                            android:layout_width="90dp"
+                            android:layout_height="wrap_content"
+                            android:text="MoMo"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
 
-                    <TextView
+                    <!-- App 2 -->
+                    <LinearLayout
+                        android:id="@+id/appTraveloka"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Vietnam Airlines"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/white"
-                        android:paddingTop="5dp" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginEnd="20dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                        <ImageView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:src="@drawable/traveloka"
+                            android:contentDescription="traveloka" />
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/anime_1"
-                        android:contentDescription="Miễn phí 3G/4G" />
+                        <TextView
+                            android:layout_width="90dp"
+                            android:layout_height="wrap_content"
+                            android:text="Traveloka"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
 
-                    <TextView
+                    <!-- App 3 -->
+                    <LinearLayout
+                        android:id="@+id/appGrab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Miễn phí 3G/4G"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/white"
-                        android:paddingTop="5dp" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginEnd="20dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
+                        <ImageView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:src="@drawable/grab"
+                            android:contentDescription="Grab" />
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/anime_1"
-                        android:contentDescription="Nạp tiền điện thoại" />
+                        <TextView
+                            android:layout_width="90dp"
+                            android:layout_height="wrap_content"
+                            android:text="Grab"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
 
-                    <TextView
+                    <!-- App 4 -->
+                    <LinearLayout
+                        android:id="@+id/appViettelMoney"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nạp tiền điện thoại"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/white"
-                        android:paddingTop="5dp" />
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginEnd="20dp">
+
+                        <ImageView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:src="@drawable/viettel_money"
+                            android:contentDescription="Viettel Money" />
+
+                        <TextView
+                            android:layout_width="90dp"
+                            android:layout_height="wrap_content"
+                            android:text="Viettel Money"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:gravity="center"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:paddingTop="6dp" />
+                    </LinearLayout>
+
                 </LinearLayout>
-            </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- Phần Trợ giúp -->
             <TextView
@@ -267,6 +295,7 @@
 
                 <!-- Trung tâm hỗ trợ -->
                 <LinearLayout
+                    android:id="@+id/layoutSupport"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -300,6 +329,7 @@
 
                 <!-- Thông tin liên hệ -->
                 <LinearLayout
+                    android:id="@+id/layoutContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
