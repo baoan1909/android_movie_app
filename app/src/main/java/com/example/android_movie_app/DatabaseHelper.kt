@@ -22,7 +22,8 @@ class DatabaseHelper(context: Context) :
                 email TEXT UNIQUE NOT NULL,
                 passwordHash TEXT NOT NULL,
                 createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                isActive INTEGER DEFAULT 1
+                isActive INTEGER DEFAULT 1,
+                avatarPath TEXT
             )
         """)
 

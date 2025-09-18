@@ -12,7 +12,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.android_movie_app.dao.NotificationDAO
 import com.example.android_movie_app.dao.UserDAO
+import com.example.android_movie_app.dao.UserSessionDAO
 import java.security.MessageDigest
 import java.util.Date
 
@@ -26,7 +28,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var txtLoginHere: TextView
 
     private lateinit var userDAO: UserDAO
-    private lateinit var user: User
+    private lateinit var notificationDAO : NotificationDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val dbHelper = DatabaseHelper(this)
         userDAO = UserDAO(dbHelper)
+        notificationDAO = NotificationDAO(dbHelper)
 
         // Ánh xạ view
         edtUsernameRegister = findViewById(R.id.edtUsernameRegister)
@@ -110,6 +113,15 @@ class RegisterActivity : AppCompatActivity() {
 
                     if (result != -1L) {
                         CustomToast.show(this, "Đăng ký thành công", ToastType.SUCCESS)
+
+                        // --- Lưu thông báo ký ---
+                        val notification = Notifications(
+                            notificationId = 0, // auto increment trong SQLite
+                            title = "Đăng ký tài khoản thành công",
+                            content = "Xin chào ${username}, chúc bạn xem phim vui vẻ!",
+                            createdAt = Date()
+                        )
+                        notificationDAO.insertNotification(notification)
 
                         val intent = Intent(this, LoginActivity::class.java)
                         intent.putExtra("username", username)

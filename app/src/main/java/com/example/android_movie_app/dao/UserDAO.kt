@@ -20,6 +20,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             put("passwordHash", user.passwordHash)
             put("createdAt", user.createdAt?.let { dateFormat.format(it) })
             put("isActive", if (user.isActive) 1 else 0)
+            put("avatarPath", user.avatarPath)
         }
         return db.insert("users", null, values)
     }
@@ -68,6 +69,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             put("passwordHash", user.passwordHash)
             put("isActive", if (user.isActive) 1 else 0)
             put("createdAt", user.createdAt?.let { dateFormat.format(it) })
+            put("avatarPath", user.avatarPath)
         }
         return db.update("users", values, "id=?", arrayOf(user.id.toString()))
     }
@@ -86,6 +88,14 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         return db.delete("users", "id=?", arrayOf(id.toString()))
     }
 
+    //Update Avatar
+    fun updateUserAvatar(id: Int, avatarPath: String): Int {
+        val db = dbHelper.writableDatabase
+        val values = ContentValues().apply {
+            put("avatarPath", avatarPath)
+        }
+        return db.update("users", values, "id=?", arrayOf(id.toString()))
+    }
 
     public fun cursorToUser(cursor: Cursor): User {
         return User(
@@ -95,7 +105,8 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             passwordHash = cursor.getString(cursor.getColumnIndexOrThrow("passwordHash")),
             createdAt = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))
                 ?.let { d -> dateFormat.parse(d) },
-            isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1
+            isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1,
+            avatarPath = cursor.getString(cursor.getColumnIndexOrThrow("avatarPath"))
         )
     }
 }

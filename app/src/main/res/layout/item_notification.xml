@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
-    android:background="?attr/selectableItemBackground"
+    android:padding="5dp"
+    android:layout_marginTop="5dp"
+    android:background="@drawable/chip_background"
     android:gravity="center_vertical">
 
     <!-- Icon hoặc ảnh thumbnail -->
@@ -27,7 +28,7 @@
             android:id="@+id/tvNotificationTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="One Piece tập 1090 đã có!"
+            android:text="Titanic mới ra mắt!"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />

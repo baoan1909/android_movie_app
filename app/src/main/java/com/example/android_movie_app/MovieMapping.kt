@@ -9,7 +9,8 @@ data class User(
     var email: String,
     var passwordHash: String,
     var createdAt: Date? = null,   // có ngày + giờ
-    var isActive: Boolean = true
+    var isActive: Boolean = true,
+    val avatarPath: String? = null // thêm avatarPath
 )
 
 // Bảng movies
