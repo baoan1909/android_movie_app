@@ -31,7 +31,7 @@ class NotificationAdapter(private val list: List<Notifications>) :
         val item = list[position]
 
         // icon mặc định (nếu bạn muốn có thể lưu loại notification trong DB để thay đổi icon)
-        holder.imgNotification.setImageResource(R.drawable.ic_infor)
+        holder.imgNotification.setImageResource(R.drawable.ic_info_circle)
 
         holder.tvTitle.text = item.title
         holder.tvContent.text = item.content

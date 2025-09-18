@@ -8,15 +8,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.android_movie_app.dao.NotificationDAO
 import com.example.android_movie_app.dao.UserDAO
+import com.example.android_movie_app.dao.UserSessionDAO
 import java.security.MessageDigest
-import java.util.Date
+import java.util.*
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,9 +26,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: Button
     private lateinit var userDAO: UserDAO
     private lateinit var notificationDAO: NotificationDAO
+    private lateinit var sessionDAO: UserSessionDAO
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -37,24 +38,23 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        val dbHelper = DatabaseHelper(this) // Tạo database helper
-        userDAO = UserDAO(dbHelper)         // Khởi tạo userDAO
+        val dbHelper = DatabaseHelper(this)
+        userDAO = UserDAO(dbHelper)
         notificationDAO = NotificationDAO(dbHelper)
+        sessionDAO = UserSessionDAO(dbHelper)
 
         edtUsername = findViewById(R.id.edtUsername)
         edtPassword = findViewById(R.id.edtPassword)
         txtCreateAccount = findViewById(R.id.txtCreateAccount)
         btnLogin = findViewById(R.id.btnLogin)
+
         var isPasswordVisible = false
-        val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val ivTogglePassword = findViewById<ImageView>(R.id.ivTogglePassword)
 
         // Auto-fill username nếu được truyền từ RegisterActivity
         val prefillUsername = intent.getStringExtra("username")
         if (!prefillUsername.isNullOrEmpty()) {
             edtUsername.setText(prefillUsername)
-
-            // Focus vào ô password + mở bàn phím
             edtPassword.requestFocus()
             val imm = getSystemService<InputMethodManager>()
             imm?.showSoftInput(edtPassword, InputMethodManager.SHOW_IMPLICIT)
@@ -63,22 +63,29 @@ class LoginActivity : AppCompatActivity() {
         ivTogglePassword.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
-                // Hiện mật khẩu
                 edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 ivTogglePassword.setImageResource(R.drawable.ic_eye_off)
             } else {
-                // Ẩn mật khẩu
                 edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                 ivTogglePassword.setImageResource(R.drawable.ic_eye_open)
             }
-            // Đưa con trỏ về cuối text
             edtPassword.setSelection(edtPassword.text.length)
         }
 
-        // Xử lý đăng nhập
+        // --- Check session trước khi hiển thị Login ---
+        val savedSession = sessionDAO.getLatestValidSession()
+        if (savedSession != null) {
+            // Nếu còn hạn thì vào thẳng Main
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
+        // --- Xử lý đăng nhập ---
         btnLogin.setOnClickListener {
-            val username = edtUsername.text.toString()
-            val password = edtPassword.text.toString()
+            val username = edtUsername.text.toString().trim()
+            val password = edtPassword.text.toString().trim()
 
             if (username.isEmpty() || password.isEmpty()) {
                 CustomToast.show(this, "Vui lòng nhập đầy đủ thông tin", ToastType.WARNING)
@@ -102,26 +109,32 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-//            val noti = Notifications(
-//                notificationId = 0,
-//                title = "Đăng nhập thành công",
-//                content = "Xin chào ${user.username}, chúc bạn xem phim vui vẻ!",
-//                createdAt = Date()
-//            )
-//            notificationDAO.insertNotification(noti)
-            // Đăng nhập thành công
+            // --- Lưu session ---
+            val token = UUID.randomUUID().toString()
+            val expiresAt = Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_MONTH, 7)  // +7 ngày
+            }.time
+
+            val newSession = UserSession(token, user.id, expiresAt)
+            sessionDAO.addSession(newSession)
+
+            // --- Lưu thông báo đăng nhập ---
+            val notification = Notifications(
+                notificationId = 0, // auto increment trong SQLite
+                title = "Đăng nhập thành công",
+                content = "Xin chào ${user.username}, chúc bạn xem phim vui vẻ!",
+                createdAt = Date()
+            )
+            notificationDAO.insertNotification(notification)
+
             CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
 
-            val session = SessionManager(this)
-            session.saveUserId(user.id)
-
-            // Chuyển sang màn hình Home/Main
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        // Chuyển sang đăng ký
+        // Chuyển sang màn hình đăng ký
         txtCreateAccount.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
@@ -131,6 +144,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun hashPassword(password: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }  // chuyển thành chuỗi hex
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 }

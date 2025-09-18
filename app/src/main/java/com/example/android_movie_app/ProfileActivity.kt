@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.example.android_movie_app.dao.UserDAO
+import com.example.android_movie_app.dao.UserSessionDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,6 +19,8 @@ import kotlinx.coroutines.withContext
 class ProfileActivity : BaseActivity() {
 
     private lateinit var userDAO: UserDAO
+    private lateinit var userSessionDAO : UserSessionDAO
+    private var userId : Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,12 +34,13 @@ class ProfileActivity : BaseActivity() {
 
         val dbHelper = DatabaseHelper(this)
         userDAO = UserDAO(dbHelper)
+        userSessionDAO = UserSessionDAO(dbHelper)
 
         // Lấy UserId
-        val sessionManager = SessionManager(this)
-        val userId = sessionManager.getUserId()
-
-        if (userId == -1) {
+        val latestValidSession = userSessionDAO.getLatestValidSession()
+        if (latestValidSession != null){
+            userId = latestValidSession.userId
+        }else{
             CustomToast.show(this, "Bạn chưa đăng nhập", ToastType.WARNING)
         }
 
@@ -60,7 +64,9 @@ class ProfileActivity : BaseActivity() {
         // Sự kiện click Đăng xuất
         val btnLogout = findViewById<LinearLayout>(R.id.btnLogoutProfile)
         btnLogout.setOnClickListener {
-            sessionManager.clearSession()
+            latestValidSession?.let {
+                userSessionDAO.deleteSession(it.sessionToken)
+            }
 
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

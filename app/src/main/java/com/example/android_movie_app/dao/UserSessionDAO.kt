@@ -20,6 +20,27 @@ class UserSessionDAO(private val dbHelper: DatabaseHelper) {
         return db.insert("user_sessions", null, values)
     }
 
+    // ---------- GET LATEST VALID SESSION ----------
+    fun getLatestValidSession(): UserSession? {
+        val db = dbHelper.readableDatabase
+        val now = dateFormat.format(Date()) // thời gian hiện tại
+        val cursor = db.rawQuery(
+            "SELECT * FROM user_sessions WHERE expiresAt > ? ORDER BY expiresAt DESC LIMIT 1",
+            arrayOf(now)
+        )
+        cursor.use {
+            if (it.moveToFirst()) {
+                return UserSession(
+                    sessionToken = it.getString(it.getColumnIndexOrThrow("sessionToken")),
+                    userId = it.getInt(it.getColumnIndexOrThrow("userId")),
+                    expiresAt = dateFormat.parse(it.getString(it.getColumnIndexOrThrow("expiresAt")))!!
+                )
+            }
+        }
+        return null
+    }
+
+
     // ---------- GET SESSION BY TOKEN ----------
     fun getSession(token: String): UserSession? {
         val db = dbHelper.readableDatabase

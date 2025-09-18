@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android_movie_app.dao.UserDAO
+import com.example.android_movie_app.dao.UserSessionDAO
 import java.security.MessageDigest
 
 class EditProfileActivity : AppCompatActivity() {
@@ -16,31 +17,43 @@ class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var userDAO: UserDAO
     private lateinit var session: SessionManager
+    private lateinit var userSessionDAO: UserSessionDAO
+
+    private var userId: Int = -1
+    private var user: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        // Khởi tạo
         val dbHelper = DatabaseHelper(this)
         userDAO = UserDAO(dbHelper)
         session = SessionManager(this)
+        userSessionDAO = UserSessionDAO(dbHelper)
 
         edtUsername = findViewById(R.id.edtUsername_edit_profile)
         edtEmail = findViewById(R.id.edtEmail_edit_profile)
         edtPassword = findViewById(R.id.edtPassword_edit_profile)
         btnSave = findViewById(R.id.btnSave_edit)
 
-        // Lấy userId từ session
-        val userId = session.getUserId()
-        val user = userDAO.getUserById(userId)
+        // --- Lấy userId ---
+        val latestValidSession = userSessionDAO.getLatestValidSession()
+        userId = latestValidSession?.userId ?: session.getUserId()
 
-        if (user != null) {
-            edtUsername.setText(user.username)
-            edtEmail.setText(user.email)
+        if (userId == -1) {
+            CustomToast.show(this, "Bạn chưa đăng nhập", ToastType.WARNING)
+            finish()
+            return
         }
 
-        // Sự kiện lưu
+        // --- Lấy user ---
+        user = userDAO.getUserById(userId)
+        if (user != null) {
+            edtUsername.setText(user!!.username)
+            edtEmail.setText(user!!.email)
+        }
+
+        // --- Lưu cập nhật ---
         btnSave.setOnClickListener {
             val newUsername = edtUsername.text.toString().trim()
             val newEmail = edtEmail.text.toString().trim()
@@ -51,19 +64,17 @@ class EditProfileActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (user != null) {
-                user.username = newUsername
-                user.email = newEmail
-
-                // Nếu người dùng nhập mật khẩu mới thì hash lại
+            user?.let {
+                it.username = newUsername
+                it.email = newEmail
                 if (newPassword.isNotEmpty()) {
-                    user.passwordHash = hashPassword(newPassword)
+                    it.passwordHash = hashPassword(newPassword)
                 }
 
-                val result = userDAO.updateUser(user)
+                val result = userDAO.updateUser(it)
                 if (result > 0) {
                     CustomToast.show(this, "Cập nhật thành công", ToastType.SUCCESS)
-                    finish() // quay lại màn trước
+                    finish()
                 } else {
                     CustomToast.show(this, "Cập nhật thất bại", ToastType.ERROR)
                 }
@@ -73,6 +84,6 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun hashPassword(password: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }  // chuyển thành chuỗi hex
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 }

@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Button
 import android.widget.Toast
 import com.example.android_movie_app.dao.UserDAO
+import com.example.android_movie_app.dao.UserSessionDAO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +19,9 @@ import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 
 class UserInfoBottomSheet(private val context: Context) {
+
+    private var userId : Int = -1
+    private lateinit var userSessionDAO : UserSessionDAO
 
     fun show(anchor: View) {
         val popupView = LayoutInflater.from(context).inflate(R.layout.popup_user_info, null)
@@ -30,8 +34,14 @@ class UserInfoBottomSheet(private val context: Context) {
         )
         popupWindow.elevation = 10f
 
-        val sessionManager = SessionManager(context)
-        val userId = sessionManager.getUserId()
+        val dbHelper = DatabaseHelper(context)
+        userSessionDAO = UserSessionDAO(dbHelper)
+        val latestValidSession = userSessionDAO.getLatestValidSession()
+        if (latestValidSession != null){
+            userId = latestValidSession.userId
+        }else{
+            CustomToast.show(context, "Bạn chưa đăng nhập", ToastType.WARNING)
+        }
 
         if (userId != -1) {
             val dbHelper = DatabaseHelper(context)
