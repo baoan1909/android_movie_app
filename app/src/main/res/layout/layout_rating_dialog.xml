@@ -94,5 +94,5 @@
         android:numStars="5"
         android:stepSize="1.0"
         android:progressTint="#FFC107"
-        android:progressBackgroundTint="@android:color/darker_gray"/>
+        android:progressBackgroundTint="#434343"/>
 </LinearLayout>

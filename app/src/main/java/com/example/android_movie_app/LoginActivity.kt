@@ -2,11 +2,15 @@ package com.example.android_movie_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.android_movie_app.dao.NotificationDAO
@@ -41,6 +45,35 @@ class LoginActivity : AppCompatActivity() {
         edtPassword = findViewById(R.id.edtPassword)
         txtCreateAccount = findViewById(R.id.txtCreateAccount)
         btnLogin = findViewById(R.id.btnLogin)
+        var isPasswordVisible = false
+        val edtPassword = findViewById<EditText>(R.id.edtPassword)
+        val ivTogglePassword = findViewById<ImageView>(R.id.ivTogglePassword)
+
+        // Auto-fill username nếu được truyền từ RegisterActivity
+        val prefillUsername = intent.getStringExtra("username")
+        if (!prefillUsername.isNullOrEmpty()) {
+            edtUsername.setText(prefillUsername)
+
+            // Focus vào ô password + mở bàn phím
+            edtPassword.requestFocus()
+            val imm = getSystemService<InputMethodManager>()
+            imm?.showSoftInput(edtPassword, InputMethodManager.SHOW_IMPLICIT)
+        }
+
+        ivTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                // Hiện mật khẩu
+                edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                ivTogglePassword.setImageResource(R.drawable.ic_eye_off)
+            } else {
+                // Ẩn mật khẩu
+                edtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                ivTogglePassword.setImageResource(R.drawable.ic_eye_open)
+            }
+            // Đưa con trỏ về cuối text
+            edtPassword.setSelection(edtPassword.text.length)
+        }
 
         // Xử lý đăng nhập
         btnLogin.setOnClickListener {
@@ -78,7 +111,6 @@ class LoginActivity : AppCompatActivity() {
 //            notificationDAO.insertNotification(noti)
             // Đăng nhập thành công
             CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
-
 
             val session = SessionManager(this)
             session.saveUserId(user.id)

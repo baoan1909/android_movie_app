@@ -27,11 +27,14 @@ import com.example.android_movie_app.CustomToast
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.R
 import com.example.android_movie_app.RatingDialog
+import com.example.android_movie_app.SessionManager
 import com.example.android_movie_app.ToastType
 import com.example.android_movie_app.WatchProgress
 import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 import java.util.Date
+import com.example.android_movie_app.ShareDialog
+
 
 class MovieDetailAdapter(
     private val activity: Activity,
@@ -50,6 +53,8 @@ class MovieDetailAdapter(
     private val watchProgressDAO = WatchProgressDAO(dbHelper)
     private val movieDAO = MovieDAO(dbHelper)
     private val reviewDAO = ReviewDAO(dbHelper)
+    private val favoriteDAO = UserFavoriteDAO(dbHelper)
+    private val sessionManager = SessionManager(activity)
 
     private val handler = Handler(Looper.getMainLooper())
     private var updateSeekBarRunnable: Runnable? = null
@@ -72,14 +77,15 @@ class MovieDetailAdapter(
         startAutoHide()
         updateFullscreenUI()
         setupRatingDialog()
+        updateFollowButtonUI()
     }
 
+    // ----------------- RATING -----------------
     private fun setupRatingDialog() {
-        val txtRating = binding.txtRatingDialog // TextView trong layout
-
+        val txtRating = binding.txtRatingDialog
         txtRating.setOnClickListener {
             val ratingDialog = RatingDialog(
-                context = activity, // dùng activity thay cho context
+                context = activity,
                 movieId = movieId,
                 episodeId = null
             ) { rating ->
@@ -89,22 +95,24 @@ class MovieDetailAdapter(
         }
     }
 
-
+    // ----------------- INIT VIEWS -----------------
     private fun initViews() {
         binding.playerView?.useController = false
         binding.playerView?.setOnClickListener { toggleControlsWithTimer() }
 
         binding.btnBack?.setOnClickListener { activity.finish() }
         binding.btnShare?.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, "Xem ngay phim $movieName trên MovieApp!")
-            }
-            activity.startActivity(Intent.createChooser(intent, "Chia sẻ với"))
+            val dialog = ShareDialog(
+                context = activity,
+                movieName = movieName,
+                movieId = movieId
+            )
+            dialog.show()
             showControlsTemporarily()
         }
+
         binding.btnFollow?.setOnClickListener {
-            Toast.makeText(activity, "Đã thêm vào danh sách theo dõi", Toast.LENGTH_SHORT).show()
+            toggleFavorite()
             showControlsTemporarily()
         }
         binding.btnDownload?.setOnClickListener {
@@ -113,6 +121,32 @@ class MovieDetailAdapter(
         }
     }
 
+    // ----------------- FAVORITES -----------------
+    private fun toggleFavorite() {
+        val userId = sessionManager.getUserId()
+        if (favoriteDAO.isFavorite(userId, movieId)) {
+            favoriteDAO.removeFavorite(userId, movieId)
+            CustomToast.show(activity, "Đã bỏ theo dõi", ToastType.INFO)
+        } else {
+            favoriteDAO.addFavorite(userId, movieId)
+            CustomToast.show(activity, "Đã thêm vào danh sách theo dõi", ToastType.SUCCESS)
+        }
+        updateFollowButtonUI()
+    }
+
+    private fun updateFollowButtonUI() {
+        val userId = sessionManager.getUserId()
+        val isFav = favoriteDAO.isFavorite(userId, movieId)
+        if (isFav) {
+            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite, 0, 0)
+            binding.btnFollow?.text = "Đang theo dõi"
+        } else {
+            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite_border, 0, 0)
+            binding.btnFollow?.text = "Theo dõi"
+        }
+    }
+
+    // ----------------- PLAYER CONTROLS -----------------
     @UnstableApi
     private fun setupPlayerControls() {
         binding.btnPlayPause?.setOnClickListener {
@@ -143,9 +177,9 @@ class MovieDetailAdapter(
             updateFullscreenUI()
             showControlsTemporarily()
         }
-
     }
 
+    // ----------------- FULLSCREEN -----------------
     @UnstableApi
     private fun updateFullscreenUI() {
         if (isLandscape) {
@@ -186,6 +220,7 @@ class MovieDetailAdapter(
         binding.playerView?.requestLayout()
     }
 
+    // ----------------- TABS -----------------
     private fun setupTabs() {
         val tabs = listOf(binding.tabEpisodes, binding.tabSeasons, binding.tabTrailers, binding.tabRelated)
         for (tab in tabs) {
@@ -210,7 +245,7 @@ class MovieDetailAdapter(
         binding.dividerTabs?.animate()?.x(selectedTab.x)?.setDuration(200)?.start()
     }
 
-    // ===== Player =====
+    // ----------------- PLAYER -----------------
     @UnstableApi
     private fun setupPlayer() {
         player = ExoPlayer.Builder(activity).build()
@@ -251,7 +286,7 @@ class MovieDetailAdapter(
     private fun loadEpisodeAndPlay() {
         val episodes = episodeDAO.getEpisodesByMovieAsc(movieId)
         if (episodes.isNotEmpty()) {
-            val watchProgress = watchProgressDAO.getWatchProgress(1, movieId)
+            val watchProgress = watchProgressDAO.getWatchProgress(sessionManager.getUserId(), movieId)
             val episodeToPlay = watchProgress?.episodeId?.let { id ->
                 episodes.find { it.id == id }
             } ?: episodes[0]
@@ -273,6 +308,7 @@ class MovieDetailAdapter(
         binding.btnPlayPause?.setImageResource(R.drawable.ic_pause)
     }
 
+    // ----------------- SEEK BAR -----------------
     private fun setupSeekBar() {
         binding.seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -311,7 +347,7 @@ class MovieDetailAdapter(
         handler.post(updateSeekBarRunnable!!)
     }
 
-    // ===== Controls fade in/out =====
+    // ----------------- CONTROLS -----------------
     private fun showControls() {
         if (!controlsVisible) {
             controlsVisible = true
@@ -394,7 +430,7 @@ class MovieDetailAdapter(
             val duration = ((player?.duration ?: 0L) / 1000L).toInt()
             if (currentPosition > 0 && duration > 0) {
                 val progress = WatchProgress(
-                    userId = 1,
+                    userId = sessionManager.getUserId(),
                     movieId = movieId,
                     episodeId = currentEpisodeId,
                     currentTime = currentPosition,

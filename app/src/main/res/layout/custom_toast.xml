@@ -14,7 +14,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_infor"
+        android:src="@drawable/ic_info_circle"
         android:contentDescription="@string/app_name" />
 
     <!-- Nội dung thông báo -->

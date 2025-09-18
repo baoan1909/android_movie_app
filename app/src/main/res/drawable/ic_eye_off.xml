@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+android:width="24dp"
+android:height="24dp"
+android:viewportWidth="24"
+android:viewportHeight="24">
+
+<!-- Khung mắt (mờ hơn) -->
+<path
+    android:fillColor="#FFFFFFFF"
+    android:alpha="0.9"
+    android:pathData="M1,12 C3,6 9,4 12,4 C15,4 21,6 23,12 C21,18 15,20 12,20 C9,20 3,18 1,12 Z"/>
+
+<!-- Con ngươi (mờ) -->
+<path
+    android:fillColor="#FF000000"
+    android:alpha="0.9"
+    android:pathData="M12,8a4,4 0 1,0 0,8a4,4 0 0,0 0,-8z"/>
+
+<!-- Gạch chéo che mắt -->
+<path
+    android:fillColor="#FFFFFFFF"
+    android:pathData="M4.2,3.8 L19.8,20.2 L18.4,21.6 L2.8,5.99 L4.2,3.8 Z"/>
+</vector>

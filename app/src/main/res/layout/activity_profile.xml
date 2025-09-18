@@ -131,7 +131,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_history"/>
+                        android:src="@drawable/ic_watch_later"/>
 
                     <TextView
                         android:layout_width="wrap_content"

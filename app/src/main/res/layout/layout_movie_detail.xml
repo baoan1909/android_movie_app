@@ -282,6 +282,7 @@
                 style="@style/ActionButton"
                 android:drawableTop="@drawable/ic_favorite_border"
                 android:text="Theo dõi"
+                android:textColor="@color/white"
                 android:layout_marginLeft="20dp" />
 
             <TextView
@@ -289,6 +290,7 @@
                 style="@style/ActionButton"
                 android:drawableTop="@drawable/ic_share"
                 android:text="Chia sẻ"
+                android:textColor="@color/white"
                 android:layout_marginLeft="20dp" />
 
             <TextView
@@ -296,6 +298,7 @@
                 style="@style/ActionButton"
                 android:drawableTop="@drawable/ic_download"
                 android:text="Tải xuống"
+                android:textColor="@color/white"
                 android:layout_marginLeft="20dp" />
         </LinearLayout>
 

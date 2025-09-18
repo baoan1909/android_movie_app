@@ -61,7 +61,7 @@
                 android:background="@drawable/edittext_border"
                 android:hint="Tên đăng nhập"
                 android:paddingHorizontal="20dp"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textColorHint="#E0DCDC" />
 
             <!-- Email -->
@@ -74,34 +74,67 @@
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:paddingHorizontal="20dp"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textColorHint="#E0DCDC" />
 
             <!-- Password -->
-            <EditText
-                android:id="@+id/edtPasswordRegister"
+            <!-- Password với icon ẩn/hiện -->
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/edittext_border"
-                android:hint="Mật khẩu"
-                android:inputType="textPassword"
-                android:paddingHorizontal="20dp"
-                android:textColor="#000000"
-                android:textColorHint="#E0DCDC" />
+                android:layout_marginTop="20dp">
 
-            <!-- Confirm Password -->
-            <EditText
-                android:id="@+id/edtConfirmPasswordRegister"
+                <EditText
+                    android:id="@+id/edtPasswordRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Mật khẩu"
+                    android:inputType="textPassword"
+                    android:background="@drawable/edittext_border"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="50dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#E0DCDC" />
+
+                <ImageView
+                    android:id="@+id/ivTogglePasswordRegister"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:src="@drawable/ic_eye_open"/>
+            </RelativeLayout>
+
+
+            <!-- Confirm Password với icon ẩn/hiện -->
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/edittext_border"
-                android:hint="Xác nhận mật khẩu"
-                android:inputType="textPassword"
-                android:paddingHorizontal="20dp"
-                android:textColor="#000000"
-                android:textColorHint="#E0DCDC" />
+                android:layout_marginTop="20dp">
+
+                <EditText
+                    android:id="@+id/edtConfirmPasswordRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Xác nhận mật khẩu"
+                    android:inputType="textPassword"
+                    android:background="@drawable/edittext_border"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="50dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#E0DCDC" />
+
+                <ImageView
+                    android:id="@+id/ivToggleConfirmPasswordRegister"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:src="@drawable/ic_eye_open"/>
+                </RelativeLayout>
+
 
             <!-- Nút Đăng ký -->
             <Button
