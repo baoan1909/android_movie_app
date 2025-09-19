@@ -70,9 +70,9 @@ class WatchingProgressAdapter(
             .into(holder.imgMoviePoster)
 
         // Episode info (for series)
-        if (movie.type == "series" && progress.episodeId != null) {
+        if (movie.type == "series" && item.episodeNumber != null) {
             holder.tvEpisodeInfo.visibility = View.VISIBLE
-            holder.tvEpisodeInfo.text = "Tập ${progress.episodeId}"
+            holder.tvEpisodeInfo.text = "Tập ${item.episodeNumber}"
         } else {
             holder.tvEpisodeInfo.visibility = View.GONE
         }

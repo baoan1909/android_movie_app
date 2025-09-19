@@ -139,7 +139,8 @@ data class Review(
 
 data class ContinueWatchingItem(
     val progress: WatchProgress,
-    val movie: Movie
+    val movie: Movie,
+    val episodeNumber: Int? = null
 )
 
 data class FavoriteMovieItem(

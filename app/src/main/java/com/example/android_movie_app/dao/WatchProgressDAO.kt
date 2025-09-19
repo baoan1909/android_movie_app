@@ -5,6 +5,8 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.WatchProgress
+import com.example.android_movie_app.ContinueWatchingItem
+import com.example.android_movie_app.Movie
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -88,6 +90,66 @@ class WatchProgressDAO(private val dbHelper: DatabaseHelper) {
         return null
     }
 
+    /** Lấy danh sách tiến trình xem của user (chưa hoàn thành) */
+    fun getContinueWatching(userId: Int): List<WatchProgress> {
+        val list = mutableListOf<WatchProgress>()
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            "watch_progress",
+            null,
+            "userId=? AND isCompleted=0",
+            arrayOf(userId.toString()),
+            null,
+            null,
+            "lastWatchedAt DESC"
+        )
+        cursor.use {
+            while (it.moveToNext()) {
+                list.add(cursorToWatchProgress(it))
+            }
+        }
+        return list
+    }
+
+    /** Lấy danh sách tiến trình xem kèm thông tin phim */
+    fun getContinueWatchingWithMovies(userId: Int): List<ContinueWatchingItem> {
+        val list = mutableListOf<ContinueWatchingItem>()
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            """
+            SELECT wp.*, m.*, e.episodeNumber
+            FROM watch_progress wp
+            INNER JOIN movies m ON wp.movieId = m.id
+            LEFT JOIN episodes e ON wp.episodeId = e.id
+            WHERE wp.userId = ? AND wp.isCompleted = 0
+            ORDER BY wp.lastWatchedAt DESC
+            """.trimIndent(),
+            arrayOf(userId.toString())
+        )
+        
+        cursor.use {
+            while (it.moveToNext()) {
+                val progress = cursorToWatchProgress(it)
+                val movie = cursorToMovie(it)
+                val episodeNumber = if (!it.isNull(it.getColumnIndexOrThrow("episodeNumber"))) {
+                    it.getInt(it.getColumnIndexOrThrow("episodeNumber"))
+                } else null
+                list.add(ContinueWatchingItem(progress, movie, episodeNumber))
+            }
+        }
+        return list
+    }
+
+    /** Reset tiến trình xem của user cho episode cụ thể */
+    fun resetWatchProgress(userId: Int, episodeId: Int): Int {
+        val db = dbHelper.writableDatabase
+        return db.delete(
+            "watch_progress",
+            "userId=? AND episodeId=?",
+            arrayOf(userId.toString(), episodeId.toString())
+        )
+    }
+
     /** Helper: chuyển Cursor -> WatchProgress */
     private fun cursorToWatchProgress(it: Cursor): WatchProgress {
         return WatchProgress(
@@ -99,6 +161,28 @@ class WatchProgressDAO(private val dbHelper: DatabaseHelper) {
             totalTime = it.getInt(it.getColumnIndexOrThrow("totalTime")),
             isCompleted = it.getInt(it.getColumnIndexOrThrow("isCompleted")) == 1,
             lastWatchedAt = it.getString(it.getColumnIndexOrThrow("lastWatchedAt"))?.let { d ->
+                dateFormat.parse(d)
+            }
+        )
+    }
+
+    /** Helper: chuyển Cursor -> Movie */
+    private fun cursorToMovie(it: Cursor): Movie {
+        return Movie(
+            id = it.getInt(it.getColumnIndexOrThrow("id")),
+            slug = it.getString(it.getColumnIndexOrThrow("slug")),
+            name = it.getString(it.getColumnIndexOrThrow("name")),
+            originName = it.getString(it.getColumnIndexOrThrow("originName")),
+            content = it.getString(it.getColumnIndexOrThrow("content")),
+            type = it.getString(it.getColumnIndexOrThrow("type")),
+            thumbUrl = it.getString(it.getColumnIndexOrThrow("thumbUrl")),
+            posterUrl = it.getString(it.getColumnIndexOrThrow("posterUrl")),
+            year = if (!it.isNull(it.getColumnIndexOrThrow("year"))) 
+                it.getInt(it.getColumnIndexOrThrow("year")) else null,
+            viewCount = it.getInt(it.getColumnIndexOrThrow("viewCount")),
+            rating = if (!it.isNull(it.getColumnIndexOrThrow("rating"))) 
+                it.getDouble(it.getColumnIndexOrThrow("rating")) else 0.0,
+            createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { d ->
                 dateFormat.parse(d)
             }
         )
