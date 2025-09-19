@@ -37,6 +37,10 @@ class CommentAdapter(
         val buttonReply: TextView = itemView.findViewById(R.id.buttonReply)
         val textViewViewReplies: TextView = itemView.findViewById(R.id.textViewViewReplies)
         val recyclerViewReplies: RecyclerView = itemView.findViewById(R.id.recyclerViewReplies)
+
+        init {
+            recyclerViewReplies.layoutManager = LinearLayoutManager(context)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
@@ -93,25 +97,35 @@ class CommentAdapter(
         // Nested replies
         val replies = comment.replies ?: emptyList()
         if (replies.isNotEmpty()) {
+            // Luôn hiển thị nút "Xem/Ẩn phản hồi" nếu có replies
             holder.textViewViewReplies.visibility = View.VISIBLE
-            holder.textViewViewReplies.text =
-                if (comment.isRepliesVisible) "Ẩn phản hồi" else "Xem thêm ${replies.size} phản hồi"
 
-            holder.recyclerViewReplies.visibility =
-                if (comment.isRepliesVisible) View.VISIBLE else View.GONE
-
+            // Cập nhật text và visibility của RecyclerView con dựa trên trạng thái
             if (comment.isRepliesVisible) {
-                holder.recyclerViewReplies.apply {
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = ReplyAdapter(context, replies)
+                holder.textViewViewReplies.text = "Ẩn phản hồi"
+                holder.recyclerViewReplies.visibility = View.VISIBLE
+
+                // Cập nhật hoặc tạo mới adapter
+                // Cách này hiệu quả hơn là luôn tạo mới
+                val replyAdapter = holder.recyclerViewReplies.adapter as? ReplyAdapter
+                if (replyAdapter == null) {
+                    holder.recyclerViewReplies.adapter = ReplyAdapter(context, replies)
+                } else {
+                    replyAdapter.updateData(replies) // Giả sử bạn có hàm updateData trong ReplyAdapter
                 }
+
+            } else {
+                holder.textViewViewReplies.text = "Xem thêm ${replies.size} phản hồi"
+                holder.recyclerViewReplies.visibility = View.GONE
             }
 
+            // Listener để bật/tắt
             holder.textViewViewReplies.setOnClickListener {
                 comment.isRepliesVisible = !comment.isRepliesVisible
                 notifyItemChanged(position)
             }
         } else {
+            // Nếu không có replies, ẩn tất cả
             holder.textViewViewReplies.visibility = View.GONE
             holder.recyclerViewReplies.visibility = View.GONE
         }

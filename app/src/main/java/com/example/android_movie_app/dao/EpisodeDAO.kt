@@ -53,6 +53,22 @@ class EpisodeDAO(private val dbHelper: DatabaseHelper) {
         return list
     }
 
+    fun getEpisodeCountByMovieId(movieId: Int): Int {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM episodes WHERE movieId = ?",
+            arrayOf(movieId.toString())
+        )
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        db.close()
+        return count
+    }
+
+
     fun updateEpisode(ep: Episode): Int {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {

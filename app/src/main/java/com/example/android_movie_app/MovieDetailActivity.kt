@@ -2,16 +2,28 @@ package com.example.android_movie_app
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.util.UnstableApi
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android_movie_app.adapter.CommentBottomSheet
+import com.example.android_movie_app.adapter.EpisodeAdapter
 import com.example.android_movie_app.adapter.MovieDetailAdapter
+import com.example.android_movie_app.dao.MovieDAO
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 
 class MovieDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: LayoutMovieDetailBinding
     private lateinit var adapter: MovieDetailAdapter
+
+    private lateinit var episodeAdapter: EpisodeAdapter
+    private lateinit var movieDAO: MovieDAO
+    private lateinit var dbHelper: DatabaseHelper
+    private lateinit var recyclerView: RecyclerView
+
+    private var movieType: String = ""
     @UnstableApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +38,16 @@ class MovieDetailActivity : AppCompatActivity() {
 
 
         binding.layoutComments.setOnClickListener {
-            CommentBottomSheet(movieId).show(supportFragmentManager, "CommentBottomSheet")
+            val bottomSheet = CommentBottomSheet(movieId)
+            bottomSheet.setOnCommentsUpdatedListener(object : CommentBottomSheet.OnCommentsUpdatedListener {
+                override fun onCommentsUpdated(movieId: Int) {
+                    // Gọi lại loadLatestComment trong adapter để cập nhật UI
+                    adapter.loadLatestComment(movieId)
+                }
+            })
+            bottomSheet.show(supportFragmentManager, "CommentBottomSheet")
         }
+
 
     }
 

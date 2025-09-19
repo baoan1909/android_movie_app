@@ -20,24 +20,29 @@ class CommentDAO(context: Context) {
             put("userId", comment.userId)
             put("movieId", comment.movieId)
             put("episodeId", comment.episodeId)
-            put("parentCommentId", comment.parentCommentId)
+            if (comment.parentCommentId != null) {
+                put("parentCommentId", comment.parentCommentId)
+            } else {
+                putNull("parentCommentId")
+            }
             put("content", comment.content)
-            // createdAt sẽ để DB tự set CURRENT_TIMESTAMP
         }
+
         return db.insert("comments", null, values)
     }
 
     fun getCommentsByMovieId(movieId: Int): List<CommentWithUser> {
-        val parentComments = mutableListOf<CommentWithUser>()
+        val commentsList = mutableListOf<CommentWithUser>()
         val db = dbHelper.readableDatabase
 
+        // Sửa ORDER BY từ ASC thành DESC để comment mới nhất lên đầu
         val sql = """
         SELECT c.id, c.userId, u.avatarPath, u.username, c.movieId, c.episodeId,
                c.parentCommentId, c.content, c.createdAt
         FROM comments c
         INNER JOIN users u ON c.userId = u.id
         WHERE c.movieId = ? AND c.parentCommentId IS NULL
-        ORDER BY c.createdAt ASC
+        ORDER BY c.createdAt DESC 
     """
 
         db.rawQuery(sql, arrayOf(movieId.toString())).use { cursor ->
@@ -57,24 +62,25 @@ class CommentDAO(context: Context) {
                         parentCommentId = null,
                         content = cursor.getString(cursor.getColumnIndexOrThrow("content")),
                         createdAt = createdAt,
-                        replies = getRepliesByParentId(cursor.getInt(cursor.getColumnIndexOrThrow("id"))).toMutableList(),
-                        isRepliesVisible = true
+                        // Truyền thẳng db object vào để không phải mở/đóng nhiều lần
+                        replies = getRepliesByParentId(cursor.getInt(cursor.getColumnIndexOrThrow("id")), db).toMutableList(),
+                        isRepliesVisible = false
                     )
 
-                    parentComments.add(parent)
+                    commentsList.add(parent)
                 } while (cursor.moveToNext())
             }
         }
 
-        db.close()
-        return parentComments
+        db.close() // Chỉ đóng DB một lần ở cuối
+        return commentsList
     }
 
 
     // Lấy danh sách reply theo parentCommentId
-    fun getRepliesByParentId(parentCommentId: Int): List<CommentWithUser> {
+    fun getRepliesByParentId(parentCommentId: Int, db: SQLiteDatabase): List<CommentWithUser> {
         val replies = mutableListOf<CommentWithUser>()
-        val db: SQLiteDatabase = dbHelper.readableDatabase
+
 
         val sql = """
         SELECT c.id, c.userId, u.avatarPath, u.username, c.movieId, c.episodeId,
@@ -82,7 +88,7 @@ class CommentDAO(context: Context) {
         FROM comments c
         INNER JOIN users u ON c.userId = u.id
         WHERE c.parentCommentId = ?
-        ORDER BY c.createdAt ASC
+        ORDER BY c.createdAt ASC 
     """
 
         db.rawQuery(sql, arrayOf(parentCommentId.toString())).use { cursor ->
@@ -112,10 +118,7 @@ class CommentDAO(context: Context) {
                 } while (cursor.moveToNext())
             }
         }
-
-        db.close()
         return replies
     }
-
 
 }

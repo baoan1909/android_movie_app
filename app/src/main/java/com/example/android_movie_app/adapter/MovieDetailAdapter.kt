@@ -15,6 +15,7 @@ import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -23,8 +24,10 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import com.bumptech.glide.Glide
 import com.example.android_movie_app.CustomToast
 import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.Episode
 import com.example.android_movie_app.R
 import com.example.android_movie_app.adapter.RatingDialog
 import com.example.android_movie_app.SessionManager
@@ -34,6 +37,7 @@ import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 import java.util.Date
 import com.example.android_movie_app.adapter.ShareDialog
+import com.example.android_movie_app.data.CommentDAO
 
 
 class MovieDetailAdapter(
@@ -45,17 +49,16 @@ class MovieDetailAdapter(
 
     private var player: ExoPlayer? = null
     private var isLandscape = false
-    private var currentEpisodeId = 0
+    private var currentEpisodeId: Int? = null // single => null, series => id tập
     private var savedPosition: Long = 0
 
     private val dbHelper = DatabaseHelper(activity)
     private val episodeDAO = EpisodeDAO(dbHelper)
     private val watchProgressDAO = WatchProgressDAO(dbHelper)
     private val movieDAO = MovieDAO(dbHelper)
-    private val reviewDAO = ReviewDAO(dbHelper)
+    private val commentDAO = CommentDAO(activity)
     private val favoriteDAO = UserFavoriteDAO(dbHelper)
-    private val sessionManager = SessionManager(activity)
-
+    private var episodeList: List<Episode> = emptyList()
     private val handler = Handler(Looper.getMainLooper())
     private var updateSeekBarRunnable: Runnable? = null
     private var isUserSeeking = false
@@ -64,6 +67,7 @@ class MovieDetailAdapter(
     private val autoHideHandler = Handler(Looper.getMainLooper())
     private val autoHideRunnable = Runnable { hideControls() }
 
+    // ----------------- INIT -----------------
     @UnstableApi
     fun onCreate() {
         isLandscape = activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -78,7 +82,9 @@ class MovieDetailAdapter(
         updateFullscreenUI()
         setupRatingDialog()
         updateFollowButtonUI()
+        loadLatestComment(movieId)
     }
+
 
     // ----------------- RATING -----------------
     private fun setupRatingDialog() {
@@ -123,7 +129,12 @@ class MovieDetailAdapter(
 
     // ----------------- FAVORITES -----------------
     private fun toggleFavorite() {
-        val userId = sessionManager.getUserId()
+        val userId = getCurrentUserIdOrNull()
+        if (userId == null) {
+            Toast.makeText(activity, "Bạn chưa đăng nhập", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (favoriteDAO.isFavorite(userId, movieId)) {
             favoriteDAO.removeFavorite(userId, movieId)
             CustomToast.show(activity, "Đã bỏ theo dõi", ToastType.INFO)
@@ -135,15 +146,37 @@ class MovieDetailAdapter(
     }
 
     private fun updateFollowButtonUI() {
-        val userId = sessionManager.getUserId()
+        val userId = getCurrentUserIdOrNull()
+        if (userId == null) {
+            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(
+                0, R.drawable.ic_favorite_border, 0, 0
+            )
+            binding.btnFollow?.text = "Theo dõi"
+            return
+        }
+
         val isFav = favoriteDAO.isFavorite(userId, movieId)
         if (isFav) {
-            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite, 0, 0)
+            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(
+                0, R.drawable.ic_favorite, 0, 0
+            )
             binding.btnFollow?.text = "Đang theo dõi"
         } else {
-            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_favorite_border, 0, 0)
+            binding.btnFollow?.setCompoundDrawablesWithIntrinsicBounds(
+                0, R.drawable.ic_favorite_border, 0, 0
+            )
             binding.btnFollow?.text = "Theo dõi"
         }
+    }
+
+    private fun getCurrentUserIdOrNull(): Int? {
+        val sessionDAO = UserSessionDAO(DatabaseHelper(activity))
+        val session = sessionDAO.getLatestValidSession() ?: return null
+
+        val userDAO = UserDAO(DatabaseHelper(activity))
+        val user = userDAO.getUserById(session.userId) ?: return null
+
+        return user.id
     }
 
     // ----------------- PLAYER CONTROLS -----------------
@@ -222,23 +255,27 @@ class MovieDetailAdapter(
 
     // ----------------- TABS -----------------
     private fun setupTabs() {
-        val tabs = listOf(binding.tabEpisodes, binding.tabSeasons, binding.tabTrailers, binding.tabRelated)
+        val tabs = listOf(binding.tabEpisodes, binding.tabSeasons)
         for (tab in tabs) {
             tab?.setOnClickListener {
                 highlightTab(tab)
                 showControlsTemporarily()
                 when (tab.id) {
-                    R.id.tabEpisodes -> Toast.makeText(activity, "Danh sách tập", Toast.LENGTH_SHORT).show()
-                    R.id.tabSeasons -> Toast.makeText(activity, "Danh sách season", Toast.LENGTH_SHORT).show()
-                    R.id.tabTrailers -> Toast.makeText(activity, "Trailer", Toast.LENGTH_SHORT).show()
-                    R.id.tabRelated -> Toast.makeText(activity, "Phim liên quan", Toast.LENGTH_SHORT).show()
+                    R.id.tabEpisodes -> {
+                        Toast.makeText(activity, "Danh sách tập", Toast.LENGTH_SHORT).show()
+                        binding.episodesRecyclerView.visibility = View.VISIBLE
+                    }
+                    R.id.tabSeasons -> {
+                        Toast.makeText(activity, "Danh sách season", Toast.LENGTH_SHORT).show()
+                        binding.episodesRecyclerView.visibility = View.GONE
+                    }
                 }
             }
         }
     }
 
     private fun highlightTab(selectedTab: TextView) {
-        val tabs = listOf(binding.tabEpisodes, binding.tabSeasons, binding.tabTrailers, binding.tabRelated)
+        val tabs = listOf(binding.tabEpisodes, binding.tabSeasons)
         for (tab in tabs) {
             tab?.alpha = if (tab == selectedTab) 1f else 0.5f
         }
@@ -259,14 +296,17 @@ class MovieDetailAdapter(
         })
     }
 
+    @UnstableApi
     private fun loadMovieDetailsAndPlay() {
         val movie = movieDAO.getMovieById(movieId)
         if (movie != null) {
             val episodes = episodeDAO.getEpisodesByMovieAsc(movieId)
+            this.episodeList = episodes
             if (episodes.isNotEmpty()) {
                 val totalEpisodes = episodes.size
                 val releasedEpisodes = episodes.count { it.videoUrl.isNotEmpty() }
                 setupMovieInfo(movie.name, movie.rating, movie.year ?: 0, movie.content, true, totalEpisodes, releasedEpisodes)
+                displayEpisodeList()
             } else {
                 setupMovieInfo(movie.name, movie.rating, movie.year ?: 0, movie.content, false)
             }
@@ -276,6 +316,26 @@ class MovieDetailAdapter(
         loadEpisodeAndPlay()
     }
 
+    @UnstableApi // Thêm annotation nếu cần
+    private fun displayEpisodeList() {
+        if (episodeList.isNotEmpty()) {
+            val episodeAdapter = EpisodeAdapter(episodeList) { selectedEpisode ->
+                currentEpisodeId = selectedEpisode.id
+                savedPosition = 0 // Bắt đầu tập mới từ đầu
+                playVideo(selectedEpisode.videoUrl)
+                CustomToast.show(activity, "Đang phát tập ${selectedEpisode.episodeNumber}", ToastType.INFO)
+            }
+
+            binding.episodesRecyclerView.apply {
+                // Sử dụng GridLayoutManager để hiển thị dạng lưới
+                layoutManager = androidx.recyclerview.widget.GridLayoutManager(activity, 4)
+                adapter = episodeAdapter
+                visibility = View.VISIBLE // Đảm bảo RecyclerView được hiển thị
+            }
+        }
+    }
+
+
     private fun setupMovieInfo(title: String, rating: Double, year: Int, content: String?, isSeries: Boolean, totalEpisodes: Int = 0, episodesReleased: Int = 0) {
         binding.txtMovieTitle?.text = title
         binding.txtMovieRating?.text = "⭐ $rating • "
@@ -283,19 +343,58 @@ class MovieDetailAdapter(
         binding.txtMovieInfo?.text = content ?: "Đang cập nhật..."
     }
 
-    private fun loadEpisodeAndPlay() {
-        val episodes = episodeDAO.getEpisodesByMovieAsc(movieId)
-        if (episodes.isNotEmpty()) {
-            val watchProgress = watchProgressDAO.getWatchProgress(sessionManager.getUserId(), movieId)
-            val episodeToPlay = watchProgress?.episodeId?.let { id ->
-                episodes.find { it.id == id }
-            } ?: episodes[0]
-            currentEpisodeId = episodeToPlay.id
-            val videoUrl = episodeToPlay.videoUrl
-            if (videoUrl.isNotEmpty()) {
-                savedPosition = (watchProgress?.currentTime?.toLong() ?: 0) * 1000
-                playVideo(videoUrl)
+    fun loadLatestComment(movieId: Int) {
+        val db = dbHelper.readableDatabase
+        val parentComments = commentDAO.getCommentsByMovieId(movieId)
+
+        // Tính tổng số comment (cha + con)
+        var totalCount = parentComments.size
+        for (c in parentComments) {
+            totalCount += commentDAO.getRepliesByParentId(c.id, db).size
+        }
+
+        // Cập nhật tổng số bình luận
+        binding.txtCommentsTitle.text = "Bình luận ($totalCount)"
+
+        if (parentComments.isNotEmpty()) {
+            val latestComment = parentComments.first()
+
+            binding.txtComment.text = latestComment.content
+
+            if (latestComment.avatarPath.isNotEmpty()) {
+                Glide.with(activity)
+                    .load(latestComment.avatarPath)
+                    .placeholder(R.drawable.ic_account_circle)
+                    .into(binding.imgUserAvatar)
+            } else {
+                binding.imgUserAvatar.setImageResource(R.drawable.ic_account_circle)
             }
+        } else {
+            binding.txtComment.text = "Chưa có bình luận nào"
+            binding.imgUserAvatar.setImageResource(R.drawable.ic_account_circle)
+        }
+
+        db.close() // đóng DB ở cuối
+    }
+
+
+    private fun loadEpisodeAndPlay() {
+        val userId = getCurrentUserIdOrNull()
+        val episodes = episodeDAO.getEpisodesByMovieAsc(movieId)
+
+        if (episodes.isEmpty()) {
+            // single movie
+            val wp = userId?.let { watchProgressDAO.getWatchProgress(it, movieId, null) }
+            currentEpisodeId = null
+            savedPosition = (wp?.currentTime?.toLong() ?: 0) * 1000
+            movieDAO.getMovieById(movieId)?.slug?.let { if (it.isNotEmpty()) playVideo(it) }
+        } else {
+            // series
+            val wp = userId?.let { watchProgressDAO.getLatestWatchProgressForMovie(it, movieId) }
+            val episodeToPlay = wp?.episodeId?.let { id -> episodes.find { it.id == id } } ?: episodes[0]
+            currentEpisodeId = episodeToPlay.id
+            savedPosition = (wp?.currentTime?.toLong() ?: 0) * 1000
+            if (episodeToPlay.videoUrl.isNotEmpty()) playVideo(episodeToPlay.videoUrl)
         }
     }
 
@@ -424,23 +523,23 @@ class MovieDetailAdapter(
         autoHideHandler.removeCallbacks(autoHideRunnable)
     }
 
+    // ----------------- SAVE PROGRESS -----------------
     private fun saveWatchProgress() {
-        if (movieId > 0 && currentEpisodeId > 0 && player != null) {
-            val currentPosition = ((player?.currentPosition ?: 0L) / 1000L).toInt()
-            val duration = ((player?.duration ?: 0L) / 1000L).toInt()
-            if (currentPosition > 0 && duration > 0) {
-                val progress = WatchProgress(
-                    userId = sessionManager.getUserId(),
-                    movieId = movieId,
-                    episodeId = currentEpisodeId,
-                    currentTime = currentPosition,
-                    totalTime = duration,
-                    isCompleted = currentPosition >= duration * 0.95,
-                    lastWatchedAt = Date()
-                )
-                watchProgressDAO.upsertWatchProgress(progress)
-            }
-        }
+        val userId = getCurrentUserIdOrNull() ?: return
+        val duration = (player?.duration ?: 0L) / 1000L
+        val current = (player?.currentPosition ?: 0L) / 1000L
+        if (duration <= 0) return
+
+        val wp = WatchProgress(
+            userId = userId,
+            movieId = movieId,
+            episodeId = currentEpisodeId, // null nếu single
+            currentTime = current.toInt(),
+            totalTime = duration.toInt(),
+            isCompleted = current >= duration * 0.95,
+            lastWatchedAt = Date()
+        )
+        watchProgressDAO.upsertWatchProgress(wp)
     }
 
     private fun formatTime(milliseconds: Long): String {

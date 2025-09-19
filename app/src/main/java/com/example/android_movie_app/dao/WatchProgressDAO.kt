@@ -67,109 +67,26 @@ class WatchProgressDAO(private val dbHelper: DatabaseHelper) {
         return null
     }
 
-    /** Cập nhật tiến trình xem (resume point) */
-    fun updateWatchProgress(progress: WatchProgress): Long {
-        val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put("movieId", progress.movieId)
-            put("episodeId", progress.episodeId)
-            put("currentTime", progress.currentTime)
-            put("totalTime", progress.totalTime)
-            put("isCompleted", if (progress.isCompleted) 1 else 0)
-            put("lastWatchedAt", progress.lastWatchedAt?.let { dateFormat.format(it) })
-        }
-        val rows = db.update(
-            "watch_progress",
-            values,
-            "userId=? AND episodeId=?",
-            arrayOf(progress.userId.toString(), progress.episodeId.toString())
-        )
-        if (rows == 0) {
-            values.put("userId", progress.userId)
-            return db.insert("watch_progress", null, values)
-        }
-        return rows.toLong()
-    }
-
-    /** Đánh dấu 1 tập đã xem xong */
-    fun markEpisodeCompleted(userId: Int, episodeId: Int): Int {
-        val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put("isCompleted", 1)
-            put("lastWatchedAt", dateFormat.format(Date()))
-        }
-        return db.update(
-            "watch_progress",
-            values,
-            "userId=? AND episodeId=?",
-            arrayOf(userId.toString(), episodeId.toString())
-        )
-    }
-
-    /** Danh sách phim đang xem dở (chưa completed) */
-    fun getContinueWatching(userId: Int): List<WatchProgress> {
-        val list = mutableListOf<WatchProgress>()
+    /** Lấy tiến trình xem mới nhất của 1 phim (cho cả single và series) */
+    fun getLatestWatchProgressForMovie(userId: Int, movieId: Int): WatchProgress? {
         val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT * FROM watch_progress WHERE userId=? AND isCompleted=0 ORDER BY lastWatchedAt DESC",
-            arrayOf(userId.toString())
+        val cursor = db.query(
+            "watch_progress", // TABLE_NAME
+            null,
+            "userId=? AND movieId=?",
+            arrayOf(userId.toString(), movieId.toString()),
+            null,
+            null,
+            "lastWatchedAt DESC", // sắp xếp mới nhất
+            "1" // chỉ lấy 1 dòng
         )
         cursor.use {
-            while (it.moveToNext()) {
-                list.add(cursorToWatchProgress(it))
+            if (it.moveToFirst()) {
+                return cursorToWatchProgress(it)
             }
         }
-        return list
+        return null
     }
-
-    /** Lịch sử xem phim (bao gồm cả completed) */
-    fun getWatchHistory(userId: Int): List<WatchProgress> {
-        val list = mutableListOf<WatchProgress>()
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT * FROM watch_progress WHERE userId=? ORDER BY lastWatchedAt DESC",
-            arrayOf(userId.toString())
-        )
-        cursor.use {
-            while (it.moveToNext()) {
-                list.add(cursorToWatchProgress(it))
-            }
-        }
-        return list
-    }
-
-    /** Xóa/reset tiến trình xem */
-    fun resetWatchProgress(userId: Int, episodeId: Int): Int {
-        val db = dbHelper.writableDatabase
-        return db.delete(
-            "watch_progress",
-            "userId=? AND episodeId=?",
-            arrayOf(userId.toString(), episodeId.toString())
-        )
-    }
-
-    /** Lấy danh sách continue watching kèm Movie */
-//    fun getContinueWatchingWithMovies(userId: Int): List<ContinueWatchingItem> {
-//        val list = mutableListOf<ContinueWatchingItem>()
-//        val db = dbHelper.readableDatabase
-//        val query = """
-//            SELECT wp.*, m.id AS movieId, m.slug, m.name, m.originName, m.content,
-//                   m.type, m.thumbUrl, m.posterUrl, m.year, m.viewCount, m.rating, m.createdAt AS movieCreatedAt
-//            FROM watch_progress wp
-//            INNER JOIN movies m ON wp.movieId = m.id
-//            WHERE wp.userId=? AND wp.isCompleted=0
-//            ORDER BY wp.lastWatchedAt DESC
-//        """
-//        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
-//        cursor.use {
-//            while (it.moveToNext()) {
-//                val progress = cursorToWatchProgress(it)
-//                val movie = dbHelper.cursorToMovie(it)
-//                list.add(ContinueWatchingItem(progress, movie))
-//            }
-//        }
-//        return list
-//    }
 
     /** Helper: chuyển Cursor -> WatchProgress */
     private fun cursorToWatchProgress(it: Cursor): WatchProgress {

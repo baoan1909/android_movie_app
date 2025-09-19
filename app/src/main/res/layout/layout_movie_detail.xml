@@ -367,15 +367,6 @@
                 style="@style/TabButton"
                 android:text="Các Season" />
 
-            <TextView
-                android:id="@+id/tabTrailers"
-                style="@style/TabButton"
-                android:text="Trailers &amp; videos" />
-
-            <TextView
-                android:id="@+id/tabRelated"
-                style="@style/TabButton"
-                android:text="Liên quan" />
         </LinearLayout>
 
         <View
@@ -383,5 +374,12 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#434343" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/episodesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:nestedScrollingEnabled="false"/>
     </LinearLayout>
 </ScrollView>

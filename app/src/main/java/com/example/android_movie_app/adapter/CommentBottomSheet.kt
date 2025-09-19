@@ -32,6 +32,17 @@ class CommentBottomSheet(private val movieId: Int) : BottomSheetDialogFragment()
 
     private var replyingToComment: CommentWithUser? = null
 
+    interface OnCommentsUpdatedListener {
+        fun onCommentsUpdated(movieId: Int)
+    }
+
+    private var commentsUpdatedListener: OnCommentsUpdatedListener? = null
+
+    fun setOnCommentsUpdatedListener(listener: OnCommentsUpdatedListener) {
+        this.commentsUpdatedListener = listener
+    }
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = LayoutCommentBinding.inflate(inflater, container, false)
         return binding.root
@@ -62,32 +73,8 @@ class CommentBottomSheet(private val movieId: Int) : BottomSheetDialogFragment()
     private fun loadComments() {
         comments.clear()
         comments.addAll(commentDAO.getCommentsByMovieId(movieId))
-        buildCommentTree()
         adapter.updateData(comments)
         updateCommentCount()
-    }
-
-    // Xây dựng cây comment: chuyển reply thành children
-    private fun buildCommentTree() {
-        val map = comments.associateBy { it.id }.toMutableMap()
-        val rootComments = mutableListOf<CommentWithUser>()
-
-        for (comment in comments) {
-            comment.replies = mutableListOf()
-            comment.isRepliesVisible = true
-        }
-
-        for (comment in comments) {
-            val parentId = comment.parentCommentId
-            if (parentId != null) {
-                map[parentId]?.replies?.add(comment)
-            } else {
-                rootComments.add(comment)
-            }
-        }
-
-        comments.clear()
-        comments.addAll(rootComments.sortedByDescending { it.createdAt })
     }
 
     private fun insertComment() {
@@ -206,5 +193,11 @@ class CommentBottomSheet(private val movieId: Int) : BottomSheetDialogFragment()
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDismiss(dialog: android.content.DialogInterface) {
+        super.onDismiss(dialog)
+        // Gọi callback khi BottomSheet đóng lại
+        commentsUpdatedListener?.onCommentsUpdated(movieId)
     }
 }
