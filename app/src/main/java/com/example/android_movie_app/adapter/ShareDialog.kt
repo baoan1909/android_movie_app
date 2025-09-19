@@ -1,4 +1,4 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.adapter
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -7,6 +7,9 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
+import com.example.android_movie_app.CustomToast
+import com.example.android_movie_app.R
+import com.example.android_movie_app.ToastType
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class ShareDialog(

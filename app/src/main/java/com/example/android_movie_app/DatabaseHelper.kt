@@ -18,12 +18,12 @@ class DatabaseHelper(context: Context) :
         db?.execSQL("""
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                avatarPath TEXT,
                 username TEXT UNIQUE NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 passwordHash TEXT NOT NULL,
                 createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-                isActive INTEGER DEFAULT 1,
-                avatarPath TEXT
+                isActive INTEGER DEFAULT 1
             )
         """)
 
@@ -34,7 +34,7 @@ class DatabaseHelper(context: Context) :
             .digest("Diyuyi@123".toByteArray())
             .joinToString("") { "%02x".format(it) }
         db?.execSQL(
-            "INSERT INTO users (username, email, passwordHash, isActive) VALUES ('diyuyi', 'diyuyi@example.com', '$seedPasswordHash', 1)"
+            "INSERT INTO users ( avatarPath, username, email, passwordHash, isActive) VALUES ('ic_account_circle','diyuyi', 'diyuyi@example.com', '$seedPasswordHash', 1)"
         )
 
         // ------------------- MOVIES -------------------

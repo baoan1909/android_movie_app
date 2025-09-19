@@ -1,9 +1,16 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.adapter
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.RatingBar
+import com.example.android_movie_app.CustomToast
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.R
+import com.example.android_movie_app.SessionManager
+import com.example.android_movie_app.ToastType
 import com.example.android_movie_app.dao.ReviewDAO
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -47,7 +54,7 @@ class RatingDialog(
                     onRatingSaved(rating.toInt())
 
                     // Đợi Toast hiển thị xong rồi đóng dialog
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    Handler(Looper.getMainLooper()).postDelayed({
                         dialog.dismiss()
                     }, 1500) // 1.5s = thời gian Toast.LENGTH_SHORT
                 } else {

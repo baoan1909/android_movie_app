@@ -1,15 +1,20 @@
-package com.example.android_movie_app
+package com.example.android_movie_app.adapter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import android.widget.EditText
-import android.widget.Button
-import android.widget.Toast
+import com.example.android_movie_app.CustomToast
+import com.example.android_movie_app.DatabaseHelper
+import com.example.android_movie_app.R
+import com.example.android_movie_app.ToastType
+import com.example.android_movie_app.User
 import com.example.android_movie_app.dao.UserDAO
 import com.example.android_movie_app.dao.UserSessionDAO
 import kotlinx.coroutines.CoroutineScope
@@ -89,7 +94,7 @@ class UserInfoBottomSheet(private val context: Context) {
             edtEmail.setText(it.email)
         }
 
-        val dialog = android.app.AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
             .setView(dialogView)
             .create()
 

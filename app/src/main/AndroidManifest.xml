@@ -48,6 +48,7 @@
             android:name=".MovieDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="sensor" />
         <activity
             android:name=".GenreDetailActivity"

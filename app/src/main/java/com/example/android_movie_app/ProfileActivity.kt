@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.example.android_movie_app.adapter.UserInfoBottomSheet
 import com.example.android_movie_app.dao.UserDAO
 import com.example.android_movie_app.dao.UserSessionDAO
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,7 @@ class ProfileActivity : BaseActivity() {
         val appGrab = findViewById<LinearLayout>(R.id.appGrab)
         val layoutSupport = findViewById<LinearLayout>(R.id.layoutSupport)
         val layoutContact = findViewById<LinearLayout>(R.id.layoutContact)
-        imgAvatar = findViewById(R.id.imgAvatarProfile)
+        imgAvatar = findViewById(R.id.avatarPath)
 
         val dbHelper = DatabaseHelper(this)
         userDAO = UserDAO(dbHelper)
@@ -60,6 +61,7 @@ class ProfileActivity : BaseActivity() {
             user?.let {
                 currentUser = it
                 findViewById<TextView>(R.id.tvUsernameProfile).text = it.username
+
 
                 if (!it.avatarPath.isNullOrEmpty()) {
                     Glide.with(this@ProfileActivity)
