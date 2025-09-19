@@ -409,27 +409,45 @@ class DatabaseHelper(context: Context) :
         """)
 
         // ------------------- NOTIFICATIONS -------------------
-        db?.execSQL( """
+        db?.execSQL("""
         CREATE TABLE notifications (
             notificationId INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             content TEXT NOT NULL,
-            createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+            createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
+            type TEXT NOT NULL,       -- "ht" = hệ thống, "cn" = cá nhân
+            userId INTEGER            -- null nếu hệ thống
         )
         """)
+
         // Thêm dữ liệu mẫu
         db?.execSQL("""
-        INSERT INTO notifications (title, content) 
-        VALUES ('One Piece tập 1090', 'Đã có phụ đề tiếng Việt')
-        """)
+        INSERT INTO notifications (title, content, type) 
+        VALUES ('One Piece tập 1090', 'Đã có phụ đề tiếng Việt', 'ht')
+    """)
+
             db?.execSQL("""
-        INSERT INTO notifications (title, content) 
-        VALUES ('Naruto Shippuden', 'Tập 220 đã có')
-        """)
+        INSERT INTO notifications (title, content, type) 
+        VALUES ('Naruto Shippuden', 'Tập 220 đã có', 'ht')
+    """)
+
             db?.execSQL("""
-        INSERT INTO notifications (title, content) 
-        VALUES ('Jujutsu Kaisen 2', 'Tập mới nhất đã được thêm')
-        """)
+        INSERT INTO notifications (title, content, type) 
+        VALUES ('Jujutsu Kaisen 2', 'Tập mới nhất đã được thêm', 'ht')
+    """)
+        db?.execSQL("""
+        INSERT INTO notifications (title, content, type) 
+        VALUES ('Thanh gươm diệt quỷ', 'Trailer chính thức phát hành', 'ht')
+    """)
+        db?.execSQL("""
+        INSERT INTO notifications (title, content, type) 
+        VALUES ('Bá chủ Tây Tạng', 'Tập 15 đã được lên sóng', 'ht')
+    """)
+        db?.execSQL("""
+        INSERT INTO notifications (title, content, type) 
+        VALUES ('Hệ thống bảo trì', 'Từ 2h00 - 4h00 ngày 19/09/2025', 'ht')
+    """)
+
 
     }
 
