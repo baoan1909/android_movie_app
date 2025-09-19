@@ -37,7 +37,7 @@ class ReplyAdapter(
 
         // Avatar (Glide)
         Glide.with(context)
-            .load(reply.avatarUrl) // link avatar lấy từ DB hoặc API
+            .load(reply.avatarPath) // link avatar lấy từ DB hoặc API
             .placeholder(R.drawable.ic_account_circle) // khi đang load
             .error(R.drawable.ic_account_circle)       // khi lỗi
             .into(holder.imageViewAvatar)

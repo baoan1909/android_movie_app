@@ -5,13 +5,12 @@ import java.util.Date
 // Bảng users
 data class User(
     var id: Int = 0,
-    var avatarUrl: String,
+    var avatarPath: String,
     var username: String,
     var email: String,
     var passwordHash: String,
     var createdAt: Date? = null,   // có ngày + giờ
     var isActive: Boolean = true,
-    val avatarPath: String? = null // thêm avatarPath
 )
 
 // Bảng movies
@@ -114,7 +113,7 @@ data class Comment(
 data class CommentWithUser(
     val id: Int,
     val userId: Int,
-    val avatarUrl: String,
+    val avatarPath: String,
     val username: String?,
     val movieId: Int,
     val episodeId: Int?,
@@ -125,7 +124,6 @@ data class CommentWithUser(
     var isRepliesVisible: Boolean = false,  // trạng thái hiển thị/ẩn replies
     var replies: MutableList<CommentWithUser>? = null
 )
-
 
 
 // ---------- REVIEWS ----------

@@ -50,7 +50,7 @@ class CommentAdapter(
 
         // Avatar
         Glide.with(context)
-            .load(comment.avatarUrl)
+            .load(comment.avatarPath)
             .placeholder(R.drawable.ic_account_circle)
             .into(holder.imageViewAvatar)
 

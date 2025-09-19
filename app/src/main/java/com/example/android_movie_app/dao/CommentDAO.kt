@@ -28,16 +28,16 @@ class CommentDAO(context: Context) {
     }
 
     fun getCommentsByMovieId(movieId: Int): List<CommentWithUser> {
-        val comments = mutableListOf<CommentWithUser>()
-        val db: SQLiteDatabase = dbHelper.readableDatabase
+        val parentComments = mutableListOf<CommentWithUser>()
+        val db = dbHelper.readableDatabase
 
         val sql = """
-        SELECT c.id, c.userId, u.avatarUrl, u.username, c.movieId, c.episodeId,
+        SELECT c.id, c.userId, u.avatarPath, u.username, c.movieId, c.episodeId,
                c.parentCommentId, c.content, c.createdAt
         FROM comments c
         INNER JOIN users u ON c.userId = u.id
-        WHERE c.movieId = ?
-        ORDER BY c.createdAt DESC
+        WHERE c.movieId = ? AND c.parentCommentId IS NULL
+        ORDER BY c.createdAt ASC
     """
 
         db.rawQuery(sql, arrayOf(movieId.toString())).use { cursor ->
@@ -46,27 +46,30 @@ class CommentDAO(context: Context) {
                     val createdAtStr = cursor.getString(cursor.getColumnIndexOrThrow("createdAt"))
                     val createdAt = try { dateFormat.parse(createdAtStr) } catch (_: Exception) { null }
 
-                    val comment = CommentWithUser(
+                    val parent = CommentWithUser(
                         id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
                         userId = cursor.getInt(cursor.getColumnIndexOrThrow("userId")),
-                        avatarUrl = cursor.getString(cursor.getColumnIndexOrThrow("avatarUrl")),
+                        avatarPath = cursor.getString(cursor.getColumnIndexOrThrow("avatarPath")),
                         username = cursor.getString(cursor.getColumnIndexOrThrow("username")),
                         movieId = cursor.getInt(cursor.getColumnIndexOrThrow("movieId")),
                         episodeId = if (cursor.isNull(cursor.getColumnIndexOrThrow("episodeId"))) null
                         else cursor.getInt(cursor.getColumnIndexOrThrow("episodeId")),
-                        parentCommentId = if (cursor.isNull(cursor.getColumnIndexOrThrow("parentCommentId"))) null
-                        else cursor.getInt(cursor.getColumnIndexOrThrow("parentCommentId")),
+                        parentCommentId = null,
                         content = cursor.getString(cursor.getColumnIndexOrThrow("content")),
-                        createdAt = createdAt
+                        createdAt = createdAt,
+                        replies = getRepliesByParentId(cursor.getInt(cursor.getColumnIndexOrThrow("id"))).toMutableList(),
+                        isRepliesVisible = true
                     )
-                    comments.add(comment)
+
+                    parentComments.add(parent)
                 } while (cursor.moveToNext())
             }
         }
 
         db.close()
-        return comments
+        return parentComments
     }
+
 
     // Lấy danh sách reply theo parentCommentId
     fun getRepliesByParentId(parentCommentId: Int): List<CommentWithUser> {
@@ -74,7 +77,7 @@ class CommentDAO(context: Context) {
         val db: SQLiteDatabase = dbHelper.readableDatabase
 
         val sql = """
-        SELECT c.id, c.userId, u.avatarUrl, u.username, c.movieId, c.episodeId,
+        SELECT c.id, c.userId, u.avatarPath, u.username, c.movieId, c.episodeId,
                c.parentCommentId, c.content, c.createdAt
         FROM comments c
         INNER JOIN users u ON c.userId = u.id
@@ -95,7 +98,7 @@ class CommentDAO(context: Context) {
                     val reply = CommentWithUser(
                         id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
                         userId = cursor.getInt(cursor.getColumnIndexOrThrow("userId")),
-                        avatarUrl = cursor.getString(cursor.getColumnIndexOrThrow("avatarUrl")),
+                        avatarPath = cursor.getString(cursor.getColumnIndexOrThrow("avatarPath")),
                         username = cursor.getString(cursor.getColumnIndexOrThrow("username")),
                         movieId = cursor.getInt(cursor.getColumnIndexOrThrow("movieId")),
                         episodeId = if (cursor.isNull(cursor.getColumnIndexOrThrow("episodeId"))) null

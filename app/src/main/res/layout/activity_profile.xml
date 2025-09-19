@@ -36,11 +36,7 @@
                     android:layout_marginEnd="10dp">
 
                     <ImageView
-<<<<<<< Updated upstream
-                        android:id="@+id/imgAvatarProfile"
-=======
-                        android:id="@+id/avatarUrl"
->>>>>>> Stashed changes
+                        android:id="@+id/avatarPath"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"

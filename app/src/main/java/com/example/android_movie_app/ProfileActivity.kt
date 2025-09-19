@@ -7,15 +7,11 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.LinearLayout
-<<<<<<< Updated upstream
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-=======
-import com.bumptech.glide.Glide
 import com.example.android_movie_app.adapter.UserInfoBottomSheet
->>>>>>> Stashed changes
 import com.example.android_movie_app.dao.UserDAO
 import com.example.android_movie_app.dao.UserSessionDAO
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +39,7 @@ class ProfileActivity : BaseActivity() {
         val appGrab = findViewById<LinearLayout>(R.id.appGrab)
         val layoutSupport = findViewById<LinearLayout>(R.id.layoutSupport)
         val layoutContact = findViewById<LinearLayout>(R.id.layoutContact)
-        imgAvatar = findViewById(R.id.imgAvatarProfile)
+        imgAvatar = findViewById(R.id.avatarPath)
 
         val dbHelper = DatabaseHelper(this)
         userDAO = UserDAO(dbHelper)
@@ -66,19 +62,13 @@ class ProfileActivity : BaseActivity() {
                 currentUser = it
                 findViewById<TextView>(R.id.tvUsernameProfile).text = it.username
 
-<<<<<<< Updated upstream
+
                 if (!it.avatarPath.isNullOrEmpty()) {
                     Glide.with(this@ProfileActivity)
                         .load(File(it.avatarPath))
                         .placeholder(R.drawable.ic_account_circle)
                         .into(imgAvatar)
                 }
-=======
-                Glide.with(this@ProfileActivity)
-                    .load(it.avatarUrl) // có thể là URL hoặc resource id
-                    .into(findViewById<ImageView>(R.id.avatarUrl))
-
->>>>>>> Stashed changes
             }
         }
 
