@@ -13,6 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+<<<<<<< Updated upstream
 .idea/misc.xml
 .idea/misc.xml
 .kotlin/errors/errors-1758187468513.log
+=======
+.idea/deviceManager.xml
+>>>>>>> Stashed changes
