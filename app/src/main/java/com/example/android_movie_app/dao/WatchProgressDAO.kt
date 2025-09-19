@@ -149,27 +149,25 @@ class WatchProgressDAO(private val dbHelper: DatabaseHelper) {
     }
 
     /** Lấy danh sách continue watching kèm Movie */
-//    fun getContinueWatchingWithMovies(userId: Int): List<ContinueWatchingItem> {
-//        val list = mutableListOf<ContinueWatchingItem>()
-//        val db = dbHelper.readableDatabase
-//        val query = """
-//            SELECT wp.*, m.id AS movieId, m.slug, m.name, m.originName, m.content,
-//                   m.type, m.thumbUrl, m.posterUrl, m.year, m.viewCount, m.rating, m.createdAt AS movieCreatedAt
-//            FROM watch_progress wp
-//            INNER JOIN movies m ON wp.movieId = m.id
-//            WHERE wp.userId=? AND wp.isCompleted=0
-//            ORDER BY wp.lastWatchedAt DESC
-//        """
-//        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
-//        cursor.use {
-//            while (it.moveToNext()) {
-//                val progress = cursorToWatchProgress(it)
-//                val movie = dbHelper.cursorToMovie(it)
-//                list.add(ContinueWatchingItem(progress, movie))
-//            }
-//        }
-//        return list
-//    }
+    fun getContinueWatchingWithMovies(userId: Int): List<com.example.android_movie_app.ContinueWatchingItem> {
+        val list = mutableListOf<com.example.android_movie_app.ContinueWatchingItem>()
+        val db = dbHelper.readableDatabase
+        
+        // Get watch progress items
+        val progressList = getContinueWatching(userId)
+        
+        for (progress in progressList) {
+            // Get movie info for each progress
+            val movieDAO = com.example.android_movie_app.dao.MovieDAO(dbHelper)
+            val movie = movieDAO.getMovieById(progress.movieId)
+            
+            if (movie != null) {
+                list.add(com.example.android_movie_app.ContinueWatchingItem(progress, movie))
+            }
+        }
+        
+        return list
+    }
 
     /** Helper: chuyển Cursor -> WatchProgress */
     private fun cursorToWatchProgress(it: Cursor): WatchProgress {

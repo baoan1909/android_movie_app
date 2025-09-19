@@ -725,6 +725,33 @@ class DatabaseHelper(context: Context) :
         VALUES ('Hệ thống bảo trì', 'Từ 2h00 - 4h00 ngày 19/09/2025', 'ht')
     """)
 
+        // ------------------- SAMPLE WATCH PROGRESS DATA -------------------
+        // Thêm một số dữ liệu mẫu cho user đầu tiên để test watching functionality
+        // Giả sử user có id = 1 (user "diyuyi" được tạo trên)
+        
+        // User đang xem I Am Your King 1 - Tập 2, đã xem được 45% (675/1500 giây)
+        db?.execSQL("""
+            INSERT INTO watch_progress (userId, movieId, episodeId, currentTime, totalTime, isCompleted, lastWatchedAt) 
+            VALUES (1, 15, (SELECT id FROM episodes WHERE movieId = 15 AND episodeNumber = 2), 675, 1500, 0, '2025-09-19 14:30:00')
+        """)
+        
+        // User đang xem Star Struck: Truy Tinh - Tập 1, đã xem được 30% (360/1200 giây)
+        db?.execSQL("""
+            INSERT INTO watch_progress (userId, movieId, episodeId, currentTime, totalTime, isCompleted, lastWatchedAt) 
+            VALUES (1, 16, (SELECT id FROM episodes WHERE movieId = 16 AND episodeNumber = 1), 360, 1200, 0, '2025-09-19 12:15:00')
+        """)
+        
+        // User đang xem Chắp Cánh - Tập 5, đã xem được 80% (1440/1800 giây)
+        db?.execSQL("""
+            INSERT INTO watch_progress (userId, movieId, episodeId, currentTime, totalTime, isCompleted, lastWatchedAt) 
+            VALUES (1, 17, (SELECT id FROM episodes WHERE movieId = 17 AND episodeNumber = 5), 1440, 1800, 0, '2025-09-19 10:45:00')
+        """)
+        
+        // User đang xem Chàng Phản Diện Dễ Thương - Tập 10, đã xem được 15% (225/1500 giây)
+        db?.execSQL("""
+            INSERT INTO watch_progress (userId, movieId, episodeId, currentTime, totalTime, isCompleted, lastWatchedAt) 
+            VALUES (1, 19, (SELECT id FROM episodes WHERE movieId = 19 AND episodeNumber = 10), 225, 1500, 0, '2025-09-18 20:30:00')
+        """)
 
     }
 

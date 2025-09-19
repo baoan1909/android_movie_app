@@ -114,6 +114,10 @@ class LoginActivity : AppCompatActivity() {
 
                 val newSession = UserSession(token, user.id, expiresAt)
                 sessionDAO.addSession(newSession)
+                
+                // Save userId to SessionManager
+                val sessionManager = SessionManager(this)
+                sessionManager.saveUserId(user.id)
 
                 val notification = Notifications(
                     title = "Đăng nhập thành công",
@@ -123,14 +127,13 @@ class LoginActivity : AppCompatActivity() {
                     userId = user.id
                 )
                 notificationDAO.insertNotification(notification)
-            }
-
-
+                
                 CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
 
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
+            }
         }
         // Chuyển sang màn hình đăng ký
         txtCreateAccount.setOnClickListener {
