@@ -13,6 +13,45 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Thanh tìm kiếm -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="2dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:hint="Tìm kiếm phim..."
+                android:background="@drawable/bg_search_box"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="#BDBCBC"
+                android:inputType="text"
+                android:singleLine="true"
+                android:dropDownVerticalOffset="4dp"
+                android:dropDownHorizontalOffset="0dp"
+                android:dropDownHeight="wrap_content"
+                android:dropDownWidth="match_parent"/>
+
+
+            <ImageButton
+                android:id="@+id/btnSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_search"
+                android:background="@android:color/transparent"
+                android:contentDescription="Tìm kiếm"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
         <!-- Banner -->
         <RelativeLayout
             android:layout_width="match_parent"

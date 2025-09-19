@@ -2,9 +2,11 @@ package com.example.android_movie_app.dao
 
 import android.content.ContentValues
 import android.database.Cursor
+import com.example.android_movie_app.Category
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.Movie
 import com.example.android_movie_app.MovieBanner
+import com.example.android_movie_app.MovieWithCategories
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -265,5 +267,82 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
             }
         )
     }
+    fun searchMovies(keyword: String?, categorySlug: String?): List<MovieWithCategories> {
+        val db = dbHelper.readableDatabase
+        val movies = mutableListOf<MovieWithCategories>()
+
+        val query = StringBuilder("""
+        SELECT m.id, m.slug, m.name, m.originName, m.type, m.thumbUrl, m.posterUrl, 
+               m.year, m.rating, m.createdAt,
+               c.id as categoryId, c.name as categoryName, c.slug as categorySlug
+        FROM movies m
+        LEFT JOIN movie_categories mc ON m.id = mc.movieId
+        LEFT JOIN categories c ON mc.categoryId = c.id
+        WHERE 1=1
+    """)
+
+        val args = mutableListOf<String>()
+
+        // Nếu có từ khóa => tìm theo tên hoặc originName
+        if (!keyword.isNullOrEmpty()) {
+            query.append(" AND (m.name LIKE ? OR m.originName LIKE ?)")
+            args.add("%$keyword%")
+            args.add("%$keyword%")
+        }
+
+        // Nếu có slug category => lọc thêm theo category
+        if (!categorySlug.isNullOrEmpty()) {
+            query.append(" AND c.slug = ?")
+            args.add(categorySlug)
+        }
+
+        query.append(" ORDER BY m.createdAt DESC")
+
+        val cursor = db.rawQuery(query.toString(), args.toTypedArray())
+
+        cursor.use {
+            val map = mutableMapOf<Int, MovieWithCategories>()
+
+            if (it.moveToFirst()) {
+                do {
+                    val movieId = it.getInt(it.getColumnIndexOrThrow("id"))
+
+                    val category = if (!it.isNull(it.getColumnIndexOrThrow("categoryId"))) {
+                        Category(
+                            id = it.getInt(it.getColumnIndexOrThrow("categoryId")),
+                            name = it.getString(it.getColumnIndexOrThrow("categoryName")),
+                            slug = it.getString(it.getColumnIndexOrThrow("categorySlug"))
+                        )
+                    } else null
+
+                    val movie = map.getOrPut(movieId) {
+                        MovieWithCategories(
+                            movieId = movieId,
+                            slug = it.getString(it.getColumnIndexOrThrow("slug")),
+                            name = it.getString(it.getColumnIndexOrThrow("name")),
+                            originName = it.getString(it.getColumnIndexOrThrow("originName")),
+                            type = it.getString(it.getColumnIndexOrThrow("type")),
+                            thumbUrl = it.getString(it.getColumnIndexOrThrow("thumbUrl")),
+                            posterUrl = it.getString(it.getColumnIndexOrThrow("posterUrl")),
+                            year = it.getInt(it.getColumnIndexOrThrow("year")),
+                            rating = it.getDouble(it.getColumnIndexOrThrow("rating")),
+                            createdAt = null,
+                            categories = mutableListOf()
+                        )
+                    }
+
+                    if (category != null) {
+                        (movie.categories as MutableList).add(category)
+                    }
+                } while (it.moveToNext())
+            }
+
+            movies.addAll(map.values)
+        }
+
+        db.close()
+        return movies
+    }
+
 
 }
