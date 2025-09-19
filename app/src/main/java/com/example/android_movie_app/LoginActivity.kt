@@ -87,60 +87,63 @@ class LoginActivity : AppCompatActivity() {
             val username = edtUsername.text.toString().trim()
             val password = edtPassword.text.toString().trim()
 
+            val user = userDAO.getUserByUsername(username)
+            val passwordHash = hashPassword(password)
             if (username.isEmpty() || password.isEmpty()) {
                 CustomToast.show(this, "Vui lòng nhập đầy đủ thông tin", ToastType.WARNING)
                 return@setOnClickListener
             }
-
-            val user = userDAO.getUserByUsername(username)
-            if (user == null) {
+            else if (user == null) {
                 CustomToast.show(this, "Tài khoản không tồn tại", ToastType.ERROR)
                 return@setOnClickListener
             }
-
-            val passwordHash = hashPassword(password)
-            if (user.passwordHash != passwordHash) {
+            else if (user.passwordHash != passwordHash) {
                 CustomToast.show(this, "Sai mật khẩu", ToastType.ERROR)
                 return@setOnClickListener
             }
-
-            if (!user.isActive) {
+            else if (!user.isActive) {
                 CustomToast.show(this, "Tài khoản chưa được kích hoạt", ToastType.WARNING)
                 return@setOnClickListener
             }
+            else {
+                // --- Lưu session ---
+                val token = UUID.randomUUID().toString()
+                val expiresAt = Calendar.getInstance().apply {
+                    add(Calendar.DAY_OF_MONTH, 7)  // +7 ngày
+                }.time
 
-            // --- Lưu session ---
-            val token = UUID.randomUUID().toString()
-            val expiresAt = Calendar.getInstance().apply {
-                add(Calendar.DAY_OF_MONTH, 7)  // +7 ngày
-            }.time
+                val newSession = UserSession(token, user.id, expiresAt)
+                sessionDAO.addSession(newSession)
+                
+                // Save userId to SessionManager
+                val sessionManager = SessionManager(this)
+                sessionManager.saveUserId(user.id)
 
-            val newSession = UserSession(token, user.id, expiresAt)
-            sessionDAO.addSession(newSession)
+                val notification = Notifications(
+                    title = "Đăng nhập thành công",
+                    content = "Xin chào ${user.username}, chúc bạn xem phim vui vẻ!",
+                    createdAt = Date(),
+                    type = "cn",
+                    userId = user.id
+                )
+                notificationDAO.insertNotification(notification)
+                
+                CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
 
-            // --- Lưu thông báo đăng nhập ---
-            val notification = Notifications(
-                notificationId = 0, // auto increment trong SQLite
-                title = "Đăng nhập thành công",
-                content = "Xin chào ${user.username}, chúc bạn xem phim vui vẻ!",
-                createdAt = Date()
-            )
-            notificationDAO.insertNotification(notification)
-
-            CustomToast.show(this, "Đăng nhập thành công", ToastType.SUCCESS)
-
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
-
         // Chuyển sang màn hình đăng ký
         txtCreateAccount.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
             finish()
         }
+
     }
+
 
     private fun hashPassword(password: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())

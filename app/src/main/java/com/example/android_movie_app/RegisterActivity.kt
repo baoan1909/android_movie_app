@@ -116,11 +116,13 @@ class RegisterActivity : AppCompatActivity() {
                         CustomToast.show(this, "Đăng ký thành công", ToastType.SUCCESS)
 
                         // --- Lưu thông báo ký ---
+                        val user = userDAO.getUserByUsername(username)
                         val notification = Notifications(
-                            notificationId = 0, // auto increment trong SQLite
-                            title = "Đăng ký tài khoản thành công",
-                            content = "Xin chào ${username}, chúc bạn xem phim vui vẻ!",
-                            createdAt = Date()
+                            title = "Đăng ký thành công",
+                            content = "Xin chào ${user?.username}, chúc bạn xem phim vui vẻ!",
+                            createdAt = Date(),
+                            type = "cn",
+                            userId = user?.id
                         )
                         notificationDAO.insertNotification(notification)
 

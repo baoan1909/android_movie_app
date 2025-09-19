@@ -162,10 +162,13 @@ data class MovieWithCategories(
 )
 
 data class Notifications(
-    val notificationId: Int,
+    val id: Int = 0,
     val title: String,
     val content: String,
-    val createdAt: Date? = null
+    val createdAt: Date?,
+    val type: String,
+    val userId: Int?
 )
+
 
 
