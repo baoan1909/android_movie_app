@@ -55,7 +55,21 @@
                 android:layout_marginTop="4dp"
                 android:text="ai xem lại điểm danh (7/5/2025)"
                 android:textColor="@android:color/white"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:maxLines="3"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/textViewToggleMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Xem thêm"
+                android:textColor="#AFAFAF"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -85,6 +99,14 @@
             android:textColor="#AFAFAF"
             android:textStyle="bold"
             android:textSize="14sp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewReplies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="52dp"
+            android:visibility="gone" />
+
 
     </LinearLayout>
 </LinearLayout>

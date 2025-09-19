@@ -26,14 +26,14 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import com.example.android_movie_app.CustomToast
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.R
-import com.example.android_movie_app.RatingDialog
+import com.example.android_movie_app.adapter.RatingDialog
 import com.example.android_movie_app.SessionManager
 import com.example.android_movie_app.ToastType
 import com.example.android_movie_app.WatchProgress
 import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 import java.util.Date
-import com.example.android_movie_app.ShareDialog
+import com.example.android_movie_app.adapter.ShareDialog
 
 
 class MovieDetailAdapter(

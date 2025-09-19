@@ -102,6 +102,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
                 else -> {
                     val newUser = User(
+                        avatarUrl = "ic_account_circle",
                         username = username,
                         email = email,
                         passwordHash = hashPassword(password),

@@ -18,6 +18,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             put("username", user.username)
             put("email", user.email)
             put("passwordHash", user.passwordHash)
+            put("avatarUrl", user.avatarUrl)
             put("createdAt", user.createdAt?.let { dateFormat.format(it) })
             put("isActive", if (user.isActive) 1 else 0)
             put("avatarPath", user.avatarPath)
@@ -30,9 +31,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM users WHERE username=?", arrayOf(username))
         cursor.use {
-            if (it.moveToFirst()) {
-                return cursorToUser(it)
-            }
+            if (it.moveToFirst()) return cursorToUser(it)
         }
         return null
     }
@@ -41,9 +40,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery("SELECT * FROM users WHERE id=?", arrayOf(id.toString()))
         cursor.use {
-            if (it.moveToFirst()) {
-                return cursorToUser(it)
-            }
+            if (it.moveToFirst()) return cursorToUser(it)
         }
         return null
     }
@@ -67,6 +64,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
             put("username", user.username)
             put("email", user.email)
             put("passwordHash", user.passwordHash)
+            put("avatarUrl", user.avatarUrl)
             put("isActive", if (user.isActive) 1 else 0)
             put("createdAt", user.createdAt?.let { dateFormat.format(it) })
             put("avatarPath", user.avatarPath)
@@ -88,6 +86,7 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         return db.delete("users", "id=?", arrayOf(id.toString()))
     }
 
+<<<<<<< Updated upstream
     //Update Avatar
     fun updateUserAvatar(id: Int, avatarPath: String): Int {
         val db = dbHelper.writableDatabase
@@ -96,9 +95,25 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
         }
         return db.update("users", values, "id=?", arrayOf(id.toString()))
     }
+=======
+    // ---------- UTILITY ----------
+    fun cursorToUser(cursor: Cursor): User {
+        // Cột bắt buộc
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+        val username = cursor.getString(cursor.getColumnIndexOrThrow("username"))
+        val email = cursor.getString(cursor.getColumnIndexOrThrow("email"))
+        val passwordHash = cursor.getString(cursor.getColumnIndexOrThrow("passwordHash"))
+        val isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1
 
-    public fun cursorToUser(cursor: Cursor): User {
+        // Cột tùy chọn
+        val avatarUrl = cursor.getColumnIndex("avatarUrl").let { if (it != -1) cursor.getString(it) ?: "" else "" }
+        val createdAt = cursor.getColumnIndex("createdAt").let {
+            if (it != -1) cursor.getString(it)?.let { d -> dateFormat.parse(d) } else null
+        }
+>>>>>>> Stashed changes
+
         return User(
+<<<<<<< Updated upstream
             id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
             username = cursor.getString(cursor.getColumnIndexOrThrow("username")),
             email = cursor.getString(cursor.getColumnIndexOrThrow("email")),
@@ -107,6 +122,15 @@ class UserDAO(private val dbHelper: DatabaseHelper) {
                 ?.let { d -> dateFormat.parse(d) },
             isActive = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) == 1,
             avatarPath = cursor.getString(cursor.getColumnIndexOrThrow("avatarPath"))
+=======
+            id = id,
+            avatarUrl = avatarUrl,
+            username = username,
+            email = email,
+            passwordHash = passwordHash,
+            createdAt = createdAt,
+            isActive = isActive
+>>>>>>> Stashed changes
         )
     }
 }

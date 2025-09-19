@@ -5,6 +5,7 @@ import java.util.Date
 // Bảng users
 data class User(
     var id: Int = 0,
+    var avatarUrl: String,
     var username: String,
     var email: String,
     var passwordHash: String,
@@ -109,6 +110,23 @@ data class Comment(
     var content: String,
     var createdAt: Date? = null
 )
+
+data class CommentWithUser(
+    val id: Int,
+    val userId: Int,
+    val avatarUrl: String,
+    val username: String?,
+    val movieId: Int,
+    val episodeId: Int?,
+    val parentCommentId: Int?,
+    val content: String,
+    val createdAt: Date?,
+    var isExpanded: Boolean = false,        // trạng thái xem thêm/thu gọn
+    var isRepliesVisible: Boolean = false,  // trạng thái hiển thị/ẩn replies
+    var replies: MutableList<CommentWithUser>? = null
+)
+
+
 
 // ---------- REVIEWS ----------
 data class Review(
