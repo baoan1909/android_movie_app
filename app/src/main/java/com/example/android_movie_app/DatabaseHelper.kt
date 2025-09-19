@@ -726,9 +726,10 @@ class DatabaseHelper(context: Context) :
     """)
 
         // ------------------- SAMPLE WATCH PROGRESS DATA -------------------
-        // Thêm một số dữ liệu mẫu cho user đầu tiên để test watching functionality
-        // Giả sử user có id = 1 (user "diyuyi" được tạo trên)
+        // Comment out sample data for production
+        // Uncomment below lines if you want to test watching functionality with sample data
         
+        /*
         // User đang xem I Am Your King 1 - Tập 2, đã xem được 45% (675/1500 giây)
         db?.execSQL("""
             INSERT INTO watch_progress (userId, movieId, episodeId, currentTime, totalTime, isCompleted, lastWatchedAt) 
@@ -752,6 +753,7 @@ class DatabaseHelper(context: Context) :
             INSERT INTO watch_progress (userId, movieId, episodeId, currentTime, totalTime, isCompleted, lastWatchedAt) 
             VALUES (1, 19, (SELECT id FROM episodes WHERE movieId = 19 AND episodeNumber = 10), 225, 1500, 0, '2025-09-18 20:30:00')
         """)
+        */
 
     }
 
