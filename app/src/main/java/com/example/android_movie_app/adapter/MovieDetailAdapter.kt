@@ -264,10 +264,12 @@ class MovieDetailAdapter(
                     R.id.tabEpisodes -> {
                         Toast.makeText(activity, "Danh sách tập", Toast.LENGTH_SHORT).show()
                         binding.episodesRecyclerView.visibility = View.VISIBLE
+                        binding.gridViewSeasonsMovie.visibility = View.GONE
                     }
                     R.id.tabSeasons -> {
                         Toast.makeText(activity, "Danh sách season", Toast.LENGTH_SHORT).show()
                         binding.episodesRecyclerView.visibility = View.GONE
+                        binding.gridViewSeasonsMovie.visibility = View.VISIBLE
                     }
                 }
             }
@@ -277,10 +279,22 @@ class MovieDetailAdapter(
     private fun highlightTab(selectedTab: TextView) {
         val tabs = listOf(binding.tabEpisodes, binding.tabSeasons)
         for (tab in tabs) {
-            tab?.alpha = if (tab == selectedTab) 1f else 0.5f
+            if (tab == selectedTab) {
+                tab?.setTextAppearance(R.style.TabButton_Selected)
+                tab?.setBackgroundResource(R.drawable.tab_selected_indicator)
+            } else {
+                tab?.setTextAppearance(R.style.TabButton)
+                tab?.background = null // hoặc set lại background mặc định
+            }
         }
-        binding.dividerTabs?.animate()?.x(selectedTab.x)?.setDuration(200)?.start()
+
+        // Animation cho divider
+        binding.dividerTabs?.animate()
+            ?.x(selectedTab.x)
+            ?.setDuration(200)
+            ?.start()
     }
+
 
     // ----------------- PLAYER -----------------
     @UnstableApi
@@ -316,10 +330,21 @@ class MovieDetailAdapter(
         loadEpisodeAndPlay()
     }
 
-    @UnstableApi // Thêm annotation nếu cần
+    @UnstableApi
     private fun displayEpisodeList() {
         if (episodeList.isNotEmpty()) {
-            val episodeAdapter = EpisodeAdapter(episodeList) { selectedEpisode ->
+            val userId = getCurrentUserIdOrNull()
+            val wp = userId?.let { watchProgressDAO.getLatestWatchProgressForMovie(it, movieId) }
+
+            // Xác định tập đang xem (nếu có), nếu chưa có thì lấy tập 1
+            val lastWatchedEpisodeNumber = wp?.episodeId?.let { id ->
+                episodeList.find { it.id == id }?.episodeNumber
+            } ?: 1
+
+            val episodeAdapter = EpisodeAdapter(
+                episodes = episodeList,
+                lastWatchedEpisodeNumber = lastWatchedEpisodeNumber
+            ) { selectedEpisode ->
                 currentEpisodeId = selectedEpisode.id
                 savedPosition = 0 // Bắt đầu tập mới từ đầu
                 playVideo(selectedEpisode.videoUrl)
@@ -327,13 +352,13 @@ class MovieDetailAdapter(
             }
 
             binding.episodesRecyclerView.apply {
-                // Sử dụng GridLayoutManager để hiển thị dạng lưới
                 layoutManager = androidx.recyclerview.widget.GridLayoutManager(activity, 4)
                 adapter = episodeAdapter
-                visibility = View.VISIBLE // Đảm bảo RecyclerView được hiển thị
+                visibility = View.VISIBLE
             }
         }
     }
+
 
 
     private fun setupMovieInfo(title: String, rating: Double, year: Int, content: String?, isSeries: Boolean, totalEpisodes: Int = 0, episodesReleased: Int = 0) {

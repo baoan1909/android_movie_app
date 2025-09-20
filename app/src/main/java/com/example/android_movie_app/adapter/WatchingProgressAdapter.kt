@@ -65,8 +65,8 @@ class WatchingProgressAdapter(
 
         Glide.with(context)
             .load(fullPosterUrl)
-            .placeholder(R.drawable.anime_1)
-            .error(R.drawable.anime_1)
+            .placeholder(R.drawable.gradient_thumb)
+            .error(R.drawable.gradient_thumb)
             .into(holder.imgMoviePoster)
 
         // Episode info (for series)

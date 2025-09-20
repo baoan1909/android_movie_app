@@ -10,10 +10,24 @@ import com.example.android_movie_app.Episode
 
 class EpisodeAdapter(
     private val episodes: List<Episode>,
-    private val onItemClick: (Episode) -> Unit // Lambda để xử lý sự kiện click
+    private val lastWatchedEpisodeNumber: Int?,
+    private val onItemClick: (Episode) -> Unit
 ) : RecyclerView.Adapter<EpisodeAdapter.EpisodeViewHolder>() {
 
     private var selectedPosition: Int = RecyclerView.NO_POSITION
+
+    init {
+        // Nếu đã xem tập nào → set selectedPosition theo nó
+        // Nếu chưa → mặc định chọn tập 1
+        selectedPosition = if (!episodes.isNullOrEmpty()) {
+            val index = lastWatchedEpisodeNumber?.let { number ->
+                episodes.indexOfFirst { it.episodeNumber == number }
+            } ?: 0 // chưa có thì tập 1
+            if (index != -1) index else 0
+        } else {
+            RecyclerView.NO_POSITION
+        }
+    }
 
     inner class EpisodeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val episodeButton: AppCompatButton = itemView.findViewById(R.id.btnEpisodeItem)
@@ -32,7 +46,6 @@ class EpisodeAdapter(
                 val previousPosition = selectedPosition
                 selectedPosition = adapterPosition
 
-                // Cập nhật lại giao diện cho tập cũ và tập mới
                 notifyItemChanged(previousPosition)
                 notifyItemChanged(selectedPosition)
 

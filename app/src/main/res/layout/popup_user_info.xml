@@ -17,7 +17,7 @@
             android:id="@+id/imgAvatar_popup_info"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/anime_1"
+            android:src="@drawable/ic_account_circle"
             android:scaleType="centerCrop"
             android:layout_marginRight="12dp" />
 
