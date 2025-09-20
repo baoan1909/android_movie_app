@@ -24,10 +24,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.android_movie_app.CustomToast
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.Episode
+import com.example.android_movie_app.GridSpacingItemDecoration
 import com.example.android_movie_app.MovieDetailActivity
 import com.example.android_movie_app.R
 import com.example.android_movie_app.adapter.RatingDialog
@@ -368,15 +370,21 @@ class MovieDetailAdapter(
     private fun loadRelatedMovies() {
         val relatedMovies = movieDAO.getRelatedMovies(movieId)
 
-        val adapter = GenreAdapter(activity, relatedMovies) { movie ->
-            val intent = Intent(activity, MovieDetailActivity::class.java)
-            intent.putExtra("movie_id", movie.id)
-            intent.putExtra("movie_name", movie.name)
-            activity.startActivity(intent)
-        }
+        binding.gridViewTypeMovie.apply {
+            layoutManager = GridLayoutManager(activity, 2)
+            adapter = GenreRecyclerAdapter(relatedMovies) { movie ->
+                val intent = Intent(activity, MovieDetailActivity::class.java)
+                intent.putExtra("movie_id", movie.id)
+                intent.putExtra("movie_name", movie.name)
+                activity.startActivity(intent)
+            }
 
-        binding.gridViewTypeMovie.adapter = adapter
-        binding.gridViewTypeMovie.visibility = if (relatedMovies.isNotEmpty()) View.VISIBLE else View.GONE
+            // Thêm khoảng cách 16dp (chuyển về px)
+            val spacing = resources.getDimensionPixelSize(R.dimen.grid_spacing)
+            if (itemDecorationCount == 0) { // tránh add nhiều lần
+                addItemDecoration(GridSpacingItemDecoration(2, spacing, true))
+            }
+        }
     }
 
 

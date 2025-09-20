@@ -375,24 +375,24 @@
             android:layout_height="1dp"
             android:background="#434343" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/episodesRecyclerView"
+        <!-- KHÔNG cần NestedScrollView thứ 2 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:nestedScrollingEnabled="false"/>
+            android:orientation="vertical">
 
-        <GridView
-            android:id="@+id/gridViewTypeMovie"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            android:numColumns="2"
-            android:verticalSpacing="10dp"
-            android:horizontalSpacing="10dp"
-            android:stretchMode="columnWidth"
-            android:padding="10dp"
-            android:gravity="center"
-            android:visibility="gone"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/episodesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/gridViewTypeMovie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:nestedScrollingEnabled="false"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
