@@ -249,6 +249,39 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         return movies
     }
 
+    // Lấy phim cùng thể loại (loại bỏ movie hiện tại)
+    fun getRelatedMovies(movieId: Int): List<Movie> {
+        val db = dbHelper.readableDatabase
+        val movies = mutableListOf<Movie>()
+
+        val query = """
+        SELECT DISTINCT m.*
+        FROM movies m
+        INNER JOIN movie_categories mc ON m.id = mc.movieId
+        WHERE mc.categoryId IN (
+            SELECT categoryId 
+            FROM movie_categories 
+            WHERE movieId = ?
+        )
+        AND m.id != ?
+        ORDER BY m.createdAt DESC
+    """
+
+        val cursor = db.rawQuery(query, arrayOf(movieId.toString(), movieId.toString()))
+
+        cursor.use {
+            if (it.moveToFirst()) {
+                do {
+                    movies.add(cursorToMovie(it))
+                } while (it.moveToNext())
+            }
+        }
+
+        db.close()
+        return movies
+    }
+
+
     public fun cursorToMovie(cursor: Cursor): Movie {
         return Movie(
             id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),

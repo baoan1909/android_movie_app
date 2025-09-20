@@ -15,9 +15,7 @@ import com.example.android_movie_app.dao.WatchProgressDAO
 import kotlinx.coroutines.*
 
 class WatchingActivity : BaseActivity() {
-
-    private lateinit var btnBack: ImageView
-    private lateinit var btnClearAll: ImageView
+    private lateinit var btnClearAll: LinearLayout
     private lateinit var tvStats: TextView
     private lateinit var layoutEmptyState: LinearLayout
     private lateinit var layoutLoading: LinearLayout
@@ -44,7 +42,6 @@ class WatchingActivity : BaseActivity() {
     }
     
     private fun initViews() {
-        btnBack = findViewById(R.id.btnBack)
         btnClearAll = findViewById(R.id.btnClearAll)
         tvStats = findViewById(R.id.tvStats)
         layoutEmptyState = findViewById(R.id.layoutEmptyState)
@@ -77,10 +74,7 @@ class WatchingActivity : BaseActivity() {
     }
     
     private fun setupListeners() {
-        btnBack.setOnClickListener {
-            finish()
-        }
-        
+
         btnClearAll.setOnClickListener {
             clearAllWatchingProgress()
         }

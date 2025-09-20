@@ -4,7 +4,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="8dp"
-    android:background="@drawable/bg_image_rounded">
+    android:background="@drawable/rounded_background">
 
     <ImageView
         android:id="@+id/imgPosterSearch"
@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:paddingStart="12dp"
         android:text="Tên phim"
-        android:textColor="#212121"
+        android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:ellipsize="end"
         android:singleLine="true"/>

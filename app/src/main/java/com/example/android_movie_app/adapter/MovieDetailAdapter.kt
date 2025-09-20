@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide
 import com.example.android_movie_app.CustomToast
 import com.example.android_movie_app.DatabaseHelper
 import com.example.android_movie_app.Episode
+import com.example.android_movie_app.MovieDetailActivity
 import com.example.android_movie_app.R
 import com.example.android_movie_app.adapter.RatingDialog
 import com.example.android_movie_app.SessionManager
@@ -75,6 +76,7 @@ class MovieDetailAdapter(
         setupPlayer()
         loadMovieDetailsAndPlay()
         setupTabs()
+        loadRelatedMovies()
         setupPlayerControls()
         setupSeekBar()
         startSeekBarUpdater()
@@ -83,6 +85,10 @@ class MovieDetailAdapter(
         setupRatingDialog()
         updateFollowButtonUI()
         loadLatestComment(movieId)
+
+        highlightTab(binding.tabEpisodes!!)
+        binding.episodesRecyclerView.visibility = View.VISIBLE
+        binding.gridViewTypeMovie.visibility = View.GONE
     }
 
 
@@ -255,7 +261,7 @@ class MovieDetailAdapter(
 
     // ----------------- TABS -----------------
     private fun setupTabs() {
-        val tabs = listOf(binding.tabEpisodes, binding.tabSeasons)
+        val tabs = listOf(binding.tabEpisodes, binding.tabType)
         for (tab in tabs) {
             tab?.setOnClickListener {
                 highlightTab(tab)
@@ -264,12 +270,12 @@ class MovieDetailAdapter(
                     R.id.tabEpisodes -> {
                         Toast.makeText(activity, "Danh sách tập", Toast.LENGTH_SHORT).show()
                         binding.episodesRecyclerView.visibility = View.VISIBLE
-                        binding.gridViewSeasonsMovie.visibility = View.GONE
+                        binding.gridViewTypeMovie.visibility = View.GONE
                     }
-                    R.id.tabSeasons -> {
-                        Toast.makeText(activity, "Danh sách season", Toast.LENGTH_SHORT).show()
+                    R.id.tabType -> {
+                        Toast.makeText(activity, "Danh sách liên quan", Toast.LENGTH_SHORT).show()
                         binding.episodesRecyclerView.visibility = View.GONE
-                        binding.gridViewSeasonsMovie.visibility = View.VISIBLE
+                        binding.gridViewTypeMovie.visibility = View.VISIBLE
                     }
                 }
             }
@@ -277,7 +283,7 @@ class MovieDetailAdapter(
     }
 
     private fun highlightTab(selectedTab: TextView) {
-        val tabs = listOf(binding.tabEpisodes, binding.tabSeasons)
+        val tabs = listOf(binding.tabEpisodes, binding.tabType)
         for (tab in tabs) {
             if (tab == selectedTab) {
                 tab?.setTextAppearance(R.style.TabButton_Selected)
@@ -359,6 +365,19 @@ class MovieDetailAdapter(
         }
     }
 
+    private fun loadRelatedMovies() {
+        val relatedMovies = movieDAO.getRelatedMovies(movieId)
+
+        val adapter = GenreAdapter(activity, relatedMovies) { movie ->
+            val intent = Intent(activity, MovieDetailActivity::class.java)
+            intent.putExtra("movie_id", movie.id)
+            intent.putExtra("movie_name", movie.name)
+            activity.startActivity(intent)
+        }
+
+        binding.gridViewTypeMovie.adapter = adapter
+        binding.gridViewTypeMovie.visibility = if (relatedMovies.isNotEmpty()) View.VISIBLE else View.GONE
+    }
 
 
     private fun setupMovieInfo(title: String, rating: Double, year: Int, content: String?, isSeries: Boolean, totalEpisodes: Int = 0, episodesReleased: Int = 0) {
