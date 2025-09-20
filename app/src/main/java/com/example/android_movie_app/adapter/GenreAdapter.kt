@@ -52,8 +52,8 @@ class GenreAdapter(
 
         Glide.with(context)
             .load(fullPosterUrl)
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .error(R.drawable.ic_launcher_foreground)
+            .placeholder(R.drawable.gradient_thumb)
+            .error(R.drawable.gradient_thumb)
             .into(holder.bannerImage)
 
         // Sử dụng callback onItemClick

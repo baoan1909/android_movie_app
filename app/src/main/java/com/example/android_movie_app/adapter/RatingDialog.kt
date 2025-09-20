@@ -12,6 +12,8 @@ import com.example.android_movie_app.R
 import com.example.android_movie_app.SessionManager
 import com.example.android_movie_app.ToastType
 import com.example.android_movie_app.dao.ReviewDAO
+import com.example.android_movie_app.dao.UserDAO
+import com.example.android_movie_app.dao.UserSessionDAO
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class RatingDialog(
@@ -20,6 +22,17 @@ class RatingDialog(
     private val episodeId: Int? = null,
     private val onRatingSaved: (Int) -> Unit
 ) {
+
+    private fun getCurrentUserIdOrNull(): Int? {
+        val sessionDAO = UserSessionDAO(DatabaseHelper(context))
+        val session = sessionDAO.getLatestValidSession() ?: return null
+
+        val userDAO = UserDAO(DatabaseHelper(context))
+        val user = userDAO.getUserById(session.userId) ?: return null
+
+        return user.id
+    }
+
     fun show() {
         val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme).apply {
             setContentView(
@@ -35,8 +48,7 @@ class RatingDialog(
         ratingBar?.setOnRatingBarChangeListener { _, rating, fromUser ->
             if (!fromUser) return@setOnRatingBarChangeListener
 
-            val session = SessionManager(context)
-            val userId = session.getUserId()
+            val userId = getCurrentUserIdOrNull()
 
             if (userId == null) {
                 CustomToast.show(context, "Bạn chưa đăng nhập", ToastType.WARNING)
