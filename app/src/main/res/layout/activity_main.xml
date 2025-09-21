@@ -38,6 +38,7 @@
                 android:singleLine="true"
                 android:dropDownVerticalOffset="4dp"
                 android:dropDownHorizontalOffset="0dp"
+                android:completionThreshold="1"
                 android:dropDownHeight="wrap_content"
                 android:dropDownWidth="match_parent"/>
 

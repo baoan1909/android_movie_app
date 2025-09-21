@@ -316,14 +316,14 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
 
         val args = mutableListOf<String>()
 
-        // Nếu có từ khóa => tìm theo tên hoặc originName
+        // Keyword filter
         if (!keyword.isNullOrEmpty()) {
             query.append(" AND (m.name LIKE ? OR m.originName LIKE ?)")
             args.add("%$keyword%")
             args.add("%$keyword%")
         }
 
-        // Nếu có slug category => lọc thêm theo category
+        // Category filter
         if (!categorySlug.isNullOrEmpty()) {
             query.append(" AND c.slug = ?")
             args.add(categorySlug)
@@ -357,9 +357,13 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
                             type = it.getString(it.getColumnIndexOrThrow("type")),
                             thumbUrl = it.getString(it.getColumnIndexOrThrow("thumbUrl")),
                             posterUrl = it.getString(it.getColumnIndexOrThrow("posterUrl")),
-                            year = it.getInt(it.getColumnIndexOrThrow("year")),
+                            year = if (!it.isNull(it.getColumnIndexOrThrow("year")))
+                                it.getInt(it.getColumnIndexOrThrow("year"))
+                            else null,
                             rating = it.getDouble(it.getColumnIndexOrThrow("rating")),
-                            createdAt = null,
+                            createdAt = it.getString(it.getColumnIndexOrThrow("createdAt"))?.let { dateStr ->
+                                dateFormat.parse(dateStr)
+                            },
                             categories = mutableListOf()
                         )
                     }
@@ -376,6 +380,7 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         db.close()
         return movies
     }
+
 
 
 }

@@ -8,6 +8,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.media3.common.util.UnstableApi
 import androidx.viewpager2.widget.ViewPager2
 import com.example.android_movie_app.adapter.BannerSliderAdapter
@@ -46,12 +47,11 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 1. Khởi tạo DatabaseHelper và DAO trước
         val dbHelper = DatabaseHelper(this)
         movieDAO = MovieDAO(dbHelper)
         mainAdapter = MainAdapter(this)
 
-        // 2. Ánh xạ view
+        // Ánh xạ view
         etSearch = findViewById(R.id.etSearch)
         btnSearch = findViewById(R.id.btnSearch)
         viewPager = findViewById(R.id.viewPagerBanner)
@@ -63,17 +63,16 @@ class MainActivity : BaseActivity() {
         posterFictionContainer = findViewById(R.id.posterFictionContainer)
         posterHumorousContainer = findViewById(R.id.posterHumorousContainer)
 
-        // 3. Khởi tạo Search Adapter với toàn bộ phim
+        // Search
         val allMovies = movieDAO.getAllMovies()
         searchAdapter = SearchResultAdapter(this, allMovies)
         etSearch.setAdapter(searchAdapter)
+        etSearch.threshold = 1 // ✅ hiển thị từ 1 ký tự
 
         // Khi chọn 1 phim trong dropdown
         etSearch.setOnItemClickListener { parent, _, position, _ ->
             val movie = parent.getItemAtPosition(position) as Movie
             etSearch.setText(movie.name, false)
-            Toast.makeText(this, "Bạn chọn: ${movie.name}", Toast.LENGTH_SHORT).show()
-
             val intent = Intent(this, MovieDetailActivity::class.java)
             intent.putExtra("movie_id", movie.id)
             startActivity(intent)
@@ -88,7 +87,12 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        // 4. Lấy dữ liệu từ database
+        // Luôn show dropdown khi text thay đổi
+        etSearch.addTextChangedListener {
+            if (!it.isNullOrEmpty()) etSearch.showDropDown()
+        }
+
+        // Load dữ liệu
         val genres = movieDAO.getGenres()
         val recentMovies = movieDAO.getRecentMovies()
         val topMovies = movieDAO.getTopMovies()
@@ -96,7 +100,6 @@ class MainActivity : BaseActivity() {
         val fictionMovies = movieDAO.getMoviesByGenre("Viễn Tưởng")
         val humorousMovies = movieDAO.getMoviesByGenre("Hài Hước")
 
-        // 5. Đưa dữ liệu lên UI
         mainAdapter.setGenres(genreContainer, genres)
         mainAdapter.setRecentMovies(posterContainer, recentMovies)
         mainAdapter.setTopMovies(topContainer, topMovies)
@@ -112,7 +115,6 @@ class MainActivity : BaseActivity() {
             TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
         }
 
-        // Logic auto slider
         setupAutoSlider()
     }
 
@@ -143,3 +145,4 @@ class MainActivity : BaseActivity() {
         sliderHandler.removeCallbacks(sliderRunnable)
     }
 }
+
