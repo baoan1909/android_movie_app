@@ -62,14 +62,23 @@ class NotificationsActivity : BaseActivity() {
 
     private fun loadSystemNotifications() {
         val system = notificationDAO.getSystemNotifications()
-        adapter = NotificationAdapter(system)
+        adapter = NotificationAdapter(system.toMutableList()) { notification ->
+            // Callback xóa
+            notificationDAO.deleteNotification(notification.id)
+            CustomToast.show(this, "Đã xóa thông báo", ToastType.SUCCESS)
+        }
         recyclerView.adapter = adapter
     }
 
     private fun loadUserNotifications() {
         val uid = currentUserId ?: return
         val personal = notificationDAO.getUserNotifications(uid)
-        adapter = NotificationAdapter(personal)
+        adapter = NotificationAdapter(personal.toMutableList()) { notification ->
+            // Callback xóa
+            notificationDAO.deleteNotification(notification.id)
+            CustomToast.show(this, "Đã xóa thông báo", ToastType.SUCCESS)
+        }
         recyclerView.adapter = adapter
     }
+
 }
