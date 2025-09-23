@@ -15,12 +15,13 @@ import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
@@ -32,14 +33,11 @@ import com.example.android_movie_app.Episode
 import com.example.android_movie_app.GridSpacingItemDecoration
 import com.example.android_movie_app.MovieDetailActivity
 import com.example.android_movie_app.R
-import com.example.android_movie_app.adapter.RatingDialog
-import com.example.android_movie_app.SessionManager
 import com.example.android_movie_app.ToastType
 import com.example.android_movie_app.WatchProgress
 import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 import java.util.Date
-import com.example.android_movie_app.adapter.ShareDialog
 import com.example.android_movie_app.data.CommentDAO
 
 
@@ -110,6 +108,7 @@ class MovieDetailAdapter(
     }
 
     // ----------------- INIT VIEWS -----------------
+    @UnstableApi
     private fun initViews() {
         binding.playerView?.useController = false
         binding.playerView?.setOnClickListener { toggleControlsWithTimer() }
@@ -131,6 +130,29 @@ class MovieDetailAdapter(
         }
         binding.btnDownload?.setOnClickListener {
             Toast.makeText(activity, "Bắt đầu tải xuống...", Toast.LENGTH_SHORT).show()
+            showControlsTemporarily()
+        }
+
+        binding.btnMore?.setOnClickListener {
+            // Lấy tốc độ hiện tại của player, nếu null thì mặc định là 1.0f
+            val currentSpeed = player?.playbackParameters?.speed ?: 1.0f
+
+            // Thay thế cách gọi cũ
+            val settingsSheet = MainSettingsBottomSheet(
+                currentSpeed = currentSpeed, // <-- THÊM DÒNG NÀY
+                onQualitySelected = { quality ->
+                    changeVideoQuality(quality)
+                },
+                onSpeedSelected = { speed ->
+                    player?.playbackParameters = player?.playbackParameters?.withSpeed(speed)!!
+                    CustomToast.show(activity, "Tốc độ phát: ${speed}x", ToastType.INFO)
+                    // CẬP NHẬT LẠI GIÁ TRỊ TỐC ĐỘ TRONG UI CỦA MAINSETTINGSBOTTOMSHEET
+                }
+            )
+            settingsSheet.show(
+                (activity as MovieDetailActivity).supportFragmentManager,
+                "MainSettingsBottomSheet"
+            )
             showControlsTemporarily()
         }
     }
@@ -219,6 +241,46 @@ class MovieDetailAdapter(
             showControlsTemporarily()
         }
     }
+
+    // Thêm hàm này vào trong class MovieDetailAdapter
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    private fun changeVideoQuality(quality: String) {
+        val qualityHeight = quality.removeSuffix("p").toIntOrNull() ?: return
+        player?.let { exoPlayer ->
+            // Lấy track group của video
+            val trackGroup = exoPlayer.currentTracks.groups.firstOrNull {
+                it.type == C.TRACK_TYPE_VIDEO
+            }?.mediaTrackGroup ?: return
+
+            // Tìm index của track có độ phân giải phù hợp
+            var trackIndex = -1
+            for (i in 0 until trackGroup.length) {
+                val format = trackGroup.getFormat(i)
+                if (format.height == qualityHeight) {
+                    trackIndex = i
+                    break
+                }
+            }
+
+            if (trackIndex != -1) {
+                // =================== PHẦN THAY ĐỔI ===================
+                val override = TrackSelectionOverride(trackGroup, listOf(trackIndex))
+
+                // Sử dụng clearOverridesOfType và addOverride
+                exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
+                    .buildUpon()
+                    .clearOverridesOfType(C.TRACK_TYPE_VIDEO) // 1. Xóa các lựa chọn chất lượng video cũ
+                    .addOverride(override)                   // 2. Thêm lựa chọn chất lượng mới
+                    .build()
+
+                CustomToast.show(activity, "Đã đổi chất lượng sang $quality", ToastType.SUCCESS)
+            } else {
+                CustomToast.show(activity, "Không tìm thấy chất lượng $quality", ToastType.ERROR)
+            }
+        }
+    }
+
 
     // ----------------- FULLSCREEN -----------------
     @UnstableApi

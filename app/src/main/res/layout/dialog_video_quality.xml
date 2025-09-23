@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:background="@drawable/rounded_background"> <TextView
+    android:id="@+id/tv_current_quality"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Chất lượng video hiện tại • 720p"
+    android:textColor="@color/white"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="16dp"
+    android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView style="@style/QualityOption" android:text="1080p" android:textColor="@color/white"/>
+        <TextView style="@style/QualityOption" android:text="720p" android:textStyle="bold" android:textColor="@color/white"/>
+        <TextView style="@style/QualityOption" android:text="480p" android:textColor="@color/white"/>
+        <TextView style="@style/QualityOption" android:text="360p" android:textColor="@color/white"/>
+        <TextView style="@style/QualityOption" android:text="240p" android:textColor="@color/white"/>
+        <TextView style="@style/QualityOption" android:text="144p" android:textColor="@color/white"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -2,9 +2,11 @@ package com.example.android_movie_app
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.util.UnstableApi
 import com.example.android_movie_app.adapter.CommentBottomSheet
+import com.example.android_movie_app.adapter.MainSettingsBottomSheet
 import com.example.android_movie_app.adapter.MovieDetailAdapter
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 

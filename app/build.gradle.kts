@@ -41,23 +41,24 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.media3.common.ktx)
+
+    // Media3 (phiên bản mới nhất, đồng bộ)
+    implementation("androidx.media3:media3-common:1.4.1")
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Thư viện khác
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("com.google.android.material:material:1.12.0")
-    // ExoPlayer core
-    implementation("androidx.media3:media3-exoplayer:1.4.1")
-    // UI để dùng PlayerView
-    implementation("androidx.media3:media3-ui:1.4.1")
-    // Nếu có HLS, DASH
-    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
 }

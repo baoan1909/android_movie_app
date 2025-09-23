@@ -171,5 +171,13 @@ data class Notifications(
     val userId: Int?
 )
 
+data class SettingOption(
+    val iconRes: Int,
+    val title: String,
+    val value: String? = null,
+    val onClick: (() -> Unit)? = null
+)
+
+
 
 
