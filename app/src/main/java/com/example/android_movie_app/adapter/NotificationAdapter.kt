@@ -11,14 +11,17 @@ import com.example.android_movie_app.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NotificationAdapter(private val list: List<Notifications>) :
-    RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+class NotificationAdapter(
+    private val notifications: MutableList<Notifications>,
+    private val onDeleteClick: (Notifications) -> Unit
+) : RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgNotification: ImageView = itemView.findViewById(R.id.imgNotification)
         val tvTitle: TextView = itemView.findViewById(R.id.tvNotificationTitle)
         val tvContent: TextView = itemView.findViewById(R.id.tvNotificationContent)
         val tvTime: TextView = itemView.findViewById(R.id.tvNotificationTime)
+        val ivDelete: ImageView = itemView.findViewById(R.id.ivDelete)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder {
@@ -28,11 +31,9 @@ class NotificationAdapter(private val list: List<Notifications>) :
     }
 
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) {
-        val item = list[position]
-
+        val item = notifications[position]
 
         holder.imgNotification.setImageResource(R.drawable.ic_info_circle)
-
         holder.tvTitle.text = item.title
         holder.tvContent.text = item.content
 
@@ -43,7 +44,21 @@ class NotificationAdapter(private val list: List<Notifications>) :
         } ?: run {
             holder.tvTime.text = ""
         }
+
+        // Khi long click vào item -> hiện nút xóa
+        holder.itemView.setOnLongClickListener {
+            holder.ivDelete.visibility = View.VISIBLE
+            true
+        }
+
+        // Khi click nút xóa -> callback + xóa item
+        holder.ivDelete.setOnClickListener {
+            onDeleteClick(item)                   // Gọi callback ra ngoài
+            notifications.removeAt(position)      // Xóa khỏi list
+            notifyItemRemoved(position)           // Cập nhật RecyclerView
+            notifyItemRangeChanged(position, notifications.size) // cập nhật lại index
+        }
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = notifications.size
 }

@@ -9,10 +9,12 @@ import android.widget.Filter
 import android.widget.ImageView
 import android.widget.TextView
 import android.util.Log
-
+import java.util.Locale
 import com.bumptech.glide.Glide
 import com.example.android_movie_app.Movie
 import com.example.android_movie_app.R
+import java.text.Normalizer
+import java.util.regex.Pattern
 
 class SearchResultAdapter(
     context: Context,
@@ -33,7 +35,7 @@ class SearchResultAdapter(
         Glide.with(parent.context)
             .load("https://img.ophim.live/uploads/movies/${movie?.posterUrl}")
             .placeholder(R.drawable.ic_movie)
-            .error(R.drawable.ic_error_circle)
+            .error(R.drawable.ic_movie)
             .into(imgPoster)
 
         return view
@@ -55,9 +57,10 @@ class SearchResultAdapter(
                     results.values = movies
                     results.count = movies.size
                 } else {
+                    val query = removeAccent(constraint.toString().lowercase(Locale.getDefault())).trim()
                     val filtered = movies.filter {
-                        it.name.contains(constraint, ignoreCase = true)
-                        // Nếu muốn tìm theo category thì phải truyền MovieWithCategories
+                        val movieName = removeAccent(it.name.lowercase(Locale.getDefault()))
+                        movieName.contains(query)
                     }
                     results.values = filtered
                     results.count = filtered.size
@@ -72,4 +75,12 @@ class SearchResultAdapter(
             }
         }
     }
+
+    // Hàm bỏ dấu tiếng Việt
+    private fun removeAccent(s: String): String {
+        val temp = Normalizer.normalize(s, Normalizer.Form.NFD)
+        val pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+")
+        return pattern.matcher(temp).replaceAll("")
+    }
 }
+
