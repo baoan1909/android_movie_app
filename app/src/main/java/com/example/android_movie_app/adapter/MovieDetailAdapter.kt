@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.widget.NestedScrollView
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -419,10 +420,12 @@ class MovieDetailAdapter(
                 savedPosition = 0 // Bắt đầu tập mới từ đầu
                 playVideo(selectedEpisode.videoUrl)
                 CustomToast.show(activity, "Đang phát tập ${selectedEpisode.episodeNumber}", ToastType.INFO)
+
+                (binding.root as? NestedScrollView)?.smoothScrollTo(0, binding.playerContainer!!.top)
             }
 
             binding.episodesRecyclerView.apply {
-                layoutManager = androidx.recyclerview.widget.GridLayoutManager(activity, 4)
+                layoutManager = GridLayoutManager(activity, 4)
                 adapter = episodeAdapter
                 visibility = View.VISIBLE
             }

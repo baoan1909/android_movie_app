@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.android_movie_app.Comment
 import com.example.android_movie_app.CommentWithUser
 import com.example.android_movie_app.DatabaseHelper
@@ -54,6 +55,25 @@ class CommentBottomSheet(private val movieId: Int) : BottomSheetDialogFragment()
         commentDAO = CommentDAO(requireContext())
         setupRecyclerView()
         loadComments()
+        val sessionDAO = UserSessionDAO(DatabaseHelper(requireContext()))
+        val session = sessionDAO.getLatestValidSession()
+        val userId = session?.userId
+        if (userId != null) {
+            val userDAO = UserDAO(DatabaseHelper(requireContext()))
+            val user = userDAO.getUserById(userId)
+
+            user?.avatarPath?.let { avatarPath ->
+                if (avatarPath.isNotEmpty()) {
+                    // Nếu bạn lưu path dạng URI hoặc URL
+                    Glide.with(this)
+                        .load(avatarPath)
+                        .placeholder(R.drawable.ic_account_circle) // fallback
+                        .into(binding.imageViewUserInputAvatar)
+                } else {
+                    binding.imageViewUserInputAvatar.setImageResource(R.drawable.ic_account_circle)
+                }
+            }
+        }
 
         binding.buttonClose.setOnClickListener { dismiss() }
         binding.buttonSend.setOnClickListener { insertComment() }

@@ -57,10 +57,10 @@ class WatchingProgressAdapter(
         holder.tvType.text = if (movie.type == "series") "Phim bộ" else "Phim lẻ"
 
         // Load movie poster
-        val fullPosterUrl = if (movie.posterUrl?.startsWith("http") == true) {
-            movie.posterUrl
+        val fullPosterUrl = if (movie.thumbUrl?.startsWith("http") == true) {
+            movie.thumbUrl
         } else {
-            "https://img.ophim.live/uploads/movies/${movie.posterUrl}"
+            "https://img.ophim.live/uploads/movies/${movie.thumbUrl}"
         }
 
         Glide.with(context)
