@@ -11,20 +11,20 @@ import com.example.android_movie_app.R
 import com.example.android_movie_app.SettingOption
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-// Sửa constructor để nhận các hàm callback
 class MainSettingsBottomSheet(
-    private val currentSpeed: Float,
-    private val onQualitySelected: (String) -> Unit,
-    private val onSpeedSelected: (Float) -> Unit
+// Nhận vào cả chất lượng và tốc độ hiện tại
+private val currentQuality: String,
+private val currentSpeed: Float,
+// Sửa callback onQualitySelected để trả về String
+private val onQualitySelected: (String) -> String,
+private val onSpeedSelected: (Float) -> Unit
 ) : BottomSheetDialogFragment() {
 
     private lateinit var adapter: SettingsAdapter
     private lateinit var options: MutableList<SettingOption>
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.dialog_main_settings, container, false)
     }
@@ -42,20 +42,22 @@ class MainSettingsBottomSheet(
             SettingOption(
                 iconRes = R.drawable.ic_settings,
                 title = "Chất lượng",
-                value = "Tự động (720p)", // Giá trị này có thể cần được truyền từ ngoài vào
+                value = currentQuality, // Hiển thị chất lượng ban đầu
                 onClick = {
-                    val dialog = VideoQualityBottomSheetDialogFragment(
-                        currentQuality = options[0].value ?: "720p"
+                    val qualityDialog = VideoQualityBottomSheetDialogFragment(
+                        currentQuality = options.find { it.title == "Chất lượng" }?.value ?: "720p"
                     ) { selectedQuality ->
-                        // Cập nhật UI
-                        options[0] = options[0].copy(value = selectedQuality)
-                        adapter.notifyItemChanged(0)
+                        // 1. Gọi callback của Adapter và nhận lại kết quả
+                        val qualityToShow = onQualitySelected(selectedQuality)
 
-                        // **GỌI CALLBACK VỀ ADAPTER**
-                        onQualitySelected(selectedQuality)
-                        dismiss() // Đóng dialog cài đặt sau khi chọn
+                        // 2. Cập nhật UI của dialog này với kết quả đó
+                        val qualityIndex = options.indexOfFirst { it.title == "Chất lượng" }
+                        if (qualityIndex != -1) {
+                            options[qualityIndex] = options[qualityIndex].copy(value = qualityToShow)
+                            adapter.notifyItemChanged(qualityIndex)
+                        }
                     }
-                    dialog.show(parentFragmentManager, "VideoQualityDialog")
+                    qualityDialog.show(parentFragmentManager, "VideoQualityDialog")
                 }
             ),
             SettingOption(
@@ -63,16 +65,21 @@ class MainSettingsBottomSheet(
                 title = "Tốc độ phát",
                 value = currentSpeedText,
                 onClick = {
-                    val dialog = PlaybackSpeedBottomSheetDialogFragment(
-                        currentSpeed = this.currentSpeed // <-- TRUYỀN TỐC ĐỘ HIỆN TẠI
-                    ) { selectedSpeed ->
-                        // Cập nhật UI
-                        val speedText = String.format("%.2fx", selectedSpeed)
-                        options[1] = options[1].copy(value = speedText)
-                        adapter.notifyItemChanged(1)
+                    // Lấy giá trị tốc độ hiện tại từ text view
+                    val speedValue = options.find { it.title == "Tốc độ phát" }?.value
+                        ?.replace("x", "")?.toFloatOrNull() ?: 1.0f
 
-                        // GỌI CALLBACK VỀ ADAPTER
+                    val dialog = PlaybackSpeedBottomSheetDialogFragment(
+                        currentSpeed = speedValue
+                    ) { selectedSpeed ->
                         onSpeedSelected(selectedSpeed)
+                        // Cập nhật UI của dialog này
+                        val speedText = String.format("%.2fx", selectedSpeed)
+                        val speedIndex = options.indexOfFirst { it.title == "Tốc độ phát" }
+                        if (speedIndex != -1) {
+                            options[speedIndex] = options[speedIndex].copy(value = speedText)
+                            adapter.notifyItemChanged(speedIndex)
+                        }
                     }
                     dialog.show(parentFragmentManager, "PlaybackSpeedDialog")
                 }

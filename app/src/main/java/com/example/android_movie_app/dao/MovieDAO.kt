@@ -69,6 +69,24 @@ class MovieDAO(val dbHelper: DatabaseHelper) {
         return db.delete("movies", "id=?", arrayOf(id.toString()))
     }
 
+    fun updateMovieRating(movieId: Int, newRating: Double): Boolean {
+        val db = dbHelper.writableDatabase
+        return try {
+            val values = ContentValues()
+            // Làm tròn rating đến 1 chữ số thập phân cho đẹp
+            val roundedRating = String.format(Locale.US, "%.1f", newRating).toDouble()
+            values.put("rating", roundedRating)
+
+            val affectedRows = db.update("movies", values, "id = ?", arrayOf(movieId.toString()))
+            affectedRows > 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        } finally {
+            db.close()
+        }
+    }
+
     fun getGenres(): List<String> {
         val db = dbHelper.readableDatabase
         val list = mutableListOf<String>()

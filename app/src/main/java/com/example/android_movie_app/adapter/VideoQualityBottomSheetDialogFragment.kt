@@ -1,11 +1,13 @@
 package com.example.android_movie_app.adapter
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.example.android_movie_app.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -15,7 +17,10 @@ class VideoQualityBottomSheetDialogFragment(
 ) : BottomSheetDialogFragment() {
 
     private lateinit var tvCurrentQuality: TextView
-    private val qualityOptions = listOf("1080p", "720p", "480p", "360p", "240p", "144p")
+    private val qualityViewIds = listOf(
+        R.id.quality_1080p, R.id.quality_720p, R.id.quality_480p,
+        R.id.quality_360p, R.id.quality_240p, R.id.quality_144p
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,23 +36,27 @@ class VideoQualityBottomSheetDialogFragment(
         tvCurrentQuality = view.findViewById(R.id.tv_current_quality)
         updateCurrentQuality()
 
-        // container chứa list quality (LinearLayout)
-        val containerOptions = view as ViewGroup
-        for (i in 0 until containerOptions.childCount) {
-            val child = containerOptions.getChildAt(i)
-            if (child is LinearLayout) {
-                // duyệt các TextView trong LinearLayout
-                for (j in 0 until child.childCount) {
-                    val optionView = child.getChildAt(j)
-                    if (optionView is TextView) {
-                        optionView.setOnClickListener {
-                            val selectedQuality = optionView.text.toString()
-                            currentQuality = selectedQuality
-                            updateCurrentQuality()
-                            onQualitySelected(selectedQuality)
-                            dismiss()
-                        }
-                    }
+        // Duyệt qua danh sách ID đã định nghĩa
+        qualityViewIds.forEach { id ->
+            val optionView = view.findViewById<TextView>(id)
+            val optionQuality = optionView.text.toString()
+
+            // 1. Kiểm tra và đổi màu cho chất lượng hiện tại
+            if (optionQuality == currentQuality) {
+                optionView.setTextColor(Color.parseColor("#FFA500")) // Màu cam
+            } else {
+                optionView.setTextColor(Color.WHITE) // Hoặc màu chữ mặc định của bạn
+            }
+
+            // 2. Gán sự kiện click
+            optionView.setOnClickListener {
+                if (optionQuality == currentQuality) {
+                    // Nếu bấm vào chất lượng đang được chọn -> hiển thị thông báo
+                    Toast.makeText(requireContext(), "Bạn đang chọn chất lượng này", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Nếu chọn chất lượng mới -> thực hiện callback và đóng dialog
+                    onQualitySelected(optionQuality)
+                    dismiss()
                 }
             }
         }

@@ -40,6 +40,7 @@ import com.example.android_movie_app.dao.*
 import com.example.android_movie_app.databinding.LayoutMovieDetailBinding
 import java.util.Date
 import com.example.android_movie_app.data.CommentDAO
+import java.util.Locale
 
 
 class MovieDetailAdapter(
@@ -50,6 +51,8 @@ class MovieDetailAdapter(
 ) {
 
     private var player: ExoPlayer? = null
+    private var currentQualitySetting: String = "720p"
+    private var currentSpeedSetting: Float = 1.0f
     private var isLandscape = false
     private var currentEpisodeId: Int? = null // single => null, series => id tập
     private var savedPosition: Long = 0
@@ -102,7 +105,20 @@ class MovieDetailAdapter(
                 movieId = movieId,
                 episodeId = null
             ) { rating ->
-                CustomToast.show(activity, "Đã đánh giá $rating sao", ToastType.SUCCESS)
+
+                // 1. Lấy điểm trung bình mới từ CSDL
+                val reviewDAO = ReviewDAO(dbHelper)
+                val newAverageRating = reviewDAO.getAverageRatingForMovie(movieId)
+
+                // 2. Cập nhật điểm trung bình mới vào bảng 'movies'
+                if (newAverageRating > 0) {
+                    movieDAO.updateMovieRating(movieId, newAverageRating)
+
+                    // 3. Cập nhật TextView trên giao diện
+                    // Làm tròn để hiển thị cho đẹp
+                    val roundedRating = String.format(Locale.US, "%.1f", newAverageRating)
+                    binding.txtMovieRating?.text = "⭐ $roundedRating • "
+                }
             }
             ratingDialog.show()
         }
@@ -135,19 +151,25 @@ class MovieDetailAdapter(
         }
 
         binding.btnMore?.setOnClickListener {
-            // Lấy tốc độ hiện tại của player, nếu null thì mặc định là 1.0f
-            val currentSpeed = player?.playbackParameters?.speed ?: 1.0f
-
-            // Thay thế cách gọi cũ
             val settingsSheet = MainSettingsBottomSheet(
-                currentSpeed = currentSpeed, // <-- THÊM DÒNG NÀY
-                onQualitySelected = { quality ->
-                    changeVideoQuality(quality)
+                // Truyền vào trạng thái hiện tại từ Adapter
+                currentQuality = currentQualitySetting,
+                currentSpeed = currentSpeedSetting,
+
+                // Callback khi chất lượng được chọn
+                onQualitySelected = { selectedQuality ->
+                    // Gọi hàm logic và nhận lại chất lượng cần hiển thị
+                    val qualityToShow = changeVideoQuality(selectedQuality)
+                    // Cập nhật lại trạng thái trong Adapter
+                    currentQualitySetting = qualityToShow
+                    // Trả về giá trị để BottomSheet cập nhật UI
+                    qualityToShow
                 },
+                // Callback khi tốc độ được chọn
                 onSpeedSelected = { speed ->
                     player?.playbackParameters = player?.playbackParameters?.withSpeed(speed)!!
+                    currentSpeedSetting = speed // Cập nhật trạng thái tốc độ
                     CustomToast.show(activity, "Tốc độ phát: ${speed}x", ToastType.INFO)
-                    // CẬP NHẬT LẠI GIÁ TRỊ TỐC ĐỘ TRONG UI CỦA MAINSETTINGSBOTTOMSHEET
                 }
             )
             settingsSheet.show(
@@ -246,38 +268,49 @@ class MovieDetailAdapter(
     // Thêm hàm này vào trong class MovieDetailAdapter
 
     @androidx.annotation.OptIn(UnstableApi::class)
-    private fun changeVideoQuality(quality: String) {
-        val qualityHeight = quality.removeSuffix("p").toIntOrNull() ?: return
+    // Sửa hàm để trả về String (chất lượng cần hiển thị trên UI)
+    private fun changeVideoQuality(selectedQuality: String): String {
+        val defaultQuality = "720p"
+
+        if (selectedQuality == defaultQuality) {
+            // ---- TRƯỜNG HỢP 1: NGƯỜI DÙNG CHỌN ĐÚNG 720p ----
+            CustomToast.show(activity, "Đã đổi chất lượng sang $defaultQuality", ToastType.SUCCESS)
+
+            // Cố gắng tìm và áp dụng chất lượng 720p cho player
+            applyQualityToPlayer(720)
+
+            // Trả về chất lượng đã chọn để cập nhật UI
+            return defaultQuality
+        } else {
+            // ---- TRƯỜNG HỢP 2: NGƯỜI DÙNG CHỌN CHẤT LƯỢNG KHÁC ----
+            CustomToast.show(activity, "Không tìm thấy chất lượng $selectedQuality", ToastType.ERROR)
+
+            // Không thay đổi gì cả và trả về chất lượng mặc định đang được áp dụng
+            return defaultQuality
+        }
+    }
+
+    // Hàm phụ để áp dụng chất lượng vào ExoPlayer
+    @UnstableApi
+    private fun applyQualityToPlayer(qualityHeight: Int) {
         player?.let { exoPlayer ->
-            // Lấy track group của video
-            val trackGroup = exoPlayer.currentTracks.groups.firstOrNull {
-                it.type == C.TRACK_TYPE_VIDEO
-            }?.mediaTrackGroup ?: return
-
-            // Tìm index của track có độ phân giải phù hợp
-            var trackIndex = -1
-            for (i in 0 until trackGroup.length) {
-                val format = trackGroup.getFormat(i)
-                if (format.height == qualityHeight) {
-                    trackIndex = i
-                    break
+            val trackGroup = exoPlayer.currentTracks.groups.firstOrNull { it.type == C.TRACK_TYPE_VIDEO }?.mediaTrackGroup
+            if (trackGroup != null) {
+                var trackIndex = -1
+                for (i in 0 until trackGroup.length) {
+                    if (trackGroup.getFormat(i).height == qualityHeight) {
+                        trackIndex = i
+                        break
+                    }
                 }
-            }
-
-            if (trackIndex != -1) {
-                // =================== PHẦN THAY ĐỔI ===================
-                val override = TrackSelectionOverride(trackGroup, listOf(trackIndex))
-
-                // Sử dụng clearOverridesOfType và addOverride
-                exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
-                    .buildUpon()
-                    .clearOverridesOfType(C.TRACK_TYPE_VIDEO) // 1. Xóa các lựa chọn chất lượng video cũ
-                    .addOverride(override)                   // 2. Thêm lựa chọn chất lượng mới
-                    .build()
-
-                CustomToast.show(activity, "Đã đổi chất lượng sang $quality", ToastType.SUCCESS)
-            } else {
-                CustomToast.show(activity, "Không tìm thấy chất lượng $quality", ToastType.ERROR)
+                if (trackIndex != -1) {
+                    val override = TrackSelectionOverride(trackGroup, listOf(trackIndex))
+                    exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
+                        .buildUpon()
+                        .clearOverridesOfType(C.TRACK_TYPE_VIDEO)
+                        .addOverride(override)
+                        .build()
+                }
             }
         }
     }

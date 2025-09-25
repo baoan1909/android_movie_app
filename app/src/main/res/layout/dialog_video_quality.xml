@@ -23,12 +23,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView style="@style/QualityOption" android:text="1080p" android:textColor="@color/white"/>
-        <TextView style="@style/QualityOption" android:text="720p" android:textStyle="bold" android:textColor="@color/white"/>
-        <TextView style="@style/QualityOption" android:text="480p" android:textColor="@color/white"/>
-        <TextView style="@style/QualityOption" android:text="360p" android:textColor="@color/white"/>
-        <TextView style="@style/QualityOption" android:text="240p" android:textColor="@color/white"/>
-        <TextView style="@style/QualityOption" android:text="144p" android:textColor="@color/white"/>
+        <TextView android:id="@+id/quality_1080p" style="@style/QualityOption" android:text="1080p" android:textColor="@color/white"/>
+        <TextView android:id="@+id/quality_720p" style="@style/QualityOption" android:text="720p" android:textStyle="bold" android:textColor="@color/white"/>
+        <TextView android:id="@+id/quality_480p" style="@style/QualityOption" android:text="480p" android:textColor="@color/white"/>
+        <TextView android:id="@+id/quality_360p" style="@style/QualityOption" android:text="360p" android:textColor="@color/white"/>
+        <TextView android:id="@+id/quality_240p" style="@style/QualityOption" android:text="240p" android:textColor="@color/white"/>
+        <TextView android:id="@+id/quality_144p" style="@style/QualityOption" android:text="144p" android:textColor="@color/white"/>
 
     </LinearLayout>
 
